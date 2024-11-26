@@ -2,8 +2,8 @@
 @import "bulma/css/bulma.css";
 
 @font-face {
-  font-family: "NotoSansMono";
-  src: url("/fonts/NotoSansMono-VariableFont_wdth,wght.ttf") format("truetype");
+  font-family: "Inter";
+  src: url("../assets/Inter-VariableFont_opsz,wght.ttf") format("truetype");
 }
 
 :root {
@@ -20,5 +20,5 @@
 }
 
 body {
-  font-family: "NotoSansMono", monospace;
+  font-family: "Inter";
 }
