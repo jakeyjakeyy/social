@@ -3,7 +3,17 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterView />
+  <div class="social-media-container container">
+    <RouterView />
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* .social-media-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+} */
+</style>
