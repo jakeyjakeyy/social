@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import Nav from "@/components/Nav.vue";
 </script>
 
 <template>
   <div class="social-media-container container">
     <RouterView />
+    <Nav />
   </div>
 </template>
 
