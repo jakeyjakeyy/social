@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { register } from "module";
 import { ref, onMounted } from "vue";
 
 const props = defineProps(["showModal"]);
