@@ -3,3 +3,5 @@ node_modules
 /venv
 .env
 Dockerfile
+*.log
+__pycache__
