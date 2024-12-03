@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import Auth from "./Auth.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 const showNavItems = ref(false);
 const router = useRouter();
+const showModal = ref(false);
 
 const navItems = [
   { name: "Home", path: "/" },
   { name: "Profile", path: "/profile" },
-  { name: "Settings", path: "/settings" },
+  { name: "Login", path: "/auth" },
 ];
 
 const toggleNavItems = () => {
@@ -16,24 +18,35 @@ const toggleNavItems = () => {
 };
 
 const navigateTo = (path: string) => {
+  if (path === "/auth") {
+    showModal.value = true;
+    return;
+  }
   router.push(path);
+};
+
+const updateShowModal = (value: boolean) => {
+  showModal.value = value;
 };
 </script>
 
 <template>
-  <div class="nav has-background-link" @click="toggleNavItems">
-    nav
+  <div class="nav-container">
+    <div class="nav has-background-link" @click="toggleNavItems">
+      nav
 
-    <div v-if="showNavItems" class="nav-items">
-      <div
-        v-for="(item, index) in navItems"
-        :key="index"
-        class="nav-item"
-        @click="navigateTo(item.path)"
-      >
-        {{ item.name }}
+      <div v-if="showNavItems" class="nav-items">
+        <div
+          v-for="(item, index) in navItems"
+          :key="index"
+          class="nav-item"
+          @click="navigateTo(item.path)"
+        >
+          {{ item.name }}
+        </div>
       </div>
     </div>
+    <Auth :showModal @updateShowModal="updateShowModal" />
   </div>
 </template>
 
