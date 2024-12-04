@@ -2,15 +2,16 @@
 import Auth from "./Auth.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
+import { deleteTokens } from "@/utils/RefreshToken";
 const showNavItems = ref(false);
 const router = useRouter();
 const showModal = ref(false);
+const loggedIn = ref(false);
 
 const navItems = [
   { name: "Home", path: "/" },
   { name: "Profile", path: "/profile" },
-  { name: "Login", path: "/auth" },
+  { name: loggedIn.value ? "Logout" : "Login", path: "/auth" },
 ];
 
 const toggleNavItems = () => {
@@ -19,7 +20,17 @@ const toggleNavItems = () => {
 
 const navigateTo = (path: string) => {
   if (path === "/auth") {
-    showModal.value = true;
+    switch (loggedIn.value) {
+      case true:
+        loggedIn.value = false;
+        deleteTokens();
+        navItems[2].name = "Login";
+        break;
+      case false:
+        showModal.value = true;
+        navItems[2].name = "Logout";
+        break;
+    }
     return;
   }
   router.push(path);
@@ -27,6 +38,14 @@ const navigateTo = (path: string) => {
 
 const updateShowModal = (value: boolean) => {
   showModal.value = value;
+};
+const updateLoggedIn = (value: boolean) => {
+  loggedIn.value = value;
+  if (value) {
+    navItems[2].name = "Logout";
+  } else {
+    navItems[2].name = "Login";
+  }
 };
 </script>
 
@@ -46,7 +65,11 @@ const updateShowModal = (value: boolean) => {
         </div>
       </div>
     </div>
-    <Auth :showModal @updateShowModal="updateShowModal" />
+    <Auth
+      :showModal
+      @updateShowModal="updateShowModal"
+      @updateLoggedIn="updateLoggedIn"
+    />
   </div>
 </template>
 

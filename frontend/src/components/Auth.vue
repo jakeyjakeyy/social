@@ -6,7 +6,7 @@ const serverURL = import.meta.env.VITE_BACKEND_URL;
 const { cookies } = useCookies();
 
 const props = defineProps(["showModal"]);
-const emit = defineEmits(["updateShowModal"]);
+const emit = defineEmits(["updateShowModal", "updateLoggedIn"]);
 
 const registerActive = ref(false);
 
@@ -64,8 +64,11 @@ const submitForm = async () => {
   cookies.set("refresh_token", data.refresh);
   cookies.set("access_token", data.access);
 
-  localStorage.setItem("token", data.token);
+  emit("updateLoggedIn", true);
   closeModal();
+  username.value = "";
+  password.value = "";
+  confirmPassword.value = "";
 };
 </script>
 
