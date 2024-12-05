@@ -58,7 +58,12 @@ const updateLoggedIn = (value: boolean) => {
         <div
           v-for="(item, index) in navItems"
           :key="index"
-          class="nav-item"
+          :class="[
+            'nav-item',
+            item.name === 'Logout'
+              ? 'has-background-danger'
+              : 'has-background-info',
+          ]"
           @click="navigateTo(item.path)"
         >
           {{ item.name }}
@@ -98,7 +103,6 @@ const updateLoggedIn = (value: boolean) => {
   position: absolute;
   bottom: 0;
   padding: 0.5rem 1rem;
-  background-color: white;
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.3s;
