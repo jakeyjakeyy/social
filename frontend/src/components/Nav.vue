@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Auth from "./Auth.vue";
+import AddPost from "./AddPost.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { deleteTokens } from "@/utils/RefreshToken";
@@ -7,6 +8,7 @@ const showNavItems = ref(false);
 const router = useRouter();
 const showModal = ref(false);
 const loggedIn = ref(false);
+const showAddPost = ref(false);
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -29,6 +31,7 @@ const navigateTo = (path: string) => {
       case false:
         showModal.value = true;
         navItems[2].name = "Logout";
+        navItems.push({ name: "Add Post", path: "/add-post" });
         break;
     }
     return;
@@ -56,21 +59,37 @@ const updateLoggedIn = (value: boolean) => {
 
       <div v-if="showNavItems" class="nav-items">
         <div
-          v-for="(item, index) in navItems"
-          :key="index"
+          class="nav-item has-text-primary-bold has-background-info"
+          @click="navigateTo('/')"
+        >
+          Home
+        </div>
+        <div
+          class="nav-item has-text-primary-bold has-background-info"
+          @click="navigateTo('/profile')"
+        >
+          Profile
+        </div>
+        <div
+          v-if="loggedIn"
+          class="nav-item has-text-primary-bold has-background-info"
+          @click="showAddPost = true"
+        >
+          Add Post
+        </div>
+        <div
           :class="[
             'nav-item',
-            item.name === 'Logout'
-              ? 'has-background-danger'
-              : 'has-background-info',
             'has-text-primary-bold',
+            loggedIn ? 'has-background-danger' : 'has-background-info',
           ]"
-          @click="navigateTo(item.path)"
+          @click="navigateTo('/auth')"
         >
-          {{ item.name }}
+          {{ loggedIn ? "Logout" : "Login" }}
         </div>
       </div>
     </div>
+    <AddPost v-if="showAddPost" />
     <Auth
       :showModal
       @updateShowModal="updateShowModal"
