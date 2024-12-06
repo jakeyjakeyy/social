@@ -1,11 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const posts: any = ref([]);
+
+onMounted(async () => {
+  posts.value = await fetchPosts();
+  console.log(posts.value);
+});
+const fetchPosts = async () => {
+  const res = await fetch(`${BACKEND_URL}/api/post/1`);
+  const data = await res.json();
+  return data;
+};
+</script>
 
 <template>
   <div class="home-container">
-    <h1 class="title is-1">Home</h1>
-    <p class="subtitle is-3">Welcome to the Home page!</p>
-    <div>
-      <h2 class="title is-2">About</h2>
+    <div class="content">
+      <div v-for="post in posts" :key="post.id">
+        <p>{{ post.content }}</p>
+      </div>
     </div>
   </div>
 </template>

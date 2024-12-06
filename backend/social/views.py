@@ -37,3 +37,21 @@ class Post(APIView):
                 content=data["content"],
             )
         return Response({"message": "Post created successfully"})
+
+    def get(self, request, page=1):
+        page = int(page)
+        posts = models.Post.objects.all().order_by("-created_at")[
+            (page - 1) * 16 : page * 16
+        ]
+        post_data = [
+            {
+                "id": post.id,
+                "account": post.account.display_name,
+                "created_at": post.created_at,
+                "content": (
+                    post.text_post.content if hasattr(post, "text_post") else None
+                ),
+            }
+            for post in posts
+        ]
+        return Response(post_data)
