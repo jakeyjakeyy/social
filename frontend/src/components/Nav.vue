@@ -63,6 +63,7 @@ const updateLoggedIn = (value: boolean) => {
             item.name === 'Logout'
               ? 'has-background-danger'
               : 'has-background-info',
+            'has-text-primary-bold',
           ]"
           @click="navigateTo(item.path)"
         >
@@ -91,32 +92,18 @@ const updateLoggedIn = (value: boolean) => {
 
 .nav-items {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
+  flex-direction: column-reverse;
   align-items: center;
+  bottom: 100%;
+  left: 0;
 }
 
 .nav-item {
-  position: absolute;
   bottom: 0;
   padding: 0.5rem 1rem;
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.3s;
-}
-
-.nav-item:nth-child(1) {
-  transform: translate(-100%, 0);
-}
-
-.nav-item:nth-child(2) {
-  transform: translate(0, -100%);
-}
-
-.nav-item:nth-child(3) {
-  transform: translate(100%, 0);
 }
 </style>
