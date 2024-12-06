@@ -53,4 +53,8 @@ function deleteTokens() {
   cookies.remove("salt");
 }
 
-export { RefreshToken, checkToken, deleteTokens };
+function getAccessToken() {
+  return cookies.get("access_token");
+}
+
+export { RefreshToken, checkToken, deleteTokens, getAccessToken };

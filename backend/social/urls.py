@@ -9,4 +9,5 @@ urlpatterns = [
     path("token", TokenObtainPairView.as_view(), name="token"),
     path("token/refresh", TokenRefreshView.as_view(), name="token-refresh"),
     path("register", Register.as_view(), name="register"),
+    path("post", Post.as_view(), name="post"),
 ]

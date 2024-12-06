@@ -1,8 +1,23 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getAccessToken } from "@/utils/RefreshToken";
 const emit = defineEmits(["closeAddPostModal"]);
 const MAX_POST_LEN = 255;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const content = ref("");
+const access_token = getAccessToken();
+
+const submitPost = async () => {
+  const res = await fetch(`${BACKEND_URL}/api/post`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${access_token}`,
+    },
+    body: JSON.stringify({ content: content.value, type: "text" }),
+  });
+  emit("closeAddPostModal");
+};
 </script>
 
 <template>
@@ -33,7 +48,12 @@ const content = ref("");
             </div>
             <div class="field">
               <div class="control">
-                <button class="button is-primary is-fullwidth">Add Post</button>
+                <button
+                  class="button is-primary is-fullwidth"
+                  @click="submitPost"
+                >
+                  Add Post
+                </button>
               </div>
             </div>
           </form>
