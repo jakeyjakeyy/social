@@ -89,7 +89,7 @@ const updateLoggedIn = (value: boolean) => {
         </div>
       </div>
     </div>
-    <AddPost v-if="showAddPost" />
+    <AddPost v-if="showAddPost" @closeAddPostModal="showAddPost = false" />
     <Auth
       :showModal
       @updateShowModal="updateShowModal"
