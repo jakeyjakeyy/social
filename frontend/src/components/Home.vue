@@ -20,6 +20,10 @@ const fetchPosts = async () => {
     <div class="content">
       <div v-for="post in posts" :key="post.id">
         <p>{{ post.content }}</p>
+        <p>
+          {{ post.account_display_name }}
+          <span>@{{ post.account_username }}</span>
+        </p>
       </div>
     </div>
   </div>

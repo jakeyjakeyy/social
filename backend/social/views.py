@@ -48,7 +48,9 @@ class Post(APIView):
         post_data = [
             {
                 "id": post.id,
-                "account": post.account.display_name,
+                "account_display_name": post.account.display_name,
+                "account_username": post.account.user.username,
+                "account_id": post.account.id,
                 "created_at": post.created_at,
                 "content": (
                     post.text_post.content if hasattr(post, "text_post") else None
