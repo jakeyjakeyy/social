@@ -12,6 +12,8 @@ class Register(APIView):
 
     def post(self, request):
         data = request.data
+        if models.User.objects.filter(username=data["username"].lower()).exists():
+            return Response({"detail": "Username already exists"}, status=400)
         user = models.User.objects.create_user(
             username=data["username"].lower(),
             password=data["password"],
