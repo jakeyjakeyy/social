@@ -13,6 +13,11 @@ const router = createRouter({
       name: "auth",
       component: () => import("../views/AuthView.vue"),
     },
+    {
+      path: "/@:username",
+      name: "profile",
+      component: () => import("../views/ProfileView.vue"),
+    }
   ],
 });
 

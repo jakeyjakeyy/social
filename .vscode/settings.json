@@ -1,3 +1,9 @@
 {
-  "conventionalCommits.scopes": ["LoginModal", "API", "AddPost", "Post"]
+  "conventionalCommits.scopes": [
+    "LoginModal",
+    "API",
+    "AddPost",
+    "Post",
+    "Profile"
+  ]
 }
