@@ -26,6 +26,7 @@ const navigateTo = (path: string) => {
       case true:
         loggedIn.value = false;
         deleteTokens();
+        localStorage.removeItem("username");
         navItems[2].name = "Login";
         break;
       case false:

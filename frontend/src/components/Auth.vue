@@ -63,12 +63,14 @@ const submitForm = async () => {
   }
   cookies.set("refresh_token", data.refresh);
   cookies.set("access_token", data.access);
+  localStorage.setItem("username", username.value);
 
   emit("updateLoggedIn", true);
   closeModal();
   username.value = "";
   password.value = "";
   confirmPassword.value = "";
+  registerActive.value = false;
 };
 </script>
 
