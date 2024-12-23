@@ -11,4 +11,5 @@ urlpatterns = [
     path("register", Register.as_view(), name="register"),
     path("post", Post.as_view(), name="post"),
     path("post/<int:page>", Post.as_view(), name="post"),
+    path("profile/<str:username>/<int:page>", Profile.as_view(), name="profile"),
 ]

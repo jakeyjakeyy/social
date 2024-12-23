@@ -59,3 +59,20 @@ class Post(APIView):
             for post in posts
         ]
         return Response(post_data)
+
+
+class Profile(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, username, page=1):
+        logger.info(f"Getting profile for {username}")
+        account = models.Account.objects.get(
+            user=models.User.objects.get(username=username)
+        )
+        return Response(
+            {
+                "display_name": account.display_name,
+                "username": account.user.username,
+                "id": account.id,
+            }
+        )

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from "@/router";
 import type { Post } from "@/types/Post";
 const props = defineProps<{ post: Post }>();
 const post = props.post;
@@ -9,7 +10,7 @@ const post = props.post;
     <p>{{ post.content }}</p>
     <p>
       {{ post.account_display_name }}
-      <span class="account-link has-text-primary"
+      <span class="account-link has-text-primary" @click="router.push(`/@${post.account_username}`)"
         >@{{ post.account_username }}</span
       >
     </p>

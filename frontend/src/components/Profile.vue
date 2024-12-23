@@ -1,8 +1,22 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+let page = 1;
 const route = useRoute();
 const username = route.params.username as string;
+const posts = ref([]);
+
+const fetchPosts = async () => {
+  const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`);
+  const data = await res.json();
+  posts.value = data;
+};
+
+onMounted(async () => {
+  await fetchPosts();
+});
 </script>
 <template>
   <div>
