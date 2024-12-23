@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import Post from "./Post.vue";
 import { useRoute } from "vue-router";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -21,6 +22,7 @@ onMounted(async () => {
 <template>
   <div>
     <h1>Profile of @{{ username }}</h1>
+    <Post v-for="post in posts" :key="post.id" :post="post" />
   </div>
 </template>
 

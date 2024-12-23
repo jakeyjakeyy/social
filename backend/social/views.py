@@ -65,14 +65,24 @@ class Profile(APIView):
     authentication_classes = [JWTAuthentication]
 
     def get(self, request, username, page=1):
-        logger.info(f"Getting profile for {username}")
+        page = int(page)
         account = models.Account.objects.get(
             user=models.User.objects.get(username=username)
         )
-        return Response(
+        posts = models.Post.objects.filter(account=account).order_by("-created_at")[
+            (page - 1) * 16 : page * 16
+        ]
+        post_data = [
             {
-                "display_name": account.display_name,
-                "username": account.user.username,
-                "id": account.id,
+                "id": post.id,
+                "account_display_name": post.account.display_name,
+                "account_username": post.account.user.username,
+                "account_id": post.account.id,
+                "created_at": post.created_at,
+                "content": (
+                    post.text_post.content if hasattr(post, "text_post") else None
+                ),
             }
-        )
+            for post in posts
+        ]
+        return Response(post_data)
