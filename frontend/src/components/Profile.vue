@@ -21,10 +21,16 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div>
+  <div class="profile-container">
     <h1>Profile of @{{ username }}</h1>
     <Post v-for="post in posts" :key="post.id" :post="post" />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>
