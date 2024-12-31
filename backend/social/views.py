@@ -32,13 +32,34 @@ class Post(APIView):
         data = request.data
         account = models.Account.objects.get(user=request.user)
         type = data["type"]
-        post = models.Post.objects.create(account=account)
         if type == "text":
+            post = models.Post.objects.create(account=account)
             models.TextPost.objects.create(
                 post=post,
                 content=data["content"],
             )
-        return Response({"message": "Post created successfully"})
+            return Response({"message": "Post created successfully"})
+        elif type == "favorite":
+            post = models.Post.objects.get(id=data["post_id"])
+            entry = models.Favorite.objects.get_or_create(
+                account=account,
+                post=post,
+            )
+            if entry[1] == False:
+                entry[0].delete()
+                return Response({"message": "Unfavorited successfully"})
+            return Response({"message": "Favorited successfully"})
+        elif type == "repost":
+            original_post = models.Post.objects.get(id=data["post_id"])
+            entry = models.Repost.objects.get_or_create(
+                account=account,
+                post=original_post,
+            )
+            if entry[1] == False:
+                entry[0].delete()
+                return Response({"message": "Unreposted successfully"})
+            return Response({"message": "Reposted successfully"})
+        return Response({"message": "Invalid post type"}, status=400)
 
     def get(self, request, page=1):
         page = int(page)
