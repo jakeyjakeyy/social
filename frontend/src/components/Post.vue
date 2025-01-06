@@ -62,7 +62,7 @@ const submitAction = async (action: string) => {
             class="button is-small is-primary"
             @click="submitAction('favorite')"
           >
-            Like
+            {{ post.favorited ? "Unfavorite" : "Favorite" }}
           </button>
         </div>
         <div class="reposts">
@@ -71,7 +71,7 @@ const submitAction = async (action: string) => {
             class="button is-small is-info"
             @click="submitAction('repost')"
           >
-            Repost
+            {{ post.reposted ? "Unrepost" : "Repost" }}
           </button>
         </div>
       </div>
