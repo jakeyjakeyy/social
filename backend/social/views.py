@@ -66,6 +66,11 @@ class Post(APIView):
         posts = models.Post.objects.all().order_by("-created_at")[
             (page - 1) * 16 : page * 16
         ]
+        account = (
+            models.Account.objects.get(user=request.user)
+            if request.user.is_authenticated
+            else None
+        )
         post_data = [
             {
                 "id": post.id,
@@ -76,6 +81,18 @@ class Post(APIView):
                 "content": (
                     post.text_post.content if hasattr(post, "text_post") else None
                 ),
+                "favorited": (
+                    models.Favorite.objects.filter(account=account, post=post).exists()
+                    if account
+                    else False
+                ),
+                "reposted": (
+                    models.Repost.objects.filter(account=account, post=post).exists()
+                    if account
+                    else False
+                ),
+                "favorite_count": models.Favorite.objects.filter(post=post).count(),
+                "repost_count": models.Repost.objects.filter(post=post).count(),
             }
             for post in posts
         ]

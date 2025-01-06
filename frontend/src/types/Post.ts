@@ -4,4 +4,8 @@ export type Post = {
   account_username: string;
   created_at: string;
   content: string;
+  favorited: boolean;
+  favorite_count: number;
+  reposted: boolean;
+  repost_count: number;
 };

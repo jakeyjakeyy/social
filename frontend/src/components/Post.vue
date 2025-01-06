@@ -28,7 +28,18 @@ const submitAction = async (action: string) => {
       await submitAction(action);
     }
   }
-  console.log(data);
+
+  if (action === "favorite") {
+    post.favorited = !post.favorited;
+    post.favorite_count = post.favorited
+      ? post.favorite_count + 1
+      : post.favorite_count - 1;
+  } else if (action === "repost") {
+    post.reposted = !post.reposted;
+    post.repost_count = post.reposted
+      ? post.repost_count + 1
+      : post.repost_count - 1;
+  }
 };
 </script>
 
@@ -45,15 +56,24 @@ const submitAction = async (action: string) => {
         >
       </p>
       <div class="post-controls">
-        <button
-          class="button is-small is-primary"
-          @click="submitAction('favorite')"
-        >
-          Like
-        </button>
-        <button class="button is-small is-info" @click="submitAction('repost')">
-          Repost
-        </button>
+        <div class="favorites">
+          <span>{{ post.favorite_count }}</span>
+          <button
+            class="button is-small is-primary"
+            @click="submitAction('favorite')"
+          >
+            Like
+          </button>
+        </div>
+        <div class="reposts">
+          <span>{{ post.repost_count }}</span>
+          <button
+            class="button is-small is-info"
+            @click="submitAction('repost')"
+          >
+            Repost
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -72,5 +92,12 @@ const submitAction = async (action: string) => {
 
 .account-link {
   cursor: pointer;
+}
+
+.post-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 1rem;
+  gap: 1rem;
 }
 </style>
