@@ -27,18 +27,18 @@ const submitAction = async (action: string) => {
     } else {
       await submitAction(action);
     }
-  }
-
-  if (action === "favorite") {
-    post.favorited = !post.favorited;
-    post.favorite_count = post.favorited
-      ? post.favorite_count + 1
-      : post.favorite_count - 1;
-  } else if (action === "repost") {
-    post.reposted = !post.reposted;
-    post.repost_count = post.reposted
-      ? post.repost_count + 1
-      : post.repost_count - 1;
+  } else {
+    if (action === "favorite") {
+      post.favorited = !post.favorited;
+      post.favorite_count = post.favorited
+        ? post.favorite_count + 1
+        : post.favorite_count - 1;
+    } else if (action === "repost") {
+      post.reposted = !post.reposted;
+      post.repost_count = post.reposted
+        ? post.repost_count + 1
+        : post.repost_count - 1;
+    }
   }
 };
 </script>
