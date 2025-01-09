@@ -4,6 +4,7 @@
     "API",
     "AddPost",
     "Post",
-    "Profile"
+    "Profile",
+    "Models"
   ]
 }

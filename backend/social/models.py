@@ -31,6 +31,16 @@ class TextPost(models.Model):
         return self.content
 
 
+class MarkdownPost(models.Model):
+    post = models.OneToOneField(
+        Post, on_delete=models.CASCADE, related_name="markdown_post"
+    )
+    content = models.TextField()
+
+    def __str__(self):
+        return self.content
+
+
 class Follow(models.Model):
     follower = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="following"

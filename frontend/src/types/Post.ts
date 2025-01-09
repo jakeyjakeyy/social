@@ -8,4 +8,5 @@ export type Post = {
   favorite_count: number;
   reposted: boolean;
   repost_count: number;
+  type: string;
 };

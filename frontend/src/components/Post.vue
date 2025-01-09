@@ -45,7 +45,7 @@ const submitAction = async (action: string) => {
 
 <template>
   <div class="post card">
-    <p>{{ post.content }}</p>
+    <p v-if="post.type === 'text'">{{ post.content }}</p>
     <div class="card-footer">
       <p>
         {{ post.account_display_name }}

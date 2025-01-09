@@ -93,6 +93,11 @@ class Post(APIView):
                 ),
                 "favorite_count": models.Favorite.objects.filter(post=post).count(),
                 "repost_count": models.Repost.objects.filter(post=post).count(),
+                "type": (
+                    "text"
+                    if hasattr(post, "text_post")
+                    else "markdown" if hasattr(post, "markdown_post") else None
+                ),
             }
             for post in posts
         ]
