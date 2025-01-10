@@ -3,11 +3,11 @@ import Auth from "./Auth.vue";
 import AddPost from "./AddPost.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { deleteTokens } from "@/utils/RefreshToken";
+import { deleteTokens, checkToken } from "@/utils/RefreshToken";
 const showNavItems = ref(false);
 const router = useRouter();
 const showModal = ref(false);
-const loggedIn = ref(false);
+const loggedIn = ref(checkToken());
 const showAddPost = ref(false);
 
 const navItems = [

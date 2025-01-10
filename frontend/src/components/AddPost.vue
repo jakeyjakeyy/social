@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { getAccessToken } from "@/utils/RefreshToken";
+import { MdEditor } from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
+
 const emit = defineEmits(["closeAddPostModal"]);
 const MAX_POST_LEN = 255;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const content = ref("");
 const access_token = getAccessToken();
+const type = ref("text");
 
 const submitPost = async () => {
   const res = await fetch(`${BACKEND_URL}/api/post`, {
@@ -18,6 +22,20 @@ const submitPost = async () => {
   });
   emit("closeAddPostModal");
 };
+
+const toggleType = (newType: string) => {
+  type.value = newType;
+  const textButton = document.getElementById("toggleTextButton");
+  const blogButton = document.getElementById("toggleBlogButton");
+  if (!textButton || !blogButton) return;
+  if (newType === "text") {
+    textButton.classList.add("is-active");
+    blogButton.classList.remove("is-active");
+  } else {
+    textButton.classList.remove("is-active");
+    blogButton.classList.add("is-active");
+  }
+};
 </script>
 
 <template>
@@ -29,9 +47,22 @@ const submitPost = async () => {
           <p class="card-header-title">Add Post</p>
         </header>
 
+        <div class="selector">
+          <div
+            id="toggleTextButton"
+            class="button is-active"
+            @click="toggleType('text')"
+          >
+            Text Post
+          </div>
+          <div id="toggleBlogButton" class="button" @click="toggleType('blog')">
+            Blog Post
+          </div>
+        </div>
+
         <div class="card-content">
           <form @submit.prevent>
-            <div class="field">
+            <div v-if="type == 'text'" class="field">
               <label class="label">Content</label>
               <div class="control">
                 <textarea
@@ -44,6 +75,12 @@ const submitPost = async () => {
                 <div class="help">
                   {{ content.length }} / {{ MAX_POST_LEN }}
                 </div>
+              </div>
+            </div>
+            <div v-else-if="type == 'blog'" class="field">
+              <label class="label">Content</label>
+              <div class="control">
+                <MdEditor v-model="content" theme="dark" language="en-US" />
               </div>
             </div>
             <div class="field">
@@ -79,5 +116,15 @@ const submitPost = async () => {
   top: 0;
   right: 0;
   margin: 0.5rem;
+}
+
+.selector {
+  display: flex;
+  justify-content: space-around;
+  margin: 0 1rem;
+}
+
+.selector-item {
+  cursor: pointer;
 }
 </style>

@@ -5,6 +5,7 @@
     "AddPost",
     "Post",
     "Profile",
-    "Models"
+    "Models",
+    "BlogPost"
   ]
 }
