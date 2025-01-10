@@ -39,6 +39,13 @@ class Post(APIView):
                 content=data["content"],
             )
             return Response({"message": "Post created successfully"})
+        elif type == "markdown":
+            post = models.Post.objects.create(account=account)
+            models.MarkdownPost.objects.create(
+                post=post,
+                content=data["content"],
+            )
+            return Response({"message": "Post created successfully"})
         elif type == "favorite":
             post = models.Post.objects.get(id=data["post_id"])
             entry = models.Favorite.objects.get_or_create(
@@ -79,7 +86,9 @@ class Post(APIView):
                 "account_id": post.account.id,
                 "created_at": post.created_at,
                 "content": (
-                    post.text_post.content if hasattr(post, "text_post") else None
+                    post.text_post.content
+                    if hasattr(post, "text_post")
+                    else post.markdown_post.content
                 ),
                 "favorited": (
                     models.Favorite.objects.filter(account=account, post=post).exists()

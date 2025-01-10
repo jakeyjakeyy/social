@@ -2,6 +2,9 @@
 import router from "@/router";
 import type { Post } from "@/types/Post";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import { MdPreview } from "md-editor-v3";
+import "md-editor-v3/lib/preview.css";
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const props = defineProps<{ post: Post }>();
 const post = props.post;
@@ -46,6 +49,14 @@ const submitAction = async (action: string) => {
 <template>
   <div class="post card">
     <p v-if="post.type === 'text'">{{ post.content }}</p>
+    <div v-else-if="post.type === 'markdown'">
+      <MdPreview
+        id="post.id"
+        :model-value="post.content"
+        theme="dark"
+        language="en-US"
+      />
+    </div>
     <div class="card-footer">
       <p>
         {{ post.account_display_name }}

@@ -18,7 +18,7 @@ const submitPost = async () => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${access_token}`,
     },
-    body: JSON.stringify({ content: content.value, type: "text" }),
+    body: JSON.stringify({ content: content.value, type: type.value }),
   });
   emit("closeAddPostModal");
 };
@@ -55,7 +55,11 @@ const toggleType = (newType: string) => {
           >
             Text Post
           </div>
-          <div id="toggleBlogButton" class="button" @click="toggleType('blog')">
+          <div
+            id="toggleBlogButton"
+            class="button"
+            @click="toggleType('markdown')"
+          >
             Blog Post
           </div>
         </div>
@@ -77,7 +81,7 @@ const toggleType = (newType: string) => {
                 </div>
               </div>
             </div>
-            <div v-else-if="type == 'blog'" class="field">
+            <div v-else-if="type == 'markdown'" class="field">
               <label class="label">Content</label>
               <div class="control">
                 <MdEditor v-model="content" theme="dark" language="en-US" />
