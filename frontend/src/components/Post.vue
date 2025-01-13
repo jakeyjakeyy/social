@@ -4,10 +4,29 @@ import type { Post } from "@/types/Post";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/preview.css";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const props = defineProps<{ post: Post }>();
 const post = props.post;
+const contentContainer = ref<HTMLDivElement | null>(null);
+const isContentTruncated = ref(false);
+const isExpanded = ref(false);
+
+onMounted(() => {
+  checkContentHeight();
+  window.addEventListener("resize", checkContentHeight);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", checkContentHeight);
+});
+
+function checkContentHeight() {
+  if (contentContainer.value) {
+    isContentTruncated.value =
+      contentContainer.value.scrollHeight > window.innerHeight / 4;
+  }
+}
 
 const submitAction = async (action: string) => {
   const access_token = getAccessToken();
@@ -44,18 +63,25 @@ const submitAction = async (action: string) => {
     }
   }
 };
+
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value;
+  contentContainer.value!.style.maxHeight = isExpanded.value ? "none" : "25vh";
+};
 </script>
 
 <template>
   <div class="post card">
-    <p v-if="post.type === 'text'">{{ post.content }}</p>
-    <div v-else-if="post.type === 'markdown'">
-      <MdPreview
-        id="post.id"
-        :model-value="post.content"
-        theme="dark"
-        language="en-US"
-      />
+    <div class="content" ref="contentContainer">
+      <p v-if="post.type === 'text'">{{ post.content }}</p>
+      <div v-else-if="post.type === 'markdown'" class="markdown-post">
+        <MdPreview
+          id="post.id"
+          :model-value="post.content"
+          theme="dark"
+          language="en-US"
+        />
+      </div>
     </div>
     <div class="card-footer">
       <p>
@@ -85,6 +111,11 @@ const submitAction = async (action: string) => {
             {{ post.reposted ? "Unrepost" : "Repost" }}
           </button>
         </div>
+        <div v-if="isContentTruncated" class="expand">
+          <button class="button is-small" @click="toggleExpand">
+            {{ isExpanded ? "Collapse" : "Expand" }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -110,5 +141,16 @@ const submitAction = async (action: string) => {
   justify-content: space-between;
   margin-left: 1rem;
   gap: 1rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.content {
+  max-height: 25vh;
+  overflow: auto;
+  margin: 0;
 }
 </style>
