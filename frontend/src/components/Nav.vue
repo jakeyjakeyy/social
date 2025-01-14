@@ -9,6 +9,7 @@ const router = useRouter();
 const showModal = ref(false);
 const loggedIn = ref(checkToken());
 const showAddPost = ref(false);
+const showNotification = ref(false);
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -52,13 +53,22 @@ const updateLoggedIn = (value: boolean) => {
   }
   window.location.reload();
 };
+
+const toggleAddPostModal = (value: boolean) => {
+  showAddPost.value = false;
+  if (value) {
+    showNotification.value = true;
+    setTimeout(() => {
+      showNotification.value = false;
+    }, 3000);
+  }
+};
 </script>
 
 <template>
   <div class="nav-container">
     <div class="nav has-background-link" @click="toggleNavItems">
       nav
-
       <div v-if="showNavItems" class="nav-items">
         <div
           class="nav-item has-text-primary-bold has-background-info"
@@ -91,12 +101,16 @@ const updateLoggedIn = (value: boolean) => {
         </div>
       </div>
     </div>
-    <AddPost v-if="showAddPost" @closeAddPostModal="showAddPost = false" />
+    <AddPost v-if="showAddPost" @closeAddPostModal="toggleAddPostModal" />
     <Auth
       :showModal
       @updateShowModal="updateShowModal"
       @updateLoggedIn="updateLoggedIn"
     />
+    <div class="notification is-success" v-if="showNotification">
+      <button class="delete"></button>
+      <strong>Success!</strong> Post added successfully.
+    </div>
   </div>
 </template>
 
@@ -126,5 +140,12 @@ const updateLoggedIn = (value: boolean) => {
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.3s;
+}
+
+.notification {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>

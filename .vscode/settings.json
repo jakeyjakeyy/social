@@ -6,6 +6,7 @@
     "Post",
     "Profile",
     "Models",
-    "BlogPost"
+    "BlogPost",
+    "Nav"
   ]
 }

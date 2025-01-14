@@ -20,7 +20,7 @@ const submitPost = async () => {
     },
     body: JSON.stringify({ content: content.value, type: type.value }),
   });
-  emit("closeAddPostModal");
+  emit("closeAddPostModal", true); // true to toggle sucess notification, this assumes the request is a success
 };
 
 const toggleType = (newType: string) => {
