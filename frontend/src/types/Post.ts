@@ -9,4 +9,5 @@ export type Post = {
   reposted: boolean;
   repost_count: number;
   type: string;
+  is_owner: boolean;
 };

@@ -8,6 +8,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const props = defineProps<{ post: Post }>();
+const emit = defineEmits(["deletePost"]);
 const post = props.post;
 const contentContainer = ref<HTMLDivElement | null>(null);
 const isContentTruncated = ref(false);
@@ -68,6 +69,28 @@ const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
   contentContainer.value!.style.maxHeight = isExpanded.value ? "none" : "25vh";
 };
+
+const deletePost = async (id: number) => {
+  const access_token = getAccessToken();
+  const res = await fetch(`${BACKEND_URL}/api/post?id=${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+  const data = await res.json();
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      await deletePost(id);
+    }
+  } else {
+    router.push("/");
+  }
+  emit("deletePost", id);
+};
 </script>
 
 <template>
@@ -84,14 +107,23 @@ const toggleExpand = () => {
       </div>
     </div>
     <div class="card-footer">
-      <p>
-        {{ post.account_display_name }}
-        <span
-          class="account-link has-text-primary"
-          @click="router.push(`/@${post.account_username}`)"
-          >@{{ post.account_username }}</span
+      <div class="post-owner">
+        <p>
+          {{ post.account_display_name }}
+          <span
+            class="account-link has-text-primary"
+            @click="router.push(`/@${post.account_username}`)"
+            >@{{ post.account_username }}</span
+          >
+        </p>
+        <button
+          v-if="post.is_owner"
+          class="button is-small is-danger"
+          @click="deletePost(post.id)"
         >
-      </p>
+          Delete
+        </button>
+      </div>
       <div class="post-controls">
         <div class="favorites">
           <span>{{ post.favorite_count }}</span>

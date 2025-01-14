@@ -70,8 +70,8 @@ class Post(APIView):
             return Response({"message": "Reposted successfully"})
         return Response({"message": "Invalid post type"}, status=400)
 
-    def get(self, request, page=1):
-        page = int(page)
+    def get(self, request):
+        page = int(request.GET.get("page", 1))
         posts = models.Post.objects.all().order_by("-created_at")[
             (page - 1) * 16 : page * 16
         ]
@@ -109,10 +109,21 @@ class Post(APIView):
                     if hasattr(post, "text_post")
                     else "markdown" if hasattr(post, "markdown_post") else None
                 ),
+                "is_owner": post.account.user == request.user,
             }
             for post in posts
         ]
         return Response(post_data)
+
+    def delete(self, request):
+        post_id = request.GET.get("id")
+        post = models.Post.objects.get(id=post_id)
+        if post.account.user != request.user:
+            return Response(
+                {"detail": "You do not have permission to delete this post"}, status=403
+            )
+        post.delete()
+        return Response({"message": "Post deleted successfully"})
 
 
 class Profile(APIView):
