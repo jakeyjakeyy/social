@@ -2,10 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from social import models
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from html_sanitizer import Sanitizer
 
 import logging
 
 logger = logging.getLogger(__name__)
+sanitizer = Sanitizer()
 
 
 class Register(APIView):
@@ -43,7 +45,7 @@ class Post(APIView):
             post = models.Post.objects.create(account=account)
             models.MarkdownPost.objects.create(
                 post=post,
-                content=data["content"],
+                content=sanitizer.sanitize(data["content"]),
             )
             return Response({"message": "Post created successfully"})
         elif type == "favorite":
