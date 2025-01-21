@@ -68,6 +68,15 @@ class Post(APIView):
                 entry[0].delete()
                 return Response({"message": "Unreposted successfully"})
             return Response({"message": "Reposted successfully"})
+        elif type == "image":
+            if not data["image"]:
+                return Response({"message": "No image provided"}, status=400)
+            post = models.Post.objects.create(account=account)
+            models.ImagePost.objects.create(
+                post=post,
+                image=data["image"],
+            )
+            return Response({"message": "Image post created successfully"})
         return Response({"message": "Invalid post type"}, status=400)
 
     def get(self, request):
@@ -90,7 +99,15 @@ class Post(APIView):
                 "content": (
                     post.text_post.content
                     if hasattr(post, "text_post")
-                    else post.markdown_post.content
+                    else (
+                        post.markdown_post.content
+                        if hasattr(post, "markdown_post")
+                        else (
+                            post.image_post.image.url
+                            if hasattr(post, "image_post")
+                            else None
+                        )
+                    )
                 ),
                 "favorited": (
                     models.Favorite.objects.filter(account=account, post=post).exists()
@@ -107,7 +124,11 @@ class Post(APIView):
                 "type": (
                     "text"
                     if hasattr(post, "text_post")
-                    else "markdown" if hasattr(post, "markdown_post") else None
+                    else (
+                        "markdown"
+                        if hasattr(post, "markdown_post")
+                        else ("image" if hasattr(post, "image_post") else None)
+                    )
                 ),
                 "is_owner": post.account.user == request.user,
             }

@@ -41,6 +41,16 @@ class MarkdownPost(models.Model):
         return self.content
 
 
+class ImagePost(models.Model):
+    post = models.OneToOneField(
+        Post, on_delete=models.CASCADE, related_name="image_post"
+    )
+    image = models.ImageField(upload_to="images/%Y/%m/%d/")
+
+    def __str__(self):
+        return self.image.url
+
+
 class Follow(models.Model):
     follower = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="following"

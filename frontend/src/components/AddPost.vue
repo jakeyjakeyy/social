@@ -10,16 +10,33 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const content = ref("");
 const access_token = getAccessToken();
 const type = ref("text");
+let image: File | null = null;
 
 const submitPost = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/post`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${access_token}`,
-    },
-    body: JSON.stringify({ content: content.value, type: type.value }),
-  });
+  if (type.value != "image") {
+    const res = await fetch(`${BACKEND_URL}/api/post`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: JSON.stringify({
+        content: content.value,
+        type: type.value,
+      }),
+    });
+  } else if (image) {
+    const formData = new FormData();
+    formData.append("type", "image");
+    formData.append("image", image);
+    const res = await fetch(`${BACKEND_URL}/api/post`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: formData,
+    });
+  }
   emit("closeAddPostModal", true); // true to toggle sucess notification, this assumes the request is a success
 };
 
@@ -27,13 +44,20 @@ const toggleType = (newType: string) => {
   type.value = newType;
   const textButton = document.getElementById("toggleTextButton");
   const blogButton = document.getElementById("toggleBlogButton");
-  if (!textButton || !blogButton) return;
+  const imageButton = document.getElementById("toggleImageButton");
+  if (!textButton || !blogButton || !imageButton) return;
   if (newType === "text") {
     textButton.classList.add("is-active");
     blogButton.classList.remove("is-active");
-  } else {
+    imageButton.classList.remove("is-active");
+  } else if (newType === "markdown") {
     textButton.classList.remove("is-active");
     blogButton.classList.add("is-active");
+    imageButton.classList.remove("is-active");
+  } else if (newType === "image") {
+    textButton.classList.remove("is-active");
+    blogButton.classList.remove("is-active");
+    imageButton.classList.add("is-active");
   }
 };
 </script>
@@ -62,6 +86,13 @@ const toggleType = (newType: string) => {
           >
             Blog Post
           </div>
+          <div
+            id="toggleImageButton"
+            class="button"
+            @click="toggleType('image')"
+          >
+            Image Post
+          </div>
         </div>
 
         <div class="card-content">
@@ -85,6 +116,16 @@ const toggleType = (newType: string) => {
               <label class="label">Content</label>
               <div class="control">
                 <MdEditor v-model="content" theme="dark" language="en-US" />
+              </div>
+            </div>
+            <div v-else-if="type == 'image'" class="field">
+              <label class="label">Image</label>
+              <div class="control">
+                <input
+                  type="file"
+                  class="input"
+                  @change="(e:any) => (image = e.target.files[0])"
+                />
               </div>
             </div>
             <div class="field">
