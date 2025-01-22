@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { getAccessToken } from "@/utils/RefreshToken";
+import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 
@@ -13,6 +13,7 @@ const type = ref("text");
 let image: File | null = null;
 
 const submitPost = async () => {
+  let data;
   if (type.value != "image") {
     const res = await fetch(`${BACKEND_URL}/api/post`, {
       method: "POST",
@@ -25,6 +26,7 @@ const submitPost = async () => {
         type: type.value,
       }),
     });
+    data = await res.json();
   } else if (image) {
     const formData = new FormData();
     formData.append("type", "image");
@@ -36,8 +38,18 @@ const submitPost = async () => {
       },
       body: formData,
     });
+    data = await res.json();
   }
-  emit("closeAddPostModal", true); // true to toggle sucess notification, this assumes the request is a success
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      await submitPost();
+    }
+  } else {
+    emit("closeAddPostModal", true); // true to toggle sucess notification
+  }
 };
 
 const toggleType = (newType: string) => {
