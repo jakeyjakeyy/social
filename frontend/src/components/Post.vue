@@ -105,6 +105,9 @@ const deletePost = async (id: number) => {
           language="en-US"
         />
       </div>
+      <div v-else-if="post.type === 'image'" class="image-post">
+        <img :src="`${BACKEND_URL}/api${post.content}`" alt="Post Image" />
+      </div>
     </div>
     <div class="card-footer">
       <div class="post-owner">
