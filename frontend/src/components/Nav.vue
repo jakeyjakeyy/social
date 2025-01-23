@@ -66,56 +66,40 @@ const toggleAddPostModal = (value: boolean) => {
 </script>
 
 <template>
-  <div class="nav-container">
-    <div class="nav has-background-link" @click="toggleNavItems">
-      nav
-      <div v-if="showNavItems" class="nav-items">
-        <div
-          class="nav-item has-text-primary-bold has-background-info"
-          @click="navigateTo('/')"
-        >
-          Home
-        </div>
-        <div
-          class="nav-item has-text-primary-bold has-background-info"
-          @click="navigateTo('/profile')"
-        >
-          Profile
-        </div>
-        <div
-          v-if="loggedIn"
-          class="nav-item has-text-primary-bold has-background-info"
-          @click="showAddPost = true"
-        >
-          Add Post
-        </div>
-        <div
-          :class="[
-            'nav-item',
-            'has-text-primary-bold',
-            loggedIn ? 'has-background-danger' : 'has-background-info',
-          ]"
-          @click="navigateTo('/auth')"
-        >
-          {{ loggedIn ? "Logout" : "Login" }}
-        </div>
-      </div>
-    </div>
-    <AddPost v-if="showAddPost" @closeAddPostModal="toggleAddPostModal" />
-    <Auth
-      :showModal
-      @updateShowModal="updateShowModal"
-      @updateLoggedIn="updateLoggedIn"
-    />
-    <div class="notification is-success" v-if="showNotification">
-      <button class="delete"></button>
-      <strong>Success!</strong> Post added successfully.
-    </div>
+  <div class="menu">
+    <p class="menu-label">Navigation</p>
+    <ul class="menu-list">
+      <li @click="navigateTo('/')"><a>Home</a></li>
+      <li @click="navigateTo('/profile')"><a>Profile</a></li>
+    </ul>
+    <p class="menu-label">Posts</p>
+    <ul class="menu-list">
+      <li @click="showAddPost = true"><a>Add Post</a></li>
+    </ul>
+    <p class="menu-label">Account</p>
+    <ul class="menu-list">
+      <li @click="navigateTo('/auth')">
+        <a>{{ loggedIn ? "Logout" : "Login" }}</a>
+      </li>
+    </ul>
+  </div>
+  <AddPost v-if="showAddPost" @closeAddPostModal="toggleAddPostModal" />
+  <Auth
+    :showModal
+    @updateShowModal="updateShowModal"
+    @updateLoggedIn="updateLoggedIn"
+  />
+  <div class="notification is-success" v-if="showNotification">
+    <button class="delete"></button>
+    <strong>Success!</strong> Post added successfully.
   </div>
 </template>
 
 <style scoped>
-.nav {
+.menu {
+  width: 20vw;
+}
+/* .nav {
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -140,7 +124,7 @@ const toggleAddPostModal = (value: boolean) => {
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.3s;
-}
+} */
 
 .notification {
   position: fixed;

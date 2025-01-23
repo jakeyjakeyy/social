@@ -4,18 +4,16 @@ import Nav from "@/components/Nav.vue";
 </script>
 
 <template>
-  <div class="social-media-container container">
-    <RouterView />
+  <div class="social-media-container">
     <Nav />
+    <RouterView />
   </div>
 </template>
 
 <style scoped>
-/* .social-media-container {
+.social-media-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-} */
+  flex-direction: row;
+  margin: 1rem;
+}
 </style>

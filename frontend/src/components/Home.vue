@@ -25,7 +25,7 @@ const fetchPosts = async () => {
 
 <template>
   <div class="home-container">
-    <div class="content container">
+    <div class="content">
       <Post
         v-for="post in posts"
         :key="post.id"
@@ -40,8 +40,9 @@ const fetchPosts = async () => {
 .home-container,
 .content {
   display: flex;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
 }
 </style>
