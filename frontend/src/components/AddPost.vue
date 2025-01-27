@@ -31,6 +31,7 @@ const submitPost = async () => {
     const formData = new FormData();
     formData.append("type", "image");
     formData.append("image", image);
+    formData.append("caption", content.value);
     const res = await fetch(`${BACKEND_URL}/api/post`, {
       method: "POST",
       headers: {
@@ -138,6 +139,19 @@ const toggleType = (newType: string) => {
                   class="input"
                   @change="(e:any) => (image = e.target.files[0])"
                 />
+              </div>
+              <label class="label">Caption</label>
+              <div class="control">
+                <textarea
+                  class="textarea"
+                  placeholder="Caption"
+                  v-model="content"
+                  :maxlength="MAX_POST_LEN"
+                  style="resize: none; overflow: auto"
+                ></textarea>
+                <div class="help">
+                  {{ content.length }} / {{ MAX_POST_LEN }}
+                </div>
               </div>
             </div>
             <div class="field">

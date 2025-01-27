@@ -46,6 +46,7 @@ class ImagePost(models.Model):
         Post, on_delete=models.CASCADE, related_name="image_post"
     )
     image = models.ImageField(upload_to="images/%Y/%m/%d/")
+    caption = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.image.url

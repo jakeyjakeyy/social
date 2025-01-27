@@ -106,7 +106,8 @@ const deletePost = async (id: number) => {
         />
       </div>
       <div v-else-if="post.type === 'image'" class="image-post">
-        <img :src="`${BACKEND_URL}/api${post.content}`" alt="Post Image" />
+        <p>{{ post.content }}</p>
+        <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image" />
       </div>
     </div>
     <div class="card-footer">
@@ -187,5 +188,11 @@ const deletePost = async (id: number) => {
   max-height: 25vh;
   overflow: auto;
   margin: 0;
+}
+
+.image-post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

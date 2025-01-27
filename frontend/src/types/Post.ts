@@ -10,4 +10,5 @@ export type Post = {
   repost_count: number;
   type: string;
   is_owner: boolean;
+  url: string;
 };

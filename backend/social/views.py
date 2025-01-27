@@ -27,6 +27,18 @@ class Register(APIView):
         return Response({"message": "User created successfully"})
 
 
+def get_post_content(post):
+    match post:
+        case _ if hasattr(post, "text_post"):
+            return post.text_post.content
+        case _ if hasattr(post, "markdown_post"):
+            return post.markdown_post.content
+        case _ if hasattr(post, "image_post"):
+            return post.image_post.caption
+        case _:
+            return None
+
+
 class Post(APIView):
     authentication_classes = [JWTAuthentication]
 
@@ -75,6 +87,7 @@ class Post(APIView):
             models.ImagePost.objects.create(
                 post=post,
                 image=data["image"],
+                caption=data["caption"],
             )
             return Response({"message": "Image post created successfully"})
         return Response({"message": "Invalid post type"}, status=400)
@@ -96,19 +109,7 @@ class Post(APIView):
                 "account_username": post.account.user.username,
                 "account_id": post.account.id,
                 "created_at": post.created_at,
-                "content": (
-                    post.text_post.content
-                    if hasattr(post, "text_post")
-                    else (
-                        post.markdown_post.content
-                        if hasattr(post, "markdown_post")
-                        else (
-                            post.image_post.image.url
-                            if hasattr(post, "image_post")
-                            else None
-                        )
-                    )
-                ),
+                "content": get_post_content(post),
                 "favorited": (
                     models.Favorite.objects.filter(account=account, post=post).exists()
                     if account
@@ -129,6 +130,9 @@ class Post(APIView):
                         if hasattr(post, "markdown_post")
                         else ("image" if hasattr(post, "image_post") else None)
                     )
+                ),
+                "url": (
+                    post.image_post.image.url if hasattr(post, "image_post") else None
                 ),
                 "is_owner": post.account.user == request.user,
             }
