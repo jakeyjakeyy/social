@@ -14,6 +14,8 @@ import Nav from "@/components/Nav.vue";
 .social-media-container {
   display: flex;
   flex-direction: row;
-  margin: 1rem;
+  height: 100vh;
+  overflow: hidden;
+  align-items: start;
 }
 </style>
