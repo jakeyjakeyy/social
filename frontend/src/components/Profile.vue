@@ -3,15 +3,23 @@ import { onMounted, ref } from "vue";
 import Post from "./Post.vue";
 import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
+import { getAccessToken } from "@/utils/RefreshToken";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const access_token = getAccessToken();
 let page = 1;
 const route = useRoute();
 const username = route.params.username as string;
 const posts = ref<posttype[]>([]);
 
 const fetchPosts = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`);
+  const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(access_token && { Authorization: `Bearer ${access_token}` }),
+    },
+  });
   const data = await res.json();
   posts.value = data;
 };
@@ -31,6 +39,10 @@ onMounted(async () => {
 .profile-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
 }
 </style>

@@ -169,9 +169,32 @@ class Profile(APIView):
                 "account_username": post.account.user.username,
                 "account_id": post.account.id,
                 "created_at": post.created_at,
-                "content": (
-                    post.text_post.content if hasattr(post, "text_post") else None
+                "content": get_post_content(post),
+                "favorited": (
+                    models.Favorite.objects.filter(account=account, post=post).exists()
+                    if account
+                    else False
                 ),
+                "reposted": (
+                    models.Repost.objects.filter(account=account, post=post).exists()
+                    if account
+                    else False
+                ),
+                "favorite_count": models.Favorite.objects.filter(post=post).count(),
+                "repost_count": models.Repost.objects.filter(post=post).count(),
+                "type": (
+                    "text"
+                    if hasattr(post, "text_post")
+                    else (
+                        "markdown"
+                        if hasattr(post, "markdown_post")
+                        else ("image" if hasattr(post, "image_post") else None)
+                    )
+                ),
+                "url": (
+                    post.image_post.image.url if hasattr(post, "image_post") else None
+                ),
+                "is_owner": post.account.user == request.user,
             }
             for post in posts
         ]

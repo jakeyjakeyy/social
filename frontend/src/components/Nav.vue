@@ -37,6 +37,8 @@ const navigateTo = (path: string) => {
         break;
     }
     return;
+  } else if (path === "/profile") {
+    path = `/@${localStorage.getItem("username")}`;
   }
   router.push(path);
 };
