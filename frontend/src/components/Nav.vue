@@ -72,8 +72,8 @@ const toggleAddPostModal = (value: boolean) => {
       <li @click="navigateTo('/')"><a>Home</a></li>
       <li @click="navigateTo('/profile')"><a>Profile</a></li>
     </ul>
-    <p class="menu-label">Posts</p>
-    <ul class="menu-list">
+    <p v-if="loggedIn" class="menu-label">Posts</p>
+    <ul v-if="loggedIn" class="menu-list">
       <li @click="showAddPost = true"><a>Add Post</a></li>
     </ul>
     <p class="menu-label">Account</p>
