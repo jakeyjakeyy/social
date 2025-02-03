@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from datetime import datetime
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+import os
 
 User = get_user_model()
 
@@ -56,6 +59,12 @@ class ImagePost(models.Model):
 
     def __str__(self):
         return self.image.url
+
+
+@receiver(pre_delete, sender=ImagePost)
+def delete_image_file(sender, instance, **kwargs):
+    if instance.image and os.path.isfile(instance.image.path):
+        os.remove(instance.image.path)
 
 
 class Follow(models.Model):
