@@ -3,10 +3,10 @@ import { onMounted, ref } from "vue";
 import Post from "./Post.vue";
 import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
-import { getAccessToken } from "@/utils/RefreshToken";
+import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const access_token = getAccessToken();
+let access_token = getAccessToken();
 let page = 1;
 const route = useRoute();
 const username = route.params.username as string;
@@ -21,6 +21,16 @@ const fetchPosts = async () => {
     },
   });
   const data = await res.json();
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      access_token = getAccessToken();
+      await fetchPosts();
+    }
+    return;
+  }
   posts.value = data;
 };
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import Post from "./Post.vue";
-import { getAccessToken } from "@/utils/RefreshToken";
+import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const posts: any = ref([]);
-const access_token = getAccessToken();
+let access_token = getAccessToken();
 let page = 1;
 const lastPage: any = ref(false);
 
@@ -35,6 +35,18 @@ const fetchPosts = async () => {
     },
   });
   const data = await res.json();
+
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      access_token = getAccessToken();
+      await fetchPosts();
+    }
+    return;
+  }
+
   posts.value = [...posts.value, ...data];
 };
 </script>
