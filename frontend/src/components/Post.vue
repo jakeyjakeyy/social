@@ -184,7 +184,6 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   padding: 1rem;
   margin: 1rem;
   width: 50%;
-  cursor: pointer;
 }
 
 .account-link {
@@ -201,12 +200,14 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
 .card-footer {
   display: flex;
   justify-content: space-between;
+  cursor: pointer;
 }
 
 .content {
   max-height: 25vh;
   overflow: auto;
   margin: 0;
+  cursor: pointer;
 }
 
 .image-post {

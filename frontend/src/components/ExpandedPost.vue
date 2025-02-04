@@ -1,6 +1,8 @@
 <script setup lang="ts"></script>
 
-<template><div class="expanded-post">this is an expanded post</div></template>
+<template>
+  <div class="expanded-post"></div>
+</template>
 
 <style scoped>
 .expanded-post {
