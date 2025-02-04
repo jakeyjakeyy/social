@@ -5,6 +5,7 @@ import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/preview.css";
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import ExpandedPost from "./ExpandedPost.vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const props = defineProps<{ post: Post }>();
@@ -13,6 +14,7 @@ const post = props.post;
 const contentContainer = ref<HTMLDivElement | null>(null);
 const isContentTruncated = ref(false);
 const isExpanded = ref(false);
+const showExpandedPost = ref(false);
 
 onMounted(() => {
   checkContentHeight();
@@ -91,10 +93,21 @@ const deletePost = async (id: number) => {
   }
   emit("deletePost", id);
 };
+
+const toggleShowExpandedPost = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  const isControlsClick = target.closest(".post-controls");
+  const isOwnerClick = target.closest(".post-owner");
+  const isExpandedClick = target.closest(".expanded-post");
+
+  if (!isOwnerClick && !isControlsClick && !isExpandedClick) {
+    showExpandedPost.value = !showExpandedPost.value;
+  }
+};
 </script>
 
 <template>
-  <div class="post card">
+  <div class="post card" @click="toggleShowExpandedPost">
     <div class="content" ref="contentContainer">
       <p v-if="post.type === 'text'">{{ post.content }}</p>
       <div v-else-if="post.type === 'markdown'" class="markdown-post">
@@ -154,6 +167,11 @@ const deletePost = async (id: number) => {
         </div>
       </div>
     </div>
+    <ExpandedPost
+      v-if="showExpandedPost"
+      :post="post"
+      @close="showExpandedPost = false"
+    />
   </div>
 </template>
 
@@ -166,6 +184,7 @@ const deletePost = async (id: number) => {
   padding: 1rem;
   margin: 1rem;
   width: 50%;
+  cursor: pointer;
 }
 
 .account-link {
