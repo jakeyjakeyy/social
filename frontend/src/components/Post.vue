@@ -8,9 +8,10 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import ExpandedPost from "./ExpandedPost.vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const props = defineProps<{ post: Post }>();
+const props = defineProps<{ post: Post; expanded: boolean }>();
 const emit = defineEmits(["deletePost"]);
 const post = props.post;
+const expanded = props.expanded;
 const contentContainer = ref<HTMLDivElement | null>(null);
 const isContentTruncated = ref(false);
 const isExpanded = ref(false);
@@ -100,7 +101,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   const isOwnerClick = target.closest(".post-owner");
   const isExpandedClick = target.closest(".expanded-post");
 
-  if (!isOwnerClick && !isControlsClick && !isExpandedClick) {
+  if (!isOwnerClick && !isControlsClick && !isExpandedClick && !expanded) {
     showExpandedPost.value = !showExpandedPost.value;
   }
 };
@@ -171,6 +172,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
       v-if="showExpandedPost"
       :post="post"
       @close="showExpandedPost = false"
+      @close-expanded-post="showExpandedPost = false"
     />
   </div>
 </template>

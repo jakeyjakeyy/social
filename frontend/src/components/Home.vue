@@ -59,6 +59,7 @@ const fetchPosts = async () => {
         :key="post.id"
         :post="post"
         @delete-post="fetchPosts"
+        :expanded="false"
       />
       <div v-if="lastPage" class="end-of-posts">
         <p>End of posts</p>
