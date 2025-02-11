@@ -97,11 +97,18 @@ class Post(APIView):
 
     def get(self, request):
         page = int(request.GET.get("page", 1))
-        posts = (
-            models.Post.objects.all()
-            .order_by("-created_at")
-            .exclude(reply_to__isnull=False)[(page - 1) * 16 : page * 16]
-        )
+        replies = request.GET.get("replies", False)
+        if replies == False:
+            posts = (
+                models.Post.objects.all()
+                .order_by("-created_at")
+                .exclude(reply_to__isnull=False)[(page - 1) * 16 : page * 16]
+            )
+        else:
+            post = models.Post.objects.get(id=int(replies))
+            posts = models.Post.objects.filter(reply_to=post).order_by("-created_at")[
+                (page - 1) * 16 : page * 16
+            ]
         account = (
             models.Account.objects.get(user=request.user)
             if request.user.is_authenticated

@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import Post from "./Post.vue";
+import type { Post as postType } from "@/types/Post";
 const emit = defineEmits(["closeExpandedPost"]);
 const props = defineProps<{ post: any }>();
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import AddPost from "./AddPost.vue";
 
 const postRef = ref<InstanceType<typeof Post> | null>(null);
 const repliesRef = ref<HTMLDivElement | null>(null);
 const showAddPost = ref(false);
+let page = 1;
+
+const replies = ref<postType[]>([]);
+
+onMounted(() => {
+  fetchReplies();
+});
 
 const clickBounds = (e: MouseEvent) => {
   if (!postRef.value || !repliesRef.value || showAddPost.value) return false;
@@ -17,6 +25,16 @@ const clickBounds = (e: MouseEvent) => {
   ) {
     emit("closeExpandedPost");
   }
+};
+
+const fetchReplies = async () => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/post?page=${page}&replies=${
+      props.post.id
+    }`
+  );
+  const data = await res.json();
+  console.log(data);
 };
 </script>
 <template>
