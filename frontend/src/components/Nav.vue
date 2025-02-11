@@ -85,7 +85,11 @@ const toggleAddPostModal = (value: boolean) => {
       </li>
     </ul>
   </div>
-  <AddPost v-if="showAddPost" @closeAddPostModal="toggleAddPostModal" />
+  <AddPost
+    v-if="showAddPost"
+    @closeAddPostModal="toggleAddPostModal"
+    :is-reply="false"
+  />
   <Auth
     :showModal
     @updateShowModal="updateShowModal"

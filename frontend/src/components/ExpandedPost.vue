@@ -3,12 +3,14 @@ import Post from "./Post.vue";
 const emit = defineEmits(["closeExpandedPost"]);
 const props = defineProps<{ post: any }>();
 import { ref } from "vue";
+import AddPost from "./AddPost.vue";
 
 const postRef = ref<InstanceType<typeof Post> | null>(null);
 const repliesRef = ref<HTMLDivElement | null>(null);
+const showAddPost = ref(false);
 
 const clickBounds = (e: MouseEvent) => {
-  if (!postRef.value || !repliesRef.value) return false;
+  if (!postRef.value || !repliesRef.value || showAddPost.value) return false;
   if (
     !postRef.value.$el.contains(e.target as Node) &&
     !repliesRef.value.contains(e.target as Node)
@@ -20,7 +22,19 @@ const clickBounds = (e: MouseEvent) => {
 <template>
   <div class="expanded-post" @click="clickBounds">
     <Post :post="post" :expanded="true" ref="postRef" />
-    <div class="post-replies" ref="repliesRef">replies go here</div>
+
+    <div class="replies-container" ref="repliesRef">
+      <button @click="showAddPost = !showAddPost" class="button">
+        Add Reply
+      </button>
+      <AddPost
+        v-if="showAddPost"
+        ref="addPostRef"
+        @close-add-post-modal="showAddPost = false"
+        :is-reply="post.id"
+      />
+      <div class="replies">replies go here</div>
+    </div>
   </div>
 </template>
 

@@ -4,6 +4,7 @@ import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 
+const props = defineProps<{ isReply: boolean | number }>();
 const emit = defineEmits(["closeAddPostModal"]);
 const MAX_POST_LEN = 255;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -24,6 +25,7 @@ const submitPost = async () => {
       body: JSON.stringify({
         content: content.value,
         type: type.value,
+        ...(props.isReply && { reply_id: props.isReply }),
       }),
     });
     data = await res.json();

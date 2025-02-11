@@ -20,6 +20,9 @@ class Account(models.Model):
 class Post(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="posts")
     created_at = models.DateTimeField(auto_now_add=True)
+    reply_to = models.ForeignKey(
+        "self", on_delete=models.CASCADE, related_name="replies", null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.account.user.username} - {self.created_at}"

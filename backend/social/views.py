@@ -45,16 +45,19 @@ class Post(APIView):
     def post(self, request):
         data = request.data
         account = models.Account.objects.get(user=request.user)
+        reply_id = data.get("reply_id")
+        reply_post = models.Post.objects.get(id=reply_id) if reply_id else None
+
         type = data["type"]
         if type == "text":
-            post = models.Post.objects.create(account=account)
+            post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.TextPost.objects.create(
                 post=post,
                 content=data["content"],
             )
             return Response({"message": "Post created successfully"})
         elif type == "markdown":
-            post = models.Post.objects.create(account=account)
+            post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.MarkdownPost.objects.create(
                 post=post,
                 content=sanitizer.sanitize(data["content"]),
@@ -83,7 +86,7 @@ class Post(APIView):
         elif type == "image":
             if not data["image"]:
                 return Response({"message": "No image provided"}, status=400)
-            post = models.Post.objects.create(account=account)
+            post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.ImagePost.objects.create(
                 post=post,
                 image=data["image"],
@@ -94,9 +97,11 @@ class Post(APIView):
 
     def get(self, request):
         page = int(request.GET.get("page", 1))
-        posts = models.Post.objects.all().order_by("-created_at")[
-            (page - 1) * 16 : page * 16
-        ]
+        posts = (
+            models.Post.objects.all()
+            .order_by("-created_at")
+            .exclude(reply_to__isnull=False)[(page - 1) * 16 : page * 16]
+        )
         account = (
             models.Account.objects.get(user=request.user)
             if request.user.is_authenticated
