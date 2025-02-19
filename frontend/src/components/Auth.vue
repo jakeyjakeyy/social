@@ -27,6 +27,10 @@ onMounted(() => {
 });
 
 const submitForm = async () => {
+  if (!username.value || !password.value) {
+    alert("Please fill in all fields");
+    return;
+  }
   if (registerActive.value) {
     if (password.value !== confirmPassword.value) {
       alert("Passwords do not match");

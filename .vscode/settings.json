@@ -8,6 +8,7 @@
     "Models",
     "BlogPost",
     "Nav",
-    "Home"
+    "Home",
+    "Auth"
   ]
 }
