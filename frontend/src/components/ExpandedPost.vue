@@ -34,7 +34,7 @@ const fetchReplies = async () => {
     }`
   );
   const data = await res.json();
-  console.log(data);
+  replies.value = data;
 };
 </script>
 <template>
@@ -51,7 +51,14 @@ const fetchReplies = async () => {
         @close-add-post-modal="showAddPost = false"
         :is-reply="post.id"
       />
-      <div class="replies">replies go here</div>
+      <div class="replies">
+        <Post
+          v-for="reply in replies"
+          :key="reply.id"
+          :post="reply"
+          :expanded="false"
+        />
+      </div>
     </div>
   </div>
 </template>
