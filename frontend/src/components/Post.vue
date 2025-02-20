@@ -217,4 +217,11 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   flex-direction: column;
   align-items: center;
 }
+
+@media (max-width: 768px) {
+  .post {
+    width: 100%;
+    margin: 0;
+  }
+}
 </style>

@@ -93,4 +93,10 @@ const fetchReplies = async () => {
   align-items: center;
   width: 100%;
 }
+
+@media (max-width: 768px) {
+  .replies-container {
+    width: 75%;
+  }
+}
 </style>

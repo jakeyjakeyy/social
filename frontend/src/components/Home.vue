@@ -82,4 +82,10 @@ const fetchPosts = async () => {
   overflow-y: auto;
   scrollbar-width: thin;
 }
+
+@media (max-width: 768px) {
+  .content {
+    margin-top: 3rem;
+  }
+}
 </style>
