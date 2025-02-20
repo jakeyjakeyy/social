@@ -77,4 +77,20 @@ const fetchReplies = async () => {
   justify-content: center;
   align-items: center;
 }
+
+.replies-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+}
+
+.replies {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 </style>
