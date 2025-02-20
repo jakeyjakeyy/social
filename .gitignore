@@ -4,6 +4,6 @@ node_modules
 .env
 Dockerfile
 *.log
-__pycache__
+__pycache__/*
 /backend/social/migrations
 media/
