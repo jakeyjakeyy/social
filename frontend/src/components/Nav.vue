@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Auth from "./Auth.vue";
 import AddPost from "./AddPost.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { deleteTokens, checkToken } from "@/utils/RefreshToken";
 const showNavItems = ref(false);
@@ -10,7 +10,19 @@ const showModal = ref(false);
 const loggedIn = ref(checkToken());
 const showAddPost = ref(false);
 const showNotification = ref(false);
+const screen = ref(window.innerWidth);
+const navIsMobile = ref(false);
+const showMobileNav = ref(false);
 
+onMounted(() => {
+  window.addEventListener("resize", () => {
+    screen.value = window.innerWidth;
+  });
+
+  if (screen.value < 768) {
+    navIsMobile.value = true;
+  }
+});
 const navItems = [
   { name: "Home", path: "/" },
   { name: "Profile", path: "/profile" },
@@ -68,7 +80,7 @@ const toggleAddPostModal = (value: boolean) => {
 </script>
 
 <template>
-  <div class="menu">
+  <div class="menu has-background" v-if="navIsMobile && showMobileNav">
     <p class="menu-label">Navigation</p>
     <ul class="menu-list">
       <li @click="navigateTo('/')"><a>Home</a></li>
@@ -99,43 +111,41 @@ const toggleAddPostModal = (value: boolean) => {
     <button class="delete"></button>
     <strong>Success!</strong> Post added successfully.
   </div>
+  <div class="toggle-nav" @click="showMobileNav = !showMobileNav">
+    <span class="icon">
+      NAV
+      <i class="fas fa-bars"></i>
+    </span>
+  </div>
 </template>
 
 <style scoped>
 .menu {
   width: 20vw;
 }
-/* .nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.75rem;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.nav-items {
-  position: absolute;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  bottom: 100%;
-  left: 0;
-}
-
-.nav-item {
-  bottom: 0;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.3s;
-} */
 
 .notification {
   position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+}
+
+@media (max-width: 768px) {
+  .menu {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+  }
+  .toggle-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #333;
+    color: white;
+    padding: 0.5rem;
+  }
 }
 </style>
