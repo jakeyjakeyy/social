@@ -80,7 +80,10 @@ const toggleAddPostModal = (value: boolean) => {
 </script>
 
 <template>
-  <div class="menu has-background" v-if="navIsMobile && showMobileNav">
+  <div
+    class="menu has-background"
+    v-if="(navIsMobile && showMobileNav) || !navIsMobile"
+  >
     <p class="menu-label">Navigation</p>
     <ul class="menu-list">
       <li @click="navigateTo('/')"><a>Home</a></li>
@@ -111,7 +114,11 @@ const toggleAddPostModal = (value: boolean) => {
     <button class="delete"></button>
     <strong>Success!</strong> Post added successfully.
   </div>
-  <div class="toggle-nav" @click="showMobileNav = !showMobileNav">
+  <div
+    v-if="navIsMobile"
+    class="toggle-nav"
+    @click="showMobileNav = !showMobileNav"
+  >
     <span class="icon">
       NAV
       <i class="fas fa-bars"></i>
