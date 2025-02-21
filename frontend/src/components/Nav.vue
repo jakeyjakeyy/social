@@ -52,6 +52,9 @@ const navigateTo = (path: string) => {
   } else if (path === "/profile") {
     path = `/@${localStorage.getItem("username")}`;
   }
+  if (navIsMobile.value) {
+    showMobileNav.value = false;
+  }
   router.push(path);
 };
 
@@ -119,10 +122,7 @@ const toggleAddPostModal = (value: boolean) => {
     class="toggle-nav"
     @click="showMobileNav = !showMobileNav"
   >
-    <span class="icon">
-      NAV
-      <i class="fas fa-bars"></i>
-    </span>
+    <span class="icon"> <v-icon name="co-hamburger-menu" /> </span>
   </div>
 </template>
 
@@ -144,14 +144,18 @@ const toggleAddPostModal = (value: boolean) => {
     width: 100vw;
     height: 100vh;
     z-index: 10;
+    padding-top: 3rem;
   }
   .toggle-nav {
     position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     top: 0;
     right: 0;
     z-index: 10;
-    background-color: #333;
     color: white;
+    border: 1px solid white;
     padding: 0.5rem;
   }
 }

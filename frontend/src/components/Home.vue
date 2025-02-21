@@ -83,9 +83,9 @@ const fetchPosts = async () => {
   scrollbar-width: thin;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .content {
     margin-top: 3rem;
   }
-}
+} */
 </style>

@@ -6,7 +6,7 @@ import Nav from "@/components/Nav.vue";
 <template>
   <div class="social-media-container">
     <Nav />
-    <RouterView />
+    <RouterView id="router-view" />
   </div>
 </template>
 
@@ -17,5 +17,11 @@ import Nav from "@/components/Nav.vue";
   height: 100vh;
   overflow: hidden;
   align-items: start;
+}
+
+@media (max-width: 768px) {
+  #router-view {
+    margin-top: 3rem;
+  }
 }
 </style>
