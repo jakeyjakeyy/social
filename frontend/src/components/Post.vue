@@ -10,12 +10,19 @@ import ExpandedPost from "./ExpandedPost.vue";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const props = defineProps<{ post: Post; expanded: boolean }>();
 const emit = defineEmits(["deletePost"]);
-const post = props.post;
+let post = props.post;
+let repostData: Post | null = null;
+const isRepost = ref(post.is_repost);
 const expanded = props.expanded;
 const contentContainer = ref<HTMLDivElement | null>(null);
 const isContentTruncated = ref(false);
 const isExpanded = ref(false);
 const showExpandedPost = ref(false);
+
+if (post.is_repost && post.original_post) {
+  repostData = post;
+  post = post.original_post;
+}
 
 onMounted(() => {
   checkContentHeight();
@@ -109,6 +116,12 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
 
 <template>
   <div class="post card" @click="toggleShowExpandedPost">
+    <div v-if="isRepost && repostData" class="reposted-by">
+      <p>
+        <v-icon name="ri-repeat-2-line" />
+        <span>Reposted by {{ repostData.account_display_name }}</span>
+      </p>
+    </div>
     <div class="content" ref="contentContainer">
       <p v-if="post.type === 'text'">{{ post.content }}</p>
       <div v-else-if="post.type === 'markdown'" class="markdown-post">

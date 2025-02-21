@@ -1,14 +1,16 @@
 export type Post = {
-  id: number;
   account_display_name: string;
   account_username: string;
-  created_at: string;
   content: string;
-  favorited: boolean;
+  created_at: string;
   favorite_count: number;
-  reposted: boolean;
-  repost_count: number;
-  type: string;
+  favorited: boolean;
+  id: number;
   is_owner: boolean;
+  is_repost: boolean;
+  original_post: Post | null;
+  repost_count: number;
+  reposted: boolean;
+  type: string;
   url: string;
 };

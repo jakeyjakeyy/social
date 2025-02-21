@@ -88,28 +88,7 @@ def serialize_post(post, request_user=None):
     # Add original post data if this is a repost
     if post.repost_post.exists():
         original_post = post.repost_post.first().original_post
-        post_data["original_post"] = {
-            "id": original_post.id,
-            "account_display_name": original_post.account.display_name,
-            "account_username": original_post.account.user.username,
-            "account_id": original_post.account.id,
-            "created_at": original_post.created_at,
-            "content": get_post_content(original_post),
-            "type": (
-                "text"
-                if hasattr(original_post, "text_post")
-                else (
-                    "markdown"
-                    if hasattr(original_post, "markdown_post")
-                    else ("image" if hasattr(original_post, "image_post") else None)
-                )
-            ),
-            "url": (
-                original_post.image_post.image.url
-                if hasattr(original_post, "image_post")
-                else None
-            ),
-        }
+        post_data["original_post"] = serialize_post(original_post, request_user)
     else:
         post_data["original_post"] = None
 
