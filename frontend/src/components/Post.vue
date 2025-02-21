@@ -143,23 +143,19 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
         </button>
       </div>
       <div class="post-controls">
-        <div class="favorites">
+        <div class="favorites control-item">
           <span>{{ post.favorite_count }}</span>
-          <button
-            class="button is-small is-primary"
-            @click="submitAction('favorite')"
-          >
-            {{ post.favorited ? "Unfavorite" : "Favorite" }}
-          </button>
+          <span @click="submitAction('favorite')">
+            <v-icon v-if="!post.favorited" name="bi-heart" />
+            <v-icon v-else name="bi-heart-fill" class="has-text-danger" />
+          </span>
         </div>
-        <div class="reposts">
+        <div class="reposts control-item">
           <span>{{ post.repost_count }}</span>
-          <button
-            class="button is-small is-info"
-            @click="submitAction('repost')"
-          >
-            {{ post.reposted ? "Unrepost" : "Repost" }}
-          </button>
+          <span @click="submitAction('repost')">
+            <v-icon v-if="!post.reposted" name="ri-repeat-2-line" />
+            <v-icon v-else name="ri-repeat-2-fill" class="has-text-success" />
+          </span>
         </div>
         <div v-if="isContentTruncated" class="expand">
           <button class="button is-small" @click="toggleExpand">
@@ -197,6 +193,18 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   justify-content: space-between;
   margin-left: 1rem;
   gap: 1rem;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 3rem;
+}
+
+.control-item span:first-child {
+  min-width: 1rem;
+  text-align: right;
 }
 
 .card-footer {

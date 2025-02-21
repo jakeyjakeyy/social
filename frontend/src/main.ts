@@ -5,9 +5,15 @@ import App from "./App.vue";
 import router from "./router";
 
 import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { CoHamburgerMenu } from "oh-vue-icons/icons";
+import {
+  CoHamburgerMenu,
+  BiHeart,
+  BiHeartFill,
+  RiRepeat2Line,
+  RiRepeat2Fill,
+} from "oh-vue-icons/icons";
 
-addIcons(CoHamburgerMenu);
+addIcons(CoHamburgerMenu, BiHeart, BiHeartFill, RiRepeat2Fill, RiRepeat2Line);
 
 const app = createApp(App);
 
