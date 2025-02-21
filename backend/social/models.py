@@ -98,7 +98,12 @@ class Repost(models.Model):
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="reposts"
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reposted_by")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="repost_post", null=True
+    )
+    original_post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="reposted_by"
+    )
 
     def __str__(self):
         return f"{self.account.user.username} reposted {self.post.id}"

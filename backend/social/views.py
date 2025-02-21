@@ -39,6 +39,83 @@ def get_post_content(post):
             return None
 
 
+def serialize_post(post, request_user=None):
+    """
+    Serializes a post object into a dictionary containing all post data.
+    Args:
+        post: Post model instance
+        request_user: The currently authenticated user (optional)
+    """
+    account = (
+        models.Account.objects.get(user=request_user)
+        if request_user and request_user.is_authenticated
+        else None
+    )
+
+    post_data = {
+        "id": post.id,
+        "account_display_name": post.account.display_name,
+        "account_username": post.account.user.username,
+        "account_id": post.account.id,
+        "created_at": post.created_at,
+        "content": get_post_content(post),
+        "favorited": (
+            models.Favorite.objects.filter(account=account, post=post).exists()
+            if account
+            else False
+        ),
+        "reposted": (
+            models.Repost.objects.filter(account=account, original_post=post).exists()
+            if account
+            else False
+        ),
+        "favorite_count": models.Favorite.objects.filter(post=post).count(),
+        "repost_count": models.Repost.objects.filter(original_post=post).count(),
+        "type": (
+            "text"
+            if hasattr(post, "text_post")
+            else (
+                "markdown"
+                if hasattr(post, "markdown_post")
+                else ("image" if hasattr(post, "image_post") else None)
+            )
+        ),
+        "url": (post.image_post.image.url if hasattr(post, "image_post") else None),
+        "is_owner": post.account.user == request_user,
+        "is_repost": post.repost_post.exists(),
+    }
+
+    # Add original post data if this is a repost
+    if post.repost_post.exists():
+        original_post = post.repost_post.first().original_post
+        post_data["original_post"] = {
+            "id": original_post.id,
+            "account_display_name": original_post.account.display_name,
+            "account_username": original_post.account.user.username,
+            "account_id": original_post.account.id,
+            "created_at": original_post.created_at,
+            "content": get_post_content(original_post),
+            "type": (
+                "text"
+                if hasattr(original_post, "text_post")
+                else (
+                    "markdown"
+                    if hasattr(original_post, "markdown_post")
+                    else ("image" if hasattr(original_post, "image_post") else None)
+                )
+            ),
+            "url": (
+                original_post.image_post.image.url
+                if hasattr(original_post, "image_post")
+                else None
+            ),
+        }
+    else:
+        post_data["original_post"] = None
+
+    return post_data
+
+
 class Post(APIView):
     authentication_classes = [JWTAuthentication]
 
@@ -77,11 +154,18 @@ class Post(APIView):
             original_post = models.Post.objects.get(id=data["post_id"])
             entry = models.Repost.objects.get_or_create(
                 account=account,
-                post=original_post,
+                original_post=original_post,
             )
             if entry[1] == False:
+                post = entry[0].post
                 entry[0].delete()
+                post.delete()
                 return Response({"message": "Unreposted successfully"})
+            else:
+                entry[0].post = models.Post.objects.create(
+                    account=account, reply_to=reply_post
+                )
+                entry[0].save()
             return Response({"message": "Reposted successfully"})
         elif type == "image":
             if not data["image"]:
@@ -114,42 +198,7 @@ class Post(APIView):
             if request.user.is_authenticated
             else None
         )
-        post_data = [
-            {
-                "id": post.id,
-                "account_display_name": post.account.display_name,
-                "account_username": post.account.user.username,
-                "account_id": post.account.id,
-                "created_at": post.created_at,
-                "content": get_post_content(post),
-                "favorited": (
-                    models.Favorite.objects.filter(account=account, post=post).exists()
-                    if account
-                    else False
-                ),
-                "reposted": (
-                    models.Repost.objects.filter(account=account, post=post).exists()
-                    if account
-                    else False
-                ),
-                "favorite_count": models.Favorite.objects.filter(post=post).count(),
-                "repost_count": models.Repost.objects.filter(post=post).count(),
-                "type": (
-                    "text"
-                    if hasattr(post, "text_post")
-                    else (
-                        "markdown"
-                        if hasattr(post, "markdown_post")
-                        else ("image" if hasattr(post, "image_post") else None)
-                    )
-                ),
-                "url": (
-                    post.image_post.image.url if hasattr(post, "image_post") else None
-                ),
-                "is_owner": post.account.user == request.user,
-            }
-            for post in posts
-        ]
+        post_data = [serialize_post(post, request.user) for post in posts]
         return Response(post_data)
 
     def delete(self, request):
@@ -174,40 +223,5 @@ class Profile(APIView):
         posts = models.Post.objects.filter(account=account).order_by("-created_at")[
             (page - 1) * 16 : page * 16
         ]
-        post_data = [
-            {
-                "id": post.id,
-                "account_display_name": post.account.display_name,
-                "account_username": post.account.user.username,
-                "account_id": post.account.id,
-                "created_at": post.created_at,
-                "content": get_post_content(post),
-                "favorited": (
-                    models.Favorite.objects.filter(account=account, post=post).exists()
-                    if account
-                    else False
-                ),
-                "reposted": (
-                    models.Repost.objects.filter(account=account, post=post).exists()
-                    if account
-                    else False
-                ),
-                "favorite_count": models.Favorite.objects.filter(post=post).count(),
-                "repost_count": models.Repost.objects.filter(post=post).count(),
-                "type": (
-                    "text"
-                    if hasattr(post, "text_post")
-                    else (
-                        "markdown"
-                        if hasattr(post, "markdown_post")
-                        else ("image" if hasattr(post, "image_post") else None)
-                    )
-                ),
-                "url": (
-                    post.image_post.image.url if hasattr(post, "image_post") else None
-                ),
-                "is_owner": post.account.user == request.user,
-            }
-            for post in posts
-        ]
+        post_data = [serialize_post(post, request.user) for post in posts]
         return Response(post_data)
