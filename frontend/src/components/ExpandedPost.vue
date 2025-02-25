@@ -70,12 +70,14 @@ const fetchReplies = async () => {
   left: 0;
   width: 100%;
   height: 100%;
+  max-height: 100vh;
   background-color: rgba(0, 0, 0, 0.8);
   z-index: 10;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: auto;
 }
 
 .replies-container {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Auth from "./Auth.vue";
 import AddPost from "./AddPost.vue";
+import ThemeSelector from "./ThemeSelector.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { deleteTokens, checkToken } from "@/utils/RefreshToken";
@@ -87,6 +88,7 @@ const toggleAddPostModal = (value: boolean) => {
     class="menu has-background"
     v-if="(navIsMobile && showMobileNav) || !navIsMobile"
   >
+    <ThemeSelector />
     <p class="menu-label">Navigation</p>
     <ul class="menu-list">
       <li @click="navigateTo('/')"><a>Home</a></li>

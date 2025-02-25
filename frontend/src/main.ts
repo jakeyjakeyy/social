@@ -11,9 +11,19 @@ import {
   BiHeartFill,
   RiRepeat2Line,
   RiRepeat2Fill,
+  FaMoon,
+  FaSun,
 } from "oh-vue-icons/icons";
 
-addIcons(CoHamburgerMenu, BiHeart, BiHeartFill, RiRepeat2Fill, RiRepeat2Line);
+addIcons(
+  CoHamburgerMenu,
+  BiHeart,
+  BiHeartFill,
+  RiRepeat2Fill,
+  RiRepeat2Line,
+  FaMoon,
+  FaSun
+);
 
 const app = createApp(App);
 

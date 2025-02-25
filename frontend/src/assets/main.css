@@ -11,17 +11,19 @@
   src: url("../assets/Cabin-VariableFont_wdth,wght.ttf") format("truetype");
 }
 
-:root {
-  --bulma-primary-h: 156deg;
-  --bulma-primary-s: 14%;
-  --bulma-primary-l: 71%;
-  --bulma-link-h: 188deg;
-  --bulma-link-s: 14%;
-  --bulma-link-l: 31%;
-  --bulma-info-h: 197deg;
-  --bulma-info-s: 14%;
-  --bulma-info-l: 58%;
-  --bulma-scheme-h: 150;
+@media (prefers-color-scheme: light) {
+  :root {
+    --bulma-primary-h: 156deg;
+    --bulma-primary-s: 14%;
+    --bulma-primary-l: 71%;
+    --bulma-link-h: 188deg;
+    --bulma-link-s: 14%;
+    --bulma-link-l: 31%;
+    --bulma-info-h: 197deg;
+    --bulma-info-s: 14%;
+    --bulma-info-l: 58%;
+    --bulma-scheme-h: 150;
+  }
 }
 
 body {
