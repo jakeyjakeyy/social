@@ -116,7 +116,8 @@ class Post(APIView):
             post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.MarkdownPost.objects.create(
                 post=post,
-                content=sanitizer.sanitize(data["content"]),
+                # content=sanitizer.sanitize(data["content"]),
+                content=data["content"],
             )
             return Response({"message": "Post created successfully"})
         elif type == "favorite":

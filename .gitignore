@@ -6,5 +6,7 @@ Dockerfile
 *.log
 __pycache__/*
 backend/social/__pycache__/
+backend/backend/__pycache__/
 /backend/social/migrations
 media/
+backend/venv/
