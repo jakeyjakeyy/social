@@ -9,6 +9,7 @@
     "BlogPost",
     "Nav",
     "Home",
-    "Auth"
+    "Auth",
+    "Theme"
   ]
 }

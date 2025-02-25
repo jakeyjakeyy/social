@@ -18,6 +18,7 @@ const contentContainer = ref<HTMLDivElement | null>(null);
 const isContentTruncated = ref(false);
 const isExpanded = ref(false);
 const showExpandedPost = ref(false);
+const theme = ref("dark");
 
 if (post.is_repost && post.original_post) {
   repostData = post;
@@ -27,6 +28,9 @@ if (post.is_repost && post.original_post) {
 onMounted(() => {
   checkContentHeight();
   window.addEventListener("resize", checkContentHeight);
+  theme.value =
+    document.getElementById("app-body")?.getAttribute("data-theme") || "dark";
+  console.log(theme.value);
 });
 onBeforeUnmount(() => {
   window.removeEventListener("resize", checkContentHeight);
@@ -128,7 +132,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
         <MdPreview
           id="post.id"
           :model-value="post.content"
-          theme="dark"
+          :theme="theme"
           language="en-US"
         />
       </div>

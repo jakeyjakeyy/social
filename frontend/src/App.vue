@@ -4,7 +4,7 @@ import Nav from "@/components/Nav.vue";
 </script>
 
 <template>
-  <div class="social-media-container">
+  <div class="social-media-container has-background">
     <Nav />
     <RouterView id="router-view" />
   </div>
