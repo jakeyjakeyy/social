@@ -2,17 +2,25 @@
 import { onMounted, ref } from "vue";
 let root: HTMLElement = document.getElementById("app-body") as HTMLElement;
 let themeLight = ref(root.getAttribute("data-theme") === "light");
+let userTheme = localStorage.getItem("theme");
 
 const toggleTheme = () => {
   themeLight.value = !themeLight.value;
   if (root && themeLight.value) {
     root.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
   } else if (root) {
     root.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
   }
 };
 
 onMounted(() => {
+  if (userTheme) {
+    themeLight.value = userTheme === "light";
+    root.setAttribute("data-theme", userTheme);
+    return;
+  }
   const localTheme = root.getAttribute("data-theme");
   if (localTheme === "light") {
     themeLight.value = true;

@@ -27,16 +27,35 @@ if (post.is_repost && post.original_post) {
   post = post.original_post;
 }
 
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (
+      mutation.type === "attributes" &&
+      mutation.attributeName === "data-theme"
+    ) {
+      const newTheme = (mutation.target as HTMLElement).getAttribute(
+        "data-theme"
+      );
+      theme.value =
+        newTheme === "light" || newTheme === "dark" ? newTheme : "dark";
+    }
+  });
+});
+
 onMounted(() => {
   checkContentHeight();
   window.addEventListener("resize", checkContentHeight);
   theme.value =
     <Themes>document.getElementById("app-body")?.getAttribute("data-theme") ||
     "dark";
-  console.log(theme.value);
+  observer.observe(document.getElementById("app-body")!, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
 });
 onBeforeUnmount(() => {
   window.removeEventListener("resize", checkContentHeight);
+  observer.disconnect();
 });
 
 function checkContentHeight() {
