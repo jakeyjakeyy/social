@@ -11,21 +11,31 @@
   src: url("../assets/Cabin-VariableFont_wdth,wght.ttf") format("truetype");
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bulma-primary-h: 156deg;
-    --bulma-primary-s: 14%;
-    --bulma-primary-l: 71%;
-    --bulma-link-h: 188deg;
-    --bulma-link-s: 14%;
-    --bulma-link-l: 31%;
-    --bulma-info-h: 197deg;
-    --bulma-info-s: 14%;
-    --bulma-info-l: 58%;
-    --bulma-scheme-h: 150;
-  }
+:root {
+  --bulma-primary-h: 186deg;
+  --bulma-primary-s: 66%;
+  --bulma-primary-l: 53%;
+  --bulma-link-h: 296deg;
+  --bulma-link-s: 65%;
+  --bulma-link-l: 71%;
+  --bulma-info-h: 333deg;
+  --bulma-info-s: 66%;
+  --bulma-info-l: 61%;
+  --bulma-scheme-h: 185;
 }
 
+[data-theme="light"] {
+  --bulma-primary-h: 186deg;
+  --bulma-primary-s: 66%;
+  --bulma-primary-l: 53%;
+  --bulma-link-h: 296deg;
+  --bulma-link-s: 65%;
+  --bulma-link-l: 71%;
+  --bulma-info-h: 333deg;
+  --bulma-info-s: 66%;
+  --bulma-info-l: 61%;
+  --bulma-scheme-h: 185;
+}
 body {
   font-family: "Cabin";
 }
