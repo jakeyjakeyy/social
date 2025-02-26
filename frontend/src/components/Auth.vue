@@ -92,7 +92,7 @@ const submitForm = async () => {
         <div class="card-content">
           <form @submit.prevent>
             <div class="field">
-              <label class="label">Username</label>
+              <label class="label has-text-current">Username</label>
               <div class="control">
                 <input
                   class="input"
@@ -103,7 +103,7 @@ const submitForm = async () => {
               </div>
             </div>
             <div class="field">
-              <label class="label">Password</label>
+              <label class="label has-text-current">Password</label>
               <div class="control">
                 <input
                   class="input"

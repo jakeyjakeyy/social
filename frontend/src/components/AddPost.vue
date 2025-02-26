@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
+
+type Themes = "light" | "dark";
 
 const props = defineProps<{ isReply: boolean | number }>();
 const emit = defineEmits(["closeAddPostModal"]);
@@ -12,6 +14,32 @@ const content = ref("");
 const access_token = getAccessToken();
 const type = ref("text");
 let image: File | null = null;
+const theme = ref<Themes>("dark");
+
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (
+      mutation.type === "attributes" &&
+      mutation.attributeName === "data-theme"
+    ) {
+      const newTheme = (mutation.target as HTMLElement).getAttribute(
+        "data-theme"
+      );
+      theme.value =
+        newTheme === "light" || newTheme === "dark" ? newTheme : "dark";
+    }
+  });
+});
+
+onMounted(() => {
+  theme.value =
+    <Themes>document.getElementById("app-body")?.getAttribute("data-theme") ||
+    "dark";
+  observer.observe(document.getElementById("app-body")!, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+});
 
 const submitPost = async () => {
   let data;
@@ -84,6 +112,11 @@ const toggleType = (newType: string) => {
       <div class="card">
         <header class="card-header">
           <p class="card-header-title">Add Post</p>
+          <button
+            class="delete"
+            aria-label="close is-large"
+            @click="emit('closeAddPostModal')"
+          ></button>
         </header>
 
         <div class="selector">
@@ -113,7 +146,7 @@ const toggleType = (newType: string) => {
         <div class="card-content">
           <form @submit.prevent>
             <div v-if="type == 'text'" class="field">
-              <label class="label">Content</label>
+              <label class="label has-text-current">Content</label>
               <div class="control">
                 <textarea
                   class="textarea"
@@ -128,13 +161,13 @@ const toggleType = (newType: string) => {
               </div>
             </div>
             <div v-else-if="type == 'markdown'" class="field">
-              <label class="label">Content</label>
+              <label class="label has-text-current">Content</label>
               <div class="control">
-                <MdEditor v-model="content" theme="dark" language="en-US" />
+                <MdEditor v-model="content" :theme="theme" language="en-US" />
               </div>
             </div>
             <div v-else-if="type == 'image'" class="field">
-              <label class="label">Image</label>
+              <label class="label has-text-current">Image</label>
               <div class="control">
                 <input
                   type="file"
@@ -142,7 +175,7 @@ const toggleType = (newType: string) => {
                   @change="(e:any) => (image = e.target.files[0])"
                 />
               </div>
-              <label class="label">Caption</label>
+              <label class="label has-text-current">Caption</label>
               <div class="control">
                 <textarea
                   class="textarea"
@@ -167,11 +200,6 @@ const toggleType = (newType: string) => {
               </div>
             </div>
           </form>
-          <button
-            class="modal-close is-large"
-            aria-label="close"
-            @click="emit('closeAddPostModal')"
-          ></button>
         </div>
       </div>
     </div>
@@ -199,5 +227,10 @@ const toggleType = (newType: string) => {
 
 .selector-item {
   cursor: pointer;
+}
+
+.delete {
+  cursor: pointer;
+  margin: 0.5rem;
 }
 </style>
