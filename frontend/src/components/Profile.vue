@@ -41,7 +41,16 @@ onMounted(async () => {
 <template>
   <div class="profile-container">
     <h1>Profile of @{{ username }}</h1>
-    <Post v-for="post in posts" :key="post.id" :post="post" />
+    <Post
+      v-if="posts.length"
+      v-for="post in posts"
+      :key="post.id"
+      :post="post"
+      :expanded="false"
+    />
+    <div v-else class="skeleton-container">
+      <div v-for="i in 16" class="skeleton-block"></div>
+    </div>
   </div>
 </template>
 
@@ -54,5 +63,18 @@ onMounted(async () => {
   height: 100%;
   overflow: auto;
   scrollbar-width: thin;
+}
+
+.skeleton-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  padding-top: 2rem;
+}
+
+.skeleton-block {
+  width: 50%;
 }
 </style>

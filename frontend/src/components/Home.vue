@@ -55,12 +55,16 @@ const fetchPosts = async () => {
   <div class="home-container">
     <div class="content" id="home-posts">
       <Post
+        v-if="posts.length"
         v-for="post in posts"
         :key="post.id"
         :post="post"
         @delete-post="fetchPosts"
         :expanded="false"
       />
+      <div v-else class="skeleton-container">
+        <div v-for="i in 16" class="skeleton-block"></div>
+      </div>
       <div v-if="lastPage" class="end-of-posts">
         <p>End of posts</p>
       </div>
@@ -70,7 +74,8 @@ const fetchPosts = async () => {
 
 <style scoped>
 .home-container,
-.content {
+.content,
+.skeleton-container {
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -81,6 +86,14 @@ const fetchPosts = async () => {
   height: 100vh;
   overflow-y: auto;
   scrollbar-width: thin;
+}
+
+.skeleton-container {
+  padding-top: 2rem;
+}
+
+.skeleton-block {
+  width: 50%;
 }
 
 /* @media (max-width: 768px) {
