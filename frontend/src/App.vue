@@ -19,10 +19,6 @@ import Nav from "@/components/Nav.vue";
   align-items: start;
 }
 
-#router-view {
-  margin-left: 20vw; /* Offset for Nav/Menu */
-}
-
 @media (max-width: 768px) {
   #router-view {
     margin-top: 3rem;

@@ -80,7 +80,7 @@ const fetchPosts = async () => {
   width: 100%;
   flex-direction: column;
   justify-content: start;
-  align-items: start;
+  align-items: center;
 }
 .content {
   height: 100vh;

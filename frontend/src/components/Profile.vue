@@ -58,7 +58,7 @@ onMounted(async () => {
 .profile-container {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
   width: 100%;
   height: 100%;
   overflow: auto;
