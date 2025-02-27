@@ -219,8 +219,8 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   text-align: left;
   border: 1px solid #ccc;
   padding: 1rem;
-  margin: 1rem;
-  width: 50%;
+  margin: 1rem 1rem 1rem 0;
+  width: 75%;
 }
 
 .account-link {
