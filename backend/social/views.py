@@ -9,6 +9,8 @@ import logging
 logger = logging.getLogger(__name__)
 sanitizer = Sanitizer()
 
+PAGE_SIZE = 16
+
 
 class Register(APIView):
 
@@ -54,9 +56,9 @@ def serialize_post(post, request_user=None):
 
     post_data = {
         "id": post.id,
-        "account_display_name": post.account.display_name,
-        "account_username": post.account.user.username,
-        "account_id": post.account.id,
+        "account_display_name": post.account.display_name if post.account else None,
+        "account_username": post.account.user.username if post.account else None,
+        "account_id": post.account.id if post.account else None,
         "created_at": post.created_at,
         "content": get_post_content(post),
         "favorited": (
@@ -81,7 +83,7 @@ def serialize_post(post, request_user=None):
             )
         ),
         "url": (post.image_post.image.url if hasattr(post, "image_post") else None),
-        "is_owner": post.account.user == request_user,
+        "is_owner": post.account.user == request_user if account else False,
         "is_repost": post.repost_post.exists(),
     }
 
@@ -166,19 +168,24 @@ class Post(APIView):
             posts = (
                 models.Post.objects.all()
                 .order_by("-created_at")
-                .exclude(reply_to__isnull=False)[(page - 1) * 16 : page * 16]
+                .exclude(reply_to__isnull=False)[
+                    (page - 1) * PAGE_SIZE : page * PAGE_SIZE
+                ]
             )
         else:
             post = models.Post.objects.get(id=int(replies))
             posts = models.Post.objects.filter(reply_to=post).order_by("-created_at")[
-                (page - 1) * 16 : page * 16
+                (page - 1) * PAGE_SIZE : page * PAGE_SIZE
             ]
         account = (
             models.Account.objects.get(user=request.user)
             if request.user.is_authenticated
             else None
         )
-        post_data = [serialize_post(post, request.user) for post in posts]
+        post_data = [
+            serialize_post(p, request.user if request.user.is_authenticated else None)
+            for p in posts
+        ]
         return Response(post_data)
 
     def delete(self, request):
@@ -201,7 +208,7 @@ class Profile(APIView):
             user=models.User.objects.get(username=username)
         )
         posts = models.Post.objects.filter(account=account).order_by("-created_at")[
-            (page - 1) * 16 : page * 16
+            (page - 1) * PAGE_SIZE : page * PAGE_SIZE
         ]
         post_data = [serialize_post(post, request.user) for post in posts]
         return Response(post_data)

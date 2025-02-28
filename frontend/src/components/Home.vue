@@ -7,22 +7,30 @@ const posts: any = ref([]);
 let access_token = getAccessToken();
 let page = 1;
 const lastPage: any = ref(false);
+let scrollPosition = 0;
+let fetchingPosts = false;
 
 onMounted(async () => {
   await fetchPosts();
   const homePosts: any = document.getElementById("home-posts");
   homePosts.addEventListener("scroll", async () => {
     if (
-      homePosts.scrollTop + homePosts.clientHeight >= homePosts.scrollHeight &&
-      !lastPage.value
+      homePosts.scrollTop + homePosts.clientHeight >=
+        homePosts.scrollHeight * 0.75 &&
+      !lastPage.value &&
+      homePosts.scrollTop > scrollPosition &&
+      !fetchingPosts
     ) {
+      scrollPosition = homePosts.scrollTop;
       page++;
       const oldPosts = posts.value;
+      fetchingPosts = true;
       await fetchPosts();
       if (oldPosts.length === posts.value.length) {
         page--;
         lastPage.value = true;
       }
+      fetchingPosts = false;
     }
   });
 });
