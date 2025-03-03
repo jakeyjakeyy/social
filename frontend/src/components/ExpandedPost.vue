@@ -75,9 +75,8 @@ const fetchReplies = async () => {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .replies-container {

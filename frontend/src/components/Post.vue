@@ -106,7 +106,7 @@ const submitAction = async (action: string) => {
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
-  contentContainer.value!.style.maxHeight = isExpanded.value ? "100vh" : "25vh";
+  contentContainer.value!.style.maxHeight = isExpanded.value ? "75vh" : "25vh";
 };
 
 const deletePost = async (id: number) => {
