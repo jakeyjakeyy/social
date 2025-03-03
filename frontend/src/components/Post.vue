@@ -52,6 +52,9 @@ onMounted(() => {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
+  if (expanded) {
+    toggleExpand();
+  }
 });
 onBeforeUnmount(() => {
   window.removeEventListener("resize", checkContentHeight);
