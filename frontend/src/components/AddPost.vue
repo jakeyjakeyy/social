@@ -43,6 +43,7 @@ onMounted(() => {
 
 const submitPost = async () => {
   let data;
+  let status;
   if (type.value != "image") {
     const res = await fetch(`${BACKEND_URL}/api/post`, {
       method: "POST",
@@ -57,6 +58,7 @@ const submitPost = async () => {
       }),
     });
     data = await res.json();
+    status = res.status;
   } else if (image) {
     const formData = new FormData();
     formData.append("type", "image");
@@ -70,6 +72,7 @@ const submitPost = async () => {
       body: formData,
     });
     data = await res.json();
+    status = res.status;
   }
   if (data.detail) {
     let refresh = await RefreshToken();
@@ -78,7 +81,7 @@ const submitPost = async () => {
     } else {
       await submitPost();
     }
-  } else if (data.status !== 200) {
+  } else if (status !== 200) {
     alert(data.message);
   } else {
     emit("closeAddPostModal", true); // true to toggle sucess notification
