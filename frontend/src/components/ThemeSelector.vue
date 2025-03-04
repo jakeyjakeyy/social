@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+const emit = defineEmits(["toggleTheme"]);
 let root: HTMLElement = document.getElementById("app-body") as HTMLElement;
 let themeLight = ref(root.getAttribute("data-theme") === "light");
 let userTheme = localStorage.getItem("theme");
@@ -13,6 +14,7 @@ const toggleTheme = () => {
     root.setAttribute("data-theme", "dark");
     localStorage.setItem("theme", "dark");
   }
+  emit("toggleTheme");
 };
 
 onMounted(() => {

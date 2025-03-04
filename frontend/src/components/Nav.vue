@@ -14,6 +14,7 @@ const showNotification = ref(false);
 const screen = ref(window.innerWidth);
 const navIsMobile = ref(false);
 const showMobileNav = ref(false);
+const theme = ref("dark");
 
 onMounted(() => {
   window.addEventListener("resize", () => {
@@ -23,6 +24,8 @@ onMounted(() => {
   if (screen.value < 768) {
     navIsMobile.value = true;
   }
+
+  theme.value = localStorage.getItem("theme") || "dark";
 });
 const navItems = [
   { name: "Home", path: "/" },
@@ -81,6 +84,10 @@ const toggleAddPostModal = (value: boolean) => {
     }, 3000);
   }
 };
+
+const toggleTheme = () => {
+  theme.value = localStorage.getItem("theme") || "dark";
+};
 </script>
 
 <template>
@@ -88,7 +95,7 @@ const toggleAddPostModal = (value: boolean) => {
     class="menu has-background"
     v-if="(navIsMobile && showMobileNav) || !navIsMobile"
   >
-    <ThemeSelector />
+    <ThemeSelector @toggle-theme="toggleTheme" />
     <p class="menu-label">Navigation</p>
     <ul class="menu-list">
       <li @click="navigateTo('/')"><a>Home</a></li>
@@ -124,7 +131,12 @@ const toggleAddPostModal = (value: boolean) => {
     class="toggle-nav"
     @click="showMobileNav = !showMobileNav"
   >
-    <span class="icon"> <v-icon name="co-hamburger-menu" /> </span>
+    <span class="icon">
+      <v-icon
+        name="co-hamburger-menu"
+        :color="theme === 'dark' ? 'white' : 'black'"
+      />
+    </span>
   </div>
 </template>
 

@@ -270,8 +270,8 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
 
 @media (max-width: 768px) {
   .post {
-    width: 100%;
-    margin: 0;
+    width: 90%;
+    margin: 0.5rem 0;
   }
 }
 </style>
