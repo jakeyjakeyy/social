@@ -85,6 +85,9 @@ def serialize_post(post, request_user=None):
         "url": (post.image_post.image.url if hasattr(post, "image_post") else None),
         "is_owner": post.account.user == request_user if account else False,
         "is_repost": post.repost_post.exists(),
+        "reply_to": (
+            serialize_post(post.reply_to, request_user) if post.reply_to else None
+        ),
     }
 
     # Add original post data if this is a repost

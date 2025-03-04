@@ -13,6 +13,7 @@ import {
   RiRepeat2Fill,
   FaMoon,
   FaSun,
+  FaGripLinesVertical,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -22,7 +23,8 @@ addIcons(
   RiRepeat2Fill,
   RiRepeat2Line,
   FaMoon,
-  FaSun
+  FaSun,
+  FaGripLinesVertical
 );
 
 const app = createApp(App);

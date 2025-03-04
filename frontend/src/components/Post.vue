@@ -145,6 +145,9 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
 
 <template>
   <div class="post card" @click="toggleShowExpandedPost">
+    <div class="reply-to" v-if="post.reply_to">
+      <v-icon name="fa-grip-lines-vertical" />
+    </div>
     <div v-if="isRepost && repostData" class="reposted-by">
       <p>
         <v-icon name="ri-repeat-2-line" />
@@ -208,7 +211,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
     </div>
     <ExpandedPost
       v-if="showExpandedPost"
-      :post="post"
+      :post="post.reply_to ? post.reply_to : post"
       @close="showExpandedPost = false"
       @close-expanded-post="showExpandedPost = false"
     />
@@ -260,6 +263,13 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   overflow: auto;
   margin: 0;
   cursor: pointer;
+}
+
+.reply-to {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .image-post {

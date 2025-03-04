@@ -9,6 +9,7 @@ export type Post = {
   is_owner: boolean;
   is_repost: boolean;
   original_post: Post | null;
+  reply_to: Post | null;
   repost_count: number;
   reposted: boolean;
   type: string;
