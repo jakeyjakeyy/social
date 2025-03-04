@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from social import models
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from html_sanitizer import Sanitizer
+from PIL import Image as PILImage
 
 import logging
 
@@ -39,6 +40,15 @@ def get_post_content(post):
             return post.image_post.caption
         case _:
             return None
+
+
+def is_valid_image_pillow(file_name):
+    try:
+        with PILImage.open(file_name) as img:
+            img.verify()
+            return True
+    except (IOError, SyntaxError):
+        return False
 
 
 def serialize_post(post, request_user=None):
@@ -155,10 +165,13 @@ class Post(APIView):
         elif type == "image":
             if not data["image"]:
                 return Response({"message": "No image provided"}, status=400)
+            image = data["image"]
+            if not is_valid_image_pillow(image):
+                return Response({"message": "Invalid file provided"}, status=400)
             post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.ImagePost.objects.create(
                 post=post,
-                image=data["image"],
+                image=image,
                 caption=data["caption"],
             )
             return Response({"message": "Image post created successfully"})

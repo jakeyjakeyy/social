@@ -78,6 +78,8 @@ const submitPost = async () => {
     } else {
       await submitPost();
     }
+  } else if (data.status !== 200) {
+    alert(data.message);
   } else {
     emit("closeAddPostModal", true); // true to toggle sucess notification
   }
