@@ -92,6 +92,7 @@ const fetchPosts = async () => {
 }
 .content {
   height: 100vh;
+  padding-bottom: 25vh;
   overflow-y: auto;
   scrollbar-width: thin;
 }
