@@ -77,20 +77,22 @@ const fetchReplies = async () => {
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
+  padding: 40px 0;
 }
 
 .replies-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 50%;
+  margin-top: 20px;
 }
 
 .replies {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
