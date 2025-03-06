@@ -228,3 +228,49 @@ class Profile(APIView):
         ]
         post_data = [serialize_post(post, request.user) for post in posts]
         return Response(post_data)
+
+
+class Follow(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        username = request.GET.get("username")
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        account = models.Account.objects.get(user=request.user)
+        if username is not None:  # Checks if user is following specific username
+            following = models.Account.objects.get(user__username=username)
+            return Response(
+                {
+                    "following": models.Follow.objects.filter(
+                        follower=account, following=following
+                    ).exists()
+                }
+            )
+        else:  # Returns all users that the user is following
+            following = models.Follow.objects.filter(follower=account)
+            following_data = [
+                {
+                    "id": f.following.id,
+                    "display_name": f.following.display_name,
+                    "username": f.following.user.username,
+                }
+                for f in following
+            ]
+            return Response(following_data)
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        data = request.data
+        follower = models.Account.objects.get(user=request.user)
+        following = models.Account.objects.get(user__username=data["username"])
+        object = models.Follow.objects.get_or_create(
+            follower=follower,
+            following=following,
+        )
+        if object[1] == False:
+            object[0].delete()
+            return Response({"message": "Unfollowed successfully"})
+        else:
+            return Response({"message": "Followed successfully"})

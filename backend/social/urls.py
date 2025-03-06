@@ -13,4 +13,5 @@ urlpatterns = [
     path("register", Register.as_view(), name="register"),
     path("post", Post.as_view(), name="post"),
     path("profile/<str:username>/<int:page>", Profile.as_view(), name="profile"),
+    path("follow", Follow.as_view(), name="follow"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

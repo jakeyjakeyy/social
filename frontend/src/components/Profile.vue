@@ -11,6 +11,7 @@ let page = 1;
 const route = useRoute();
 const username = route.params.username as string;
 const posts = ref<posttype[]>([]);
+const isFollowing = ref<boolean>(false);
 
 const fetchPosts = async () => {
   const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`, {
@@ -36,11 +37,69 @@ const fetchPosts = async () => {
 
 onMounted(async () => {
   await fetchPosts();
+  await checkFollow();
 });
+
+const checkFollow = async () => {
+  const res = await fetch(`${BACKEND_URL}/api/follow?username=${username}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(access_token && { Authorization: `Bearer ${access_token}` }),
+    },
+  });
+  const data = await res.json();
+  if (res.status != 200) {
+    alert(data.message);
+  }
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      access_token = getAccessToken();
+      await checkFollow();
+    }
+    return;
+  }
+  isFollowing.value = data.following;
+};
+const handleFollow = async () => {
+  const res = await fetch(`${BACKEND_URL}/api/follow`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(access_token && { Authorization: `Bearer ${access_token}` }),
+    },
+    body: JSON.stringify({ username }),
+  });
+  let data = await res.json();
+  if (res.status != 200) {
+    alert(data.message);
+  }
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      access_token = getAccessToken();
+      await handleFollow();
+    }
+  }
+  if (res.status == 400) {
+    alert(data.detail);
+  }
+  isFollowing.value = !isFollowing.value;
+};
 </script>
 <template>
   <div class="profile-container">
     <h1>Profile of @{{ username }}</h1>
+    <div class="follow-container">
+      <button class="button" @click="handleFollow">
+        {{ isFollowing ? "Unfollow" : "Follow" }}
+      </button>
+    </div>
     <Post
       v-if="posts.length"
       v-for="post in posts"
