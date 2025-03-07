@@ -180,15 +180,30 @@ class Post(APIView):
     def get(self, request):
         page = int(request.GET.get("page", 1))
         replies = request.GET.get("replies", False)
-        if replies == False:
-            posts = (
-                models.Post.objects.all()
-                .order_by("-created_at")
-                .exclude(reply_to__isnull=False)[
-                    (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-                ]
-            )
-        else:
+        followingFeed = request.GET.get("following", False)
+        logger.info(f"Following: {followingFeed}")
+        if replies == False:  # Get all posts (that aren't replies)
+            if followingFeed:  # Get posts from users that the user is following
+                account = models.Account.objects.get(user=request.user)
+                following = models.Follow.objects.filter(follower=account)
+                posts = (
+                    models.Post.objects.filter(
+                        account__in=[f.following for f in following]
+                    )
+                    .order_by("-created_at")
+                    .exclude(reply_to__isnull=False)[
+                        (page - 1) * PAGE_SIZE : page * PAGE_SIZE
+                    ]
+                )
+            else:  # Else get all posts
+                posts = (
+                    models.Post.objects.all()
+                    .order_by("-created_at")
+                    .exclude(reply_to__isnull=False)[
+                        (page - 1) * PAGE_SIZE : page * PAGE_SIZE
+                    ]
+                )
+        else:  # Get replies to a specific post
             post = models.Post.objects.get(id=int(replies))
             posts = models.Post.objects.filter(reply_to=post).order_by("-created_at")[
                 (page - 1) * PAGE_SIZE : page * PAGE_SIZE

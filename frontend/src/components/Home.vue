@@ -9,6 +9,8 @@ let page = 1;
 const lastPage: any = ref(false);
 let scrollPosition = 0;
 let fetchingPosts = false;
+const allButtonRef = ref<HTMLButtonElement | null>(null);
+const followingButtonRef = ref<HTMLButtonElement | null>(null);
 
 onMounted(async () => {
   await fetchPosts();
@@ -34,8 +36,14 @@ onMounted(async () => {
     }
   });
 });
-const fetchPosts = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/post?page=${page}`, {
+const fetchPosts = async (followingFeed = false) => {
+  let path;
+  if (followingFeed) {
+    path = `${BACKEND_URL}/api/post?page=${page}&following=true`;
+  } else {
+    path = `${BACKEND_URL}/api/post?page=${page}`;
+  }
+  const res = await fetch(`${path}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -57,10 +65,32 @@ const fetchPosts = async () => {
 
   posts.value = [...posts.value, ...data];
 };
+
+const toggleFeed = async (e: MouseEvent) => {
+  page = 1;
+  posts.value = [];
+  if (e.target === allButtonRef.value) {
+    allButtonRef.value?.classList.add("is-primary");
+    followingButtonRef.value?.classList.remove("is-primary");
+    await fetchPosts();
+  } else {
+    followingButtonRef.value?.classList.add("is-primary");
+    allButtonRef.value?.classList.remove("is-primary");
+    await fetchPosts(true);
+  }
+};
 </script>
 
 <template>
   <div class="home-container">
+    <div class="content-selections">
+      <button ref="allButtonRef" class="button is-primary" @click="toggleFeed">
+        All
+      </button>
+      <button ref="followingButtonRef" class="button" @click="toggleFeed">
+        Following
+      </button>
+    </div>
     <div class="content" id="home-posts">
       <Post
         v-if="posts.length"
