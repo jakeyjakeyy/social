@@ -1,12 +1,14 @@
-<script setup lang="ts">
-import { onMounted, ref } from "vue";
+<script lang="ts" setup>
+import {onMounted, ref} from "vue";
 import Post from "./Post.vue";
-import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import {getAccessToken, RefreshToken} from "@/utils/RefreshToken"
+import type {Post as PostType} from "@/types/Post";
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const posts: any = ref([]);
+const posts = ref<PostType[]>([]);
 let access_token = getAccessToken();
 let page = 1;
-const lastPage: any = ref(false);
+const lastPage = ref<boolean>(false);
 let scrollPosition = 0;
 let fetchingPosts = false;
 const allButtonRef = ref<HTMLButtonElement | null>(null);
@@ -14,27 +16,29 @@ const followingButtonRef = ref<HTMLButtonElement | null>(null);
 
 onMounted(async () => {
   await fetchPosts();
-  const homePosts: any = document.getElementById("home-posts");
-  homePosts.addEventListener("scroll", async () => {
-    if (
-      homePosts.scrollTop + homePosts.clientHeight >=
+  const homePosts: HTMLElement | null = document.getElementById("home-posts");
+  if (homePosts) {
+    homePosts.addEventListener("scroll", async () => {
+      if (
+        homePosts.scrollTop + homePosts.clientHeight >=
         homePosts.scrollHeight * 0.75 &&
-      !lastPage.value &&
-      homePosts.scrollTop > scrollPosition &&
-      !fetchingPosts
-    ) {
-      scrollPosition = homePosts.scrollTop;
-      page++;
-      const oldPosts = posts.value;
-      fetchingPosts = true;
-      await fetchPosts();
-      if (oldPosts.length === posts.value.length) {
-        page--;
-        lastPage.value = true;
+        !lastPage.value &&
+        homePosts.scrollTop > scrollPosition &&
+        !fetchingPosts
+      ) {
+        scrollPosition = homePosts.scrollTop;
+        page++;
+        const oldPosts = posts.value;
+        fetchingPosts = true;
+        await fetchPosts();
+        if (oldPosts.length === posts.value.length) {
+          page--;
+          lastPage.value = true;
+        }
+        fetchingPosts = false;
       }
-      fetchingPosts = false;
-    }
-  });
+    });
+  }
 });
 const fetchPosts = async (followingFeed = false) => {
   let path;
@@ -47,13 +51,13 @@ const fetchPosts = async (followingFeed = false) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(access_token && { Authorization: `Bearer ${access_token}` }),
+      ...(access_token && {Authorization: `Bearer ${access_token}`}),
     },
   });
   const data = await res.json();
 
   if (data.detail) {
-    let refresh = await RefreshToken();
+    const refresh = await RefreshToken();
     if (refresh.error) {
       alert("Please login again");
     } else {
@@ -91,17 +95,18 @@ const toggleFeed = async (e: MouseEvent) => {
         Following
       </button>
     </div>
-    <div class="content" id="home-posts">
-      <Post
-        v-if="posts.length"
-        v-for="post in posts"
-        :key="post.id"
-        :post="post"
-        @delete-post="fetchPosts"
-        :expanded="false"
-      />
+    <div id="home-posts" class="content">
+      <div class="posts-wrapper" v-if="posts.length">
+        <Post
+          v-for="post in posts"
+          :key="post.id"
+          :expanded="false"
+          :post="post"
+          @delete-post="fetchPosts"
+        />
+      </div>
       <div v-else class="skeleton-container">
-        <div v-for="i in 16" class="skeleton-block"></div>
+        <div v-for="i in 16" :key="i" class="skeleton-block"></div>
       </div>
       <div v-if="lastPage" class="end-of-posts">
         <p>End of posts</p>
@@ -113,13 +118,15 @@ const toggleFeed = async (e: MouseEvent) => {
 <style scoped>
 .home-container,
 .content,
-.skeleton-container {
+.skeleton-container,
+.posts-wrapper {
   display: flex;
   width: 100%;
   flex-direction: column;
   justify-content: start;
   align-items: center;
 }
+
 .content {
   height: 100vh;
   padding-bottom: 25vh;
