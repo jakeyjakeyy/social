@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
-import { MdEditor } from "md-editor-v3";
+<script lang="ts" setup>
+import {onMounted, ref} from "vue";
+import {getAccessToken, RefreshToken} from "@/utils/RefreshToken";
+import {MdEditor} from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 
 type Themes = "light" | "dark";
@@ -54,7 +54,7 @@ const submitPost = async () => {
       body: JSON.stringify({
         content: content.value,
         type: type.value,
-        ...(props.isReply && { reply_id: props.isReply }),
+        ...(props.isReply && {reply_id: props.isReply}),
       }),
     });
     data = await res.json();
@@ -75,7 +75,7 @@ const submitPost = async () => {
     status = res.status;
   }
   if (data.detail) {
-    let refresh = await RefreshToken();
+    const refresh = await RefreshToken();
     if (refresh.error) {
       alert("Please login again");
     } else {
@@ -84,7 +84,7 @@ const submitPost = async () => {
   } else if (status !== 200) {
     alert(data.message);
   } else {
-    emit("closeAddPostModal", true); // true to toggle sucess notification
+    emit("closeAddPostModal", true); // true to toggle success notification
   }
 };
 
@@ -108,6 +108,8 @@ const toggleType = (newType: string) => {
     imageButton.classList.add("is-active");
   }
 };
+
+const setImage = (e: Event) => (image = (e.target as HTMLInputElement).files?.[0] || null);
 </script>
 
 <template>
@@ -118,8 +120,8 @@ const toggleType = (newType: string) => {
         <header class="card-header">
           <p class="card-header-title">Add Post</p>
           <button
-            class="delete"
             aria-label="close is-large"
+            class="delete"
             @click="emit('closeAddPostModal')"
           ></button>
         </header>
@@ -154,10 +156,10 @@ const toggleType = (newType: string) => {
               <label class="label has-text-current">Content</label>
               <div class="control">
                 <textarea
-                  class="textarea"
-                  placeholder="Content"
                   v-model="content"
                   :maxlength="MAX_POST_LEN"
+                  class="textarea"
+                  placeholder="Content"
                   style="resize: none; overflow: auto"
                 ></textarea>
                 <div class="help">
@@ -168,25 +170,25 @@ const toggleType = (newType: string) => {
             <div v-else-if="type == 'markdown'" class="field">
               <label class="label has-text-current">Content</label>
               <div class="control">
-                <MdEditor v-model="content" :theme="theme" language="en-US" />
+                <MdEditor v-model="content" :theme="theme" language="en-US"/>
               </div>
             </div>
             <div v-else-if="type == 'image'" class="field">
               <label class="label has-text-current">Image</label>
               <div class="control">
                 <input
-                  type="file"
                   class="input"
-                  @change="(e:any) => (image = e.target.files[0])"
+                  type="file"
+                  @change="(e) => setImage(e)"
                 />
               </div>
               <label class="label has-text-current">Caption</label>
               <div class="control">
                 <textarea
-                  class="textarea"
-                  placeholder="Caption"
                   v-model="content"
                   :maxlength="MAX_POST_LEN"
+                  class="textarea"
+                  placeholder="Caption"
                   style="resize: none; overflow: auto"
                 ></textarea>
                 <div class="help">
@@ -217,21 +219,10 @@ const toggleType = (newType: string) => {
   margin: 20px;
 }
 
-.modal-close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 0.5rem;
-}
-
 .selector {
   display: flex;
   justify-content: space-around;
   margin: 0 1rem;
-}
-
-.selector-item {
-  cursor: pointer;
 }
 
 .delete {
