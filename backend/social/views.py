@@ -1,14 +1,12 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from social import models
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from html_sanitizer import Sanitizer
-from PIL import Image as PILImage
-
+import html
 import logging
+from PIL import Image as PILImage
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from social import models
 
 logger = logging.getLogger(__name__)
-sanitizer = Sanitizer()
 
 PAGE_SIZE = 16
 
@@ -131,8 +129,8 @@ class Post(APIView):
             post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.MarkdownPost.objects.create(
                 post=post,
-                # content=sanitizer.sanitize(data["content"]),
-                content=data["content"],
+                content=html.escape(data["content"]),
+                # content=data["content"],
             )
             return Response({"message": "Post created successfully"})
         elif type == "favorite":
@@ -192,7 +190,7 @@ class Post(APIView):
                     )
                     .order_by("-created_at")
                     .exclude(reply_to__isnull=False)[
-                        (page - 1) * PAGE_SIZE : page * PAGE_SIZE
+                    (page - 1) * PAGE_SIZE: page * PAGE_SIZE
                     ]
                 )
             else:  # Else get all posts
@@ -200,14 +198,14 @@ class Post(APIView):
                     models.Post.objects.all()
                     .order_by("-created_at")
                     .exclude(reply_to__isnull=False)[
-                        (page - 1) * PAGE_SIZE : page * PAGE_SIZE
+                    (page - 1) * PAGE_SIZE: page * PAGE_SIZE
                     ]
                 )
         else:  # Get replies to a specific post
             post = models.Post.objects.get(id=int(replies))
             posts = models.Post.objects.filter(reply_to=post).order_by("-created_at")[
-                (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-            ]
+                    (page - 1) * PAGE_SIZE: page * PAGE_SIZE
+                    ]
         account = (
             models.Account.objects.get(user=request.user)
             if request.user.is_authenticated
@@ -239,8 +237,8 @@ class Profile(APIView):
             user=models.User.objects.get(username=username)
         )
         posts = models.Post.objects.filter(account=account).order_by("-created_at")[
-            (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-        ]
+                (page - 1) * PAGE_SIZE: page * PAGE_SIZE
+                ]
         post_data = [serialize_post(post, request.user) for post in posts]
         return Response(post_data)
 
