@@ -118,7 +118,7 @@ const setImage = (e: Event) =>
   <div class="modal is-active">
     <div class="modal-background"></div>
     <div class="modal-content">
-      <div class="card">
+      <div class="card column is-half">
         <header class="card-header">
           <p class="card-header-title">Add Post</p>
           <button
@@ -218,8 +218,13 @@ const setImage = (e: Event) =>
 
 <style scoped>
 .modal-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
   margin: 20px;
+  width: 100%;
+  height: 100%;
 }
 
 .selector {
