@@ -128,8 +128,8 @@ const handleFollow = async () => {
   display: flex;
   width: 100%;
   flex-direction: column;
-  justify-content: start;
-  align-items: start;
+  justify-content: center;
+  align-items: center;
   padding-top: 2rem;
 }
 
