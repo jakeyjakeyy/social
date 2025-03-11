@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import router from "@/router";
-import type {Post} from "@/types/Post";
-import {getAccessToken, RefreshToken} from "@/utils/RefreshToken";
-import {MdPreview} from "md-editor-v3";
+import type { Post } from "@/types/Post";
+import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/preview.css";
-import {onBeforeUnmount, onMounted, ref} from "vue";
-import ExpandedPost from "./ExpandedPost.vue"
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import ExpandedPost from "./ExpandedPost.vue";
+import { sanitizeHTML } from "@/utils/SanitizeHTML";
 
 type Themes = "light" | "dark";
 
@@ -55,7 +56,6 @@ onMounted(() => {
   if (expanded) {
     toggleExpand();
   }
-  console.log(post.content)
 });
 onBeforeUnmount(() => {
   window.removeEventListener("resize", checkContentHeight);
@@ -142,17 +142,16 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
     showExpandedPost.value = !showExpandedPost.value;
   }
 };
-
 </script>
 
 <template>
   <div class="post card" @click="toggleShowExpandedPost">
     <div class="reply-to" v-if="post.reply_to">
-      <v-icon name="fa-grip-lines-vertical"/>
+      <v-icon name="fa-grip-lines-vertical" />
     </div>
     <div v-if="isRepost && repostData" class="reposted-by">
       <p>
-        <v-icon name="ri-repeat-2-line"/>
+        <v-icon name="ri-repeat-2-line" />
         <span>Reposted by {{ repostData.account_display_name }}</span>
       </p>
     </div>
@@ -164,11 +163,12 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
           :model-value="post.content"
           :theme="theme"
           language="en-US"
+          :sanitize="sanitizeHTML"
         />
       </div>
       <div v-else-if="post.type === 'image'" class="image-post">
         <p>{{ post.content }}</p>
-        <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image"/>
+        <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image" />
       </div>
     </div>
     <div class="card-footer">
@@ -178,7 +178,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
           <span
             class="account-link has-text-primary"
             @click="router.push(`/@${post.account_username}`)"
-          >@{{ post.account_username }}</span
+            >@{{ post.account_username }}</span
           >
         </p>
         <button
@@ -193,15 +193,15 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
         <div class="favorites control-item">
           <span>{{ post.favorite_count }}</span>
           <span @click="submitAction('favorite')">
-            <v-icon v-if="!post.favorited" name="bi-heart"/>
-            <v-icon v-else name="bi-heart-fill" class="has-text-danger"/>
+            <v-icon v-if="!post.favorited" name="bi-heart" />
+            <v-icon v-else name="bi-heart-fill" class="has-text-danger" />
           </span>
         </div>
         <div class="reposts control-item">
           <span>{{ post.repost_count }}</span>
           <span @click="submitAction('repost')">
-            <v-icon v-if="!post.reposted" name="ri-repeat-2-line"/>
-            <v-icon v-else name="ri-repeat-2-fill" class="has-text-success"/>
+            <v-icon v-if="!post.reposted" name="ri-repeat-2-line" />
+            <v-icon v-else name="ri-repeat-2-fill" class="has-text-success" />
           </span>
         </div>
         <div v-if="isContentTruncated" class="expand">

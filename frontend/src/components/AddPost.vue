@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import {onMounted, ref} from "vue";
-import {getAccessToken, RefreshToken} from "@/utils/RefreshToken";
-import {MdEditor} from "md-editor-v3";
+import { onMounted, ref } from "vue";
+import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
+import { sanitizeHTML } from "@/utils/SanitizeHTML";
 
 type Themes = "light" | "dark";
 
@@ -54,7 +55,7 @@ const submitPost = async () => {
       body: JSON.stringify({
         content: content.value,
         type: type.value,
-        ...(props.isReply && {reply_id: props.isReply}),
+        ...(props.isReply && { reply_id: props.isReply }),
       }),
     });
     data = await res.json();
@@ -109,7 +110,8 @@ const toggleType = (newType: string) => {
   }
 };
 
-const setImage = (e: Event) => (image = (e.target as HTMLInputElement).files?.[0] || null);
+const setImage = (e: Event) =>
+  (image = (e.target as HTMLInputElement).files?.[0] || null);
 </script>
 
 <template>
@@ -170,17 +172,18 @@ const setImage = (e: Event) => (image = (e.target as HTMLInputElement).files?.[0
             <div v-else-if="type == 'markdown'" class="field">
               <label class="label has-text-current">Content</label>
               <div class="control">
-                <MdEditor v-model="content" :theme="theme" language="en-US"/>
+                <MdEditor
+                  v-model="content"
+                  :theme="theme"
+                  language="en-US"
+                  :sanitize="sanitizeHTML"
+                />
               </div>
             </div>
             <div v-else-if="type == 'image'" class="field">
               <label class="label has-text-current">Image</label>
               <div class="control">
-                <input
-                  class="input"
-                  type="file"
-                  @change="(e) => setImage(e)"
-                />
+                <input class="input" type="file" @change="(e) => setImage(e)" />
               </div>
               <label class="label has-text-current">Caption</label>
               <div class="control">
