@@ -94,19 +94,45 @@ const handleFollow = async () => {
 </script>
 <template>
   <div class="profile-container">
-    <h1>Profile of @{{ username }}</h1>
-    <div class="follow-container">
-      <button class="button" @click="handleFollow">
-        {{ isFollowing ? "Unfollow" : "Follow" }}
-      </button>
+    <div class="card profile-header">
+      <div class="card-image">
+        <figure class="image banner-image">
+          <img
+            src="https://bulma.io/assets/images/placeholders/1280x960.png"
+            alt="Placeholder image"
+          />
+        </figure>
+      </div>
+      <div class="card-content">
+        <div class="media">
+          <div class="media-left">
+            <figure class="image is-128x128">
+              <img
+                src="https://bulma.io/assets/images/placeholders/128x128.png"
+                alt="Placeholder image"
+              />
+            </figure>
+          </div>
+          <div class="media-content">
+            <p class="title is-3">{{ username }}</p>
+            <p class="title is-3">@{{ username }}</p>
+          </div>
+          <div class="follow-container">
+            <button class="button" @click="handleFollow">
+              {{ isFollowing ? "Unfollow" : "Follow" }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-    <Post
-      v-if="posts.length"
-      v-for="post in posts"
-      :key="post.id"
-      :post="post"
-      :expanded="false"
-    />
+    <div v-if="posts.length" class="posts">
+      <Post
+        v-for="post in posts"
+        :key="post.id"
+        :post="post"
+        :expanded="false"
+      />
+    </div>
     <div v-else class="skeleton-container">
       <div v-for="i in 16" class="skeleton-block"></div>
     </div>
@@ -135,5 +161,22 @@ const handleFollow = async () => {
 
 .skeleton-block {
   width: 50%;
+}
+
+.profile-header {
+  width: 100%;
+}
+
+.banner-image img {
+  width: 100%;
+  height: 25vh;
+  object-fit: cover;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 </style>
