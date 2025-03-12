@@ -42,15 +42,6 @@ const fetchReplies = async () => {
     <Post :post="post" :expanded="true" ref="postRef" />
 
     <div class="replies-container" ref="repliesRef">
-      <button @click="showAddPost = !showAddPost" class="button">
-        Add Reply
-      </button>
-      <AddPost
-        v-if="showAddPost"
-        ref="addPostRef"
-        @close-add-post-modal="showAddPost = false"
-        :is-reply="post.id"
-      />
       <div class="replies">
         <Post
           v-for="reply in replies"

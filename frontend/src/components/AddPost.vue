@@ -115,7 +115,7 @@ const setImage = (e: Event) =>
 </script>
 
 <template>
-  <div class="modal is-active">
+  <div class="modal is-active add-post-modal">
     <div class="modal-background"></div>
     <div class="modal-content">
       <div class="card column is-half">

@@ -7,6 +7,7 @@ import "md-editor-v3/lib/preview.css";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import ExpandedPost from "./ExpandedPost.vue";
 import { sanitizeHTML } from "@/utils/SanitizeHTML";
+import AddPost from "./AddPost.vue";
 
 type Themes = "light" | "dark";
 
@@ -17,11 +18,9 @@ let post = props.post;
 let repostData: Post | null = null;
 const isRepost = ref(post.is_repost);
 const expanded = props.expanded;
-const contentContainer = ref<HTMLDivElement | null>(null);
-const isContentTruncated = ref(false);
-const isExpanded = ref(false);
 const showExpandedPost = ref(false);
 const theme = ref<Themes>("dark");
+const showAddPost = ref(false);
 
 if (post.is_repost && post.original_post) {
   repostData = post;
@@ -120,7 +119,13 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   const isMedia = target.closest(".media");
   const isExpandedClick = target.closest(".expanded-post");
 
-  if (!isMedia && !isFooterClick && !isExpandedClick && !expanded) {
+  if (
+    !isMedia &&
+    !isFooterClick &&
+    !isExpandedClick &&
+    !showAddPost.value &&
+    !expanded
+  ) {
     showExpandedPost.value = !showExpandedPost.value;
   }
 };
@@ -179,7 +184,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
       }}</time>
     </div>
     <footer class="card-footer">
-      <div class="card-footer-item">
+      <div class="card-footer-item" @click="showAddPost = !showAddPost">
         <v-icon name="bi-chat-left" />
         <!-- <span>{{ post.reply_count }}</span> -->
       </div>
@@ -210,6 +215,12 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
       :post="post.reply_to ? post.reply_to : post"
       @close="showExpandedPost = false"
       @close-expanded-post="showExpandedPost = false"
+    />
+    <AddPost
+      v-if="showAddPost"
+      ref="addPostRef"
+      @close-add-post-modal="showAddPost = false"
+      :is-reply="post.id"
     />
   </div>
 </template>
