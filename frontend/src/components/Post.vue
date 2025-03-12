@@ -51,9 +51,6 @@ onMounted(() => {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
-  if (expanded) {
-    toggleExpand();
-  }
 });
 onBeforeUnmount(() => {
   observer.disconnect();
@@ -93,11 +90,6 @@ const submitAction = async (action: string) => {
         : post.repost_count - 1;
     }
   }
-};
-
-const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value;
-  contentContainer.value!.style.maxHeight = isExpanded.value ? "75vh" : "25vh";
 };
 
 const deletePost = async (id: number) => {
@@ -145,79 +137,74 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
         <span>Reposted by {{ repostData.account_display_name }}</span>
       </p>
     </div>
-    <div class="card-content" ref="contentContainer">
-      <div v-if="post.type === 'image'" class="card-image">
-        <figure class="image is-4by3">
-          <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image" />
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media" @click="router.push(`/@${post.account_username}`)">
-          <div class="media-left">
-            <figure class="image is-48x48">
-              <!-- <img
+    <div v-if="post.type === 'image'" class="card-image">
+      <figure class="image is-4by3">
+        <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image" />
+      </figure>
+    </div>
+    <div class="card-content">
+      <div class="media" @click="router.push(`/@${post.account_username}`)">
+        <div class="media-left">
+          <figure class="image is-48x48">
+            <!-- <img
                 :src="`${BACKEND_URL}/api${post.account_avatar}`"
                 alt="User Avatar"
               /> -->
-              <img
-                src="https://bulma.io/assets/images/placeholders/96x96.png"
-                alt="Placeholder image"
-              />
-            </figure>
-          </div>
-          <div class="media-content">
-            <p class="title is-4">{{ post.account_display_name }}</p>
-            <p class="subtitle is-6">@{{ post.account_username }}</p>
-          </div>
+            <img
+              src="https://bulma.io/assets/images/placeholders/96x96.png"
+              alt="Placeholder image"
+            />
+          </figure>
         </div>
-        <div v-if="post.type === 'markdown'" class="markdown-post">
-          <MdPreview
-            id="post.id"
-            :model-value="post.content"
-            :theme="theme"
-            language="en-US"
-            :sanitize="sanitizeHTML"
-          />
+        <div class="media-content">
+          <p class="title is-4">{{ post.account_display_name }}</p>
+          <p class="subtitle is-6">@{{ post.account_username }}</p>
         </div>
       </div>
-      <div class="content has-text-weight-semibold">
-        {{ post.type === "text" || post.type === "image" ? post.content : "" }}
-        <br />
-        <time class="has-text-weight-light is-size-7">{{
-          new Date(post.created_at).toLocaleString()
-        }}</time>
+      <div v-if="post.type === 'markdown'" class="markdown-post">
+        <MdPreview
+          id="post.id"
+          :model-value="post.content"
+          :theme="theme"
+          language="en-US"
+          :sanitize="sanitizeHTML"
+        />
       </div>
-      <footer class="card-footer">
-        <div class="card-footer-item">
-          <v-icon name="bi-chat-left" />
-          <!-- <span>{{ post.reply_count }}</span> -->
-        </div>
-        <div
-          class="favorites card-footer-item"
-          @click="submitAction('favorite')"
-        >
-          <span>{{ post.favorite_count }}</span>
-          <span>
-            <v-icon v-if="!post.favorited" name="bi-heart" />
-            <v-icon v-else name="bi-heart-fill" class="has-text-danger" />
-          </span>
-        </div>
-        <div class="reposts card-footer-item" @click="submitAction('repost')">
-          <span>{{ post.repost_count }}</span>
-          <span>
-            <v-icon v-if="!post.reposted" name="ri-repeat-2-line" />
-            <v-icon v-else name="ri-repeat-2-fill" class="has-text-success" />
-          </span>
-        </div>
-        <div
-          v-if="post.is_owner"
-          class="card-footer-item"
-          @click="deletePost(post.id)"
-        >
-          <v-icon name="fa-regular-trash-alt" class="has-text-danger" />
-        </div>
-      </footer>
     </div>
+    <div class="content has-text-weight-semibold">
+      {{ post.type === "text" || post.type === "image" ? post.content : "" }}
+      <br />
+      <time class="has-text-weight-light is-size-7">{{
+        new Date(post.created_at).toLocaleString()
+      }}</time>
+    </div>
+    <footer class="card-footer">
+      <div class="card-footer-item">
+        <v-icon name="bi-chat-left" />
+        <!-- <span>{{ post.reply_count }}</span> -->
+      </div>
+      <div class="favorites card-footer-item" @click="submitAction('favorite')">
+        <span>{{ post.favorite_count }}</span>
+        <span>
+          <v-icon v-if="!post.favorited" name="bi-heart" />
+          <v-icon v-else name="bi-heart-fill" class="has-text-danger" />
+        </span>
+      </div>
+      <div class="reposts card-footer-item" @click="submitAction('repost')">
+        <span>{{ post.repost_count }}</span>
+        <span>
+          <v-icon v-if="!post.reposted" name="ri-repeat-2-line" />
+          <v-icon v-else name="ri-repeat-2-fill" class="has-text-success" />
+        </span>
+      </div>
+      <div
+        v-if="post.is_owner"
+        class="card-footer-item"
+        @click="deletePost(post.id)"
+      >
+        <v-icon name="fa-regular-trash-alt" class="has-text-danger" />
+      </div>
+    </footer>
     <ExpandedPost
       v-if="showExpandedPost"
       :post="post.reply_to ? post.reply_to : post"
