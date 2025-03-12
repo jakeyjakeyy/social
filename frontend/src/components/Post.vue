@@ -175,13 +175,13 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
           :sanitize="sanitizeHTML"
         />
       </div>
-    </div>
-    <div class="content has-text-weight-semibold">
-      {{ post.type === "text" || post.type === "image" ? post.content : "" }}
-      <br />
-      <time class="has-text-weight-light is-size-7">{{
-        new Date(post.created_at).toLocaleString()
-      }}</time>
+      <div class="content has-text-weight-semibold">
+        {{ post.type === "text" || post.type === "image" ? post.content : "" }}
+        <br />
+        <time class="has-text-weight-light is-size-7">{{
+          new Date(post.created_at).toLocaleString()
+        }}</time>
+      </div>
     </div>
     <footer class="card-footer">
       <div class="card-footer-item" @click="showAddPost = !showAddPost">
@@ -251,6 +251,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
 .markdown-post {
   max-height: 50vh;
   overflow: auto;
+  box-shadow: 0 0 15px -2px var(--bulma-primary);
 }
 
 @media (max-width: 768px) {
