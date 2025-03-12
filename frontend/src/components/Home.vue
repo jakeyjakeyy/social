@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import Post from "./Post.vue";
-import {getAccessToken, RefreshToken} from "@/utils/RefreshToken"
-import type {Post as PostType} from "@/types/Post";
+import { checkToken, getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import type { Post as PostType } from "@/types/Post";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const posts = ref<PostType[]>([]);
@@ -13,6 +13,7 @@ let scrollPosition = 0;
 let fetchingPosts = false;
 const allButtonRef = ref<HTMLButtonElement | null>(null);
 const followingButtonRef = ref<HTMLButtonElement | null>(null);
+const loggedIn = ref<boolean>(checkToken());
 
 onMounted(async () => {
   await fetchPosts();
@@ -21,7 +22,7 @@ onMounted(async () => {
     homePosts.addEventListener("scroll", async () => {
       if (
         homePosts.scrollTop + homePosts.clientHeight >=
-        homePosts.scrollHeight * 0.75 &&
+          homePosts.scrollHeight * 0.75 &&
         !lastPage.value &&
         homePosts.scrollTop > scrollPosition &&
         !fetchingPosts
@@ -51,7 +52,7 @@ const fetchPosts = async (followingFeed = false) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(access_token && {Authorization: `Bearer ${access_token}`}),
+      ...(access_token && { Authorization: `Bearer ${access_token}` }),
     },
   });
   const data = await res.json();
@@ -87,7 +88,7 @@ const toggleFeed = async (e: MouseEvent) => {
 
 <template>
   <div class="home-container">
-    <div class="content-selections">
+    <div v-if="loggedIn" class="content-selections">
       <button ref="allButtonRef" class="button is-primary" @click="toggleFeed">
         All
       </button>
