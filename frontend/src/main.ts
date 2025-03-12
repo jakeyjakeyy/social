@@ -14,6 +14,8 @@ import {
   FaMoon,
   FaSun,
   FaGripLinesVertical,
+  FaRegularTrashAlt,
+  BiChatLeft,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -24,7 +26,9 @@ addIcons(
   RiRepeat2Line,
   FaMoon,
   FaSun,
-  FaGripLinesVertical
+  FaGripLinesVertical,
+  FaRegularTrashAlt,
+  BiChatLeft
 );
 
 const app = createApp(App);
