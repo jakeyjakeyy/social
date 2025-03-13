@@ -287,3 +287,21 @@ class Follow(APIView):
             return Response({"message": "Unfollowed successfully"})
         else:
             return Response({"message": "Followed successfully"})
+
+
+class ProfileInfo(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        username = request.GET.get("username")
+        account = models.Account.objects.get(user__username=username)
+        following = models.Follow.objects.filter(follower=account).count()
+        followers = models.Follow.objects.filter(following=account).count()
+        return Response(
+            {
+                "display_name": account.display_name,
+                "followers": followers,
+                "following": following,
+                "username": account.user.username,
+            }
+        )

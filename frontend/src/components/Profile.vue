@@ -4,6 +4,7 @@ import Post from "./Post.vue";
 import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import type { ProfileInfo } from "@/types/ProfileInfo";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 let access_token = getAccessToken();
@@ -12,6 +13,7 @@ const route = useRoute();
 const username = route.params.username as string;
 const posts = ref<posttype[]>([]);
 const isFollowing = ref<boolean>(false);
+const profileInfo = ref<ProfileInfo | null>(null);
 
 const fetchPosts = async () => {
   const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`, {
@@ -34,11 +36,6 @@ const fetchPosts = async () => {
   }
   posts.value = data;
 };
-
-onMounted(async () => {
-  await fetchPosts();
-  await checkFollow();
-});
 
 const checkFollow = async () => {
   const res = await fetch(`${BACKEND_URL}/api/follow?username=${username}`, {
@@ -91,6 +88,37 @@ const handleFollow = async () => {
   }
   isFollowing.value = !isFollowing.value;
 };
+
+const fetchProfileInfo = async () => {
+  const res = await fetch(
+    `${BACKEND_URL}/api/profile/info?username=${username}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(access_token && { Authorization: `Bearer ${access_token}` }),
+      },
+    }
+  );
+  const data = await res.json();
+  if (data.detail) {
+    let refresh = await RefreshToken();
+    if (refresh.error) {
+      alert("Please login again");
+    } else {
+      access_token = getAccessToken();
+      await fetchProfileInfo();
+    }
+  }
+  profileInfo.value = data;
+  console.log(profileInfo);
+};
+
+onMounted(async () => {
+  await fetchProfileInfo();
+  await fetchPosts();
+  await checkFollow();
+});
 </script>
 <template>
   <div class="profile-container">
@@ -114,7 +142,9 @@ const handleFollow = async () => {
             </figure>
           </div>
           <div class="media-content">
-            <p class="title is-3">{{ username }}</p>
+            <p v-if="profileInfo" class="title is-3">
+              {{ profileInfo.display_name }}
+            </p>
             <p class="title is-3">@{{ username }}</p>
           </div>
           <div class="follow-container">
@@ -124,6 +154,16 @@ const handleFollow = async () => {
           </div>
         </div>
       </div>
+      <footer class="card-footer">
+        <p class="card-footer-item">
+          <span class="has-text-weight-bold">{{ profileInfo?.followers }}</span>
+          <p>Followers</p>
+        </p>
+        <p class="card-footer-item">
+          <span class="has-text-weight-bold">{{ profileInfo?.following }}</span>
+          <p>Following</p>
+        </p>
+      </footer>
     </div>
     <div v-if="posts.length" class="posts">
       <Post
@@ -178,5 +218,9 @@ const handleFollow = async () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
+}
+
+.card-footer-item {
+  gap: 1rem;
 }
 </style>
