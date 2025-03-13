@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import Post from "./Post.vue";
 import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
-import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import { checkToken, getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import type { ProfileInfo } from "@/types/ProfileInfo";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -14,6 +14,7 @@ const username = route.params.username as string;
 const posts = ref<posttype[]>([]);
 const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
+const loggedIn = checkToken();
 
 const fetchPosts = async () => {
   const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`, {
@@ -111,13 +112,12 @@ const fetchProfileInfo = async () => {
     }
   }
   profileInfo.value = data;
-  console.log(profileInfo);
 };
 
 onMounted(async () => {
   await fetchProfileInfo();
   await fetchPosts();
-  await checkFollow();
+  if (loggedIn) await checkFollow();
 });
 </script>
 <template>
