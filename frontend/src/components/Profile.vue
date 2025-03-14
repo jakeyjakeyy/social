@@ -10,7 +10,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 let access_token = getAccessToken();
 let page = 1;
 const route = useRoute();
-let username = route.params.username as string;
+const username = ref(route.params.username as string);
 const posts = ref<posttype[]>([]);
 const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
@@ -18,7 +18,7 @@ const loggedIn = checkToken();
 const isOwner = ref<boolean>(false);
 
 const fetchPosts = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`, {
+  const res = await fetch(`${BACKEND_URL}/api/profile/${username.value}/${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -40,7 +40,7 @@ const fetchPosts = async () => {
 };
 
 const checkFollow = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/follow?username=${username}`, {
+  const res = await fetch(`${BACKEND_URL}/api/follow?username=${username.value}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -70,7 +70,7 @@ const handleFollow = async () => {
       "Content-Type": "application/json",
       ...(access_token && { Authorization: `Bearer ${access_token}` }),
     },
-    body: JSON.stringify({ username }),
+    body: JSON.stringify({ username: username.value }),
   });
   let data = await res.json();
   if (res.status != 200) {
@@ -93,7 +93,7 @@ const handleFollow = async () => {
 
 const fetchProfileInfo = async () => {
   const res = await fetch(
-    `${BACKEND_URL}/api/profile/info?username=${username}`,
+    `${BACKEND_URL}/api/profile/info?username=${username.value}`,
     {
       method: "GET",
       headers: {
@@ -119,7 +119,7 @@ const fetchProfileInfo = async () => {
 const loadProfileData = async () => {
   posts.value = [];
   page = 1;
-  username = route.params.username as string;
+  username.value = route.params.username as string;
   await fetchProfileInfo();
   await fetchPosts();
   if (loggedIn) await checkFollow();
