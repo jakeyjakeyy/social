@@ -15,6 +15,7 @@ const posts = ref<posttype[]>([]);
 const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
 const loggedIn = checkToken();
+const isOwner = ref<boolean>(false);
 
 const fetchPosts = async () => {
   const res = await fetch(`${BACKEND_URL}/api/profile/${username}/${page}`, {
@@ -112,6 +113,7 @@ const fetchProfileInfo = async () => {
     }
   }
   profileInfo.value = data;
+  isOwner.value = data.is_owner;
 };
 
 onMounted(async () => {
@@ -129,16 +131,26 @@ onMounted(async () => {
             src="https://bulma.io/assets/images/placeholders/1280x960.png"
             alt="Placeholder image"
           />
+          <div v-if="isOwner" class="image-overlay">
+            <span class="icon">
+              <v-icon name="bi-camera" color="white" />
+            </span>
+          </div>
         </figure>
       </div>
       <div class="card-content">
         <div class="media">
           <div class="media-left">
-            <figure class="image is-128x128">
+            <figure class="image is-128x128 profile-image-container">
               <img
                 src="https://bulma.io/assets/images/placeholders/128x128.png"
                 alt="Placeholder image"
               />
+              <div v-if="isOwner" class="image-overlay">
+                <span class="icon">
+                  <v-icon name="bi-camera" color="white" />
+                </span>
+              </div>
             </figure>
           </div>
           <div class="media-content">
@@ -147,7 +159,7 @@ onMounted(async () => {
             </p>
             <p class="title is-3">@{{ username }}</p>
           </div>
-          <div class="follow-container">
+          <div v-if="!isOwner && loggedIn" class="follow-container">
             <button class="button" @click="handleFollow">
               {{ isFollowing ? "Unfollow" : "Follow" }}
             </button>
@@ -223,4 +235,25 @@ onMounted(async () => {
 .card-footer-item {
   gap: 1rem;
 }
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.banner-image:hover .image-overlay,
+.profile-image-container:hover .image-overlay {
+  opacity: 1;
+}
+
 </style>

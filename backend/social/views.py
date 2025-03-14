@@ -303,5 +303,6 @@ class ProfileInfo(APIView):
                 "followers": followers,
                 "following": following,
                 "username": account.user.username,
+                "is_owner": account.user == request.user,
             }
         )

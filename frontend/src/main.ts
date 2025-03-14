@@ -16,6 +16,7 @@ import {
   FaGripLinesVertical,
   FaRegularTrashAlt,
   BiChatLeft,
+  BiCamera,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -28,7 +29,8 @@ addIcons(
   FaSun,
   FaGripLinesVertical,
   FaRegularTrashAlt,
-  BiChatLeft
+  BiChatLeft,
+  BiCamera
 );
 
 const app = createApp(App);
