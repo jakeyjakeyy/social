@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import Post from "./Post.vue";
 import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
@@ -10,7 +10,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 let access_token = getAccessToken();
 let page = 1;
 const route = useRoute();
-const username = route.params.username as string;
+let username = route.params.username as string;
 const posts = ref<posttype[]>([]);
 const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
@@ -116,11 +116,27 @@ const fetchProfileInfo = async () => {
   isOwner.value = data.is_owner;
 };
 
-onMounted(async () => {
+const loadProfileData = async () => {
+  posts.value = [];
+  page = 1;
+  username = route.params.username as string;
   await fetchProfileInfo();
   await fetchPosts();
   if (loggedIn) await checkFollow();
+};
+
+onMounted(async () => {
+  await loadProfileData();
 });
+
+watch(
+  () => route.params.username,
+  (newUsername) => {
+    if (newUsername) {
+      loadProfileData();
+    }
+  }
+);
 </script>
 <template>
   <div class="profile-container">
