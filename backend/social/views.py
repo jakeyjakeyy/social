@@ -304,5 +304,28 @@ class ProfileInfo(APIView):
                 "following": following,
                 "username": account.user.username,
                 "is_owner": account.user == request.user,
+                "profile_picture": (
+                    account.profile_picture.url if account.profile_picture else None
+                ),
             }
         )
+
+    def post(self, request):
+        data = request.data
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        username = data["username"]
+        if request.user.username != username:
+            return Response({"message": "Not authorized"}, status=403)
+        account = models.Account.objects.get(user=request.user)
+        if data["type"] == "pfp":
+            if not is_valid_image_pillow(data["file"]):
+                return Response({"message": "Invalid file provided"}, status=400)
+            account.profile_picture = data["file"]
+            account.save()
+        if data["type"] == "banner":
+            if not is_valid_image_pillow(data["file"]):
+                return Response({"message": "Invalid file provided"}, status=400)
+            account.banner_picture = data["file"]
+            account.save()
+        return Response({"message": "Profile updated successfully"})

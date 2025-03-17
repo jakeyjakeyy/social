@@ -16,6 +16,8 @@ const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
 const loggedIn = checkToken();
 const isOwner = ref<boolean>(false);
+const profileFileInput = ref<HTMLInputElement | null>(null);
+const bannerFileInput = ref<HTMLInputElement | null>(null);
 
 const fetchPosts = async () => {
   const res = await fetch(`${BACKEND_URL}/api/profile/${username.value}/${page}`, {
@@ -137,6 +139,57 @@ watch(
     }
   }
 );
+
+const uploadPhoto = async (type: string) => {
+  if (type === 'pfp') {
+    profileFileInput.value?.click();
+  } else if (type === 'banner') {
+    bannerFileInput.value?.click();
+  }
+};
+
+const handleFileUpload = async (event: Event, type: string) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+  
+  const file = input.files[0];
+  const formData = new FormData();
+  formData.append('username', username.value);
+  formData.append('file', file);
+  formData.append('type', type);
+  
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/profile/info`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: formData,
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.detail) {
+        let refresh = await RefreshToken();
+        if (refresh.error) {
+          alert("Please login again");
+        } else {
+          access_token = getAccessToken();
+          await handleFileUpload(event, type);
+        }
+        return;
+      }
+      alert(data.message || "Failed to upload image");
+    } else {
+      await fetchProfileInfo();
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    alert("Failed to upload image");
+  }
+  
+  input.value = '';
+};
 </script>
 <template>
   <div class="profile-container">
@@ -147,10 +200,11 @@ watch(
             src="https://bulma.io/assets/images/placeholders/1280x960.png"
             alt="Placeholder image"
           />
-          <div v-if="isOwner" class="image-overlay">
+          <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')">
             <span class="icon">
               <v-icon name="bi-camera" color="white" />
             </span>
+            <input type="file" ref="bannerFileInput" @change="($event) => handleFileUpload($event, 'banner')" style="display: none"  accept="image/*"/>
           </div>
         </figure>
       </div>
@@ -162,10 +216,11 @@ watch(
                 src="https://bulma.io/assets/images/placeholders/128x128.png"
                 alt="Placeholder image"
               />
-              <div v-if="isOwner" class="image-overlay">
+              <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')">
                 <span class="icon">
                   <v-icon name="bi-camera" color="white" />
                 </span>
+                <input type="file" ref="profileFileInput" @change="($event) => handleFileUpload($event, 'pfp')" style="display: none" accept="image/*"/>
               </div>
             </figure>
           </div>

@@ -1,20 +1,58 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 import os
 
 User = get_user_model()
 
 
+def user_image_path(self, filename):
+    username = (
+        self.post.account.user.username if hasattr(self, "post") else self.user.username
+    )
+    return f'users/{username}/images/{datetime.now().strftime("%Y/%m/%d")}/{filename}'
+
+
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="account")
     display_name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    profile_picture = models.ImageField(
+        upload_to=user_image_path, blank=True, null=True
+    )
+    banner_picture = models.ImageField(upload_to=user_image_path, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
+
+
+@receiver(pre_save, sender=Account)
+def delete_old_profile_images(sender, instance, **kwargs):
+    # Check if this is an existing account
+    if instance.pk:
+        try:
+            old_instance = Account.objects.get(pk=instance.pk)
+
+            # Check if profile picture has changed
+            if (
+                old_instance.profile_picture
+                and old_instance.profile_picture != instance.profile_picture
+            ):
+                if os.path.isfile(old_instance.profile_picture.path):
+                    os.remove(old_instance.profile_picture.path)
+
+            # Check if banner picture has changed
+            if (
+                old_instance.banner_picture
+                and old_instance.banner_picture != instance.banner_picture
+            ):
+                if os.path.isfile(old_instance.banner_picture.path):
+                    os.remove(old_instance.banner_picture.path)
+
+        except Account.DoesNotExist:
+            pass
 
 
 class Post(models.Model):
@@ -46,11 +84,6 @@ class MarkdownPost(models.Model):
 
     def __str__(self):
         return self.content
-
-
-def user_image_path(self, filename):
-    username = self.post.account.user.username
-    return f'users/{username}/images/{datetime.now().strftime("%Y/%m/%d")}/{filename}'
 
 
 class ImagePost(models.Model):
