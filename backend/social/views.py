@@ -307,6 +307,9 @@ class ProfileInfo(APIView):
                 "profile_picture": (
                     account.profile_picture.url if account.profile_picture else None
                 ),
+                "banner_picture": (
+                    account.banner_picture.url if account.banner_picture else None
+                ),
             }
         )
 

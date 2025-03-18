@@ -197,7 +197,7 @@ const handleFileUpload = async (event: Event, type: string) => {
       <div class="card-image">
         <figure class="image banner-image">
           <img
-            src="https://bulma.io/assets/images/placeholders/1280x960.png"
+          :src="profileInfo ? `${BACKEND_URL}/api${profileInfo.banner_picture}` : 'https://bulma.io/assets/images/placeholders/1280x960.png'"
             alt="Placeholder image"
           />
           <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')">
@@ -213,8 +213,8 @@ const handleFileUpload = async (event: Event, type: string) => {
           <div class="media-left">
             <figure class="image is-128x128 profile-image-container">
               <img
-                src="https://bulma.io/assets/images/placeholders/128x128.png"
-                alt="Placeholder image"
+                :src="profileInfo ? `${BACKEND_URL}/api${profileInfo.profile_picture}` : 'https://bulma.io/assets/images/placeholders/128x128.png'"
+                alt="Profile Picture"
               />
               <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')">
                 <span class="icon">
