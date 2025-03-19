@@ -353,6 +353,7 @@ const handleFileUpload = async (event: Event, type: string) => {
   border: 4px solid var(--surface);
   box-shadow: var(--shadow-md);
   background-color: var(--surface);
+  overflow: hidden;
 }
 
 .avatar {

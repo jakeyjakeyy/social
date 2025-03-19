@@ -241,6 +241,10 @@ const toggleTheme = () => {
   z-index: 1000;
 }
 
+.nav-brand {
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .nav-menu {
     position: fixed;
