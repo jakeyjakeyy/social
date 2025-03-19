@@ -153,11 +153,14 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
           <figure class="image is-48x48">
             <!-- <img
                 :src="`${BACKEND_URL}/api${post.account_avatar}`"
-                alt="User Avatar"
               /> -->
             <img
-              src="https://bulma.io/assets/images/placeholders/96x96.png"
-              alt="Placeholder image"
+              :src="
+                post.account_profile_picture
+                  ? `${BACKEND_URL}/api${post.account_profile_picture}`
+                  : 'https://bulma.io/assets/images/placeholders/96x96.png'
+              "
+              alt="User Avatar"
             />
           </figure>
         </div>

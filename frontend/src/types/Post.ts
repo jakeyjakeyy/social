@@ -1,5 +1,6 @@
 export type Post = {
   account_display_name: string;
+  account_profile_picture: string;
   account_username: string;
   content: string;
   created_at: string;
