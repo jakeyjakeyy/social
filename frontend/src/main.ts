@@ -17,6 +17,17 @@ import {
   FaRegularTrashAlt,
   BiChatLeft,
   BiCamera,
+  IoClose,
+  RiText,
+  RiMarkdownLine,
+  RiImageLine,
+  RiUploadCloudLine,
+  RiChatSmile2Fill,
+  RiHome5Line,
+  RiUserLine,
+  RiAddLine,
+  RiLogoutBoxLine,
+  RiLoginBoxLine,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -30,7 +41,18 @@ addIcons(
   FaGripLinesVertical,
   FaRegularTrashAlt,
   BiChatLeft,
-  BiCamera
+  BiCamera,
+  IoClose,
+  RiText,
+  RiMarkdownLine,
+  RiImageLine,
+  RiUploadCloudLine,
+  RiChatSmile2Fill,
+  RiHome5Line,
+  RiUserLine,
+  RiAddLine,
+  RiLogoutBoxLine,
+  RiLoginBoxLine
 );
 
 const app = createApp(App);

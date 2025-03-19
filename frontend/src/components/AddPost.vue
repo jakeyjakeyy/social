@@ -115,61 +115,103 @@ const setImage = (e: Event) =>
 </script>
 
 <template>
-  <div class="modal is-active add-post-modal">
-    <div class="modal-background"></div>
-    <div class="modal-content">
-      <div class="card add-post-card">
-        <header class="card-header">
-          <p class="card-header-title">
-            {{ isReply ? "Reply" : "Create Post" }}
-          </p>
-          <button
-            aria-label="close"
-            class="delete"
-            @click="emit('closeAddPostModal')"
-          ></button>
-        </header>
+  <div class="modal-overlay">
+    <div class="modal-container">
+      <header class="modal-header">
+        <h2 class="modal-title">{{ isReply ? "Reply" : "Create Post" }}</h2>
+        <button
+          class="close-modal"
+          aria-label="close"
+          @click="emit('closeAddPostModal')"
+        >
+          <v-icon name="io-close" />
+        </button>
+      </header>
 
-        <div class="post-type-selector">
-          <div
-            id="toggleTextButton"
-            class="button"
-            :class="{ 'is-primary': type === 'text' }"
-            @click="toggleType('text')"
-          >
-            <v-icon name="ri-text" />
-            <span>Text</span>
-          </div>
-          <div
-            id="toggleBlogButton"
-            class="button"
-            :class="{ 'is-primary': type === 'markdown' }"
-            @click="toggleType('markdown')"
-          >
-            <v-icon name="ri-markdown-line" />
-            <span>Blog</span>
-          </div>
-          <div
-            id="toggleImageButton"
-            class="button"
-            :class="{ 'is-primary': type === 'image' }"
-            @click="toggleType('image')"
-          >
-            <v-icon name="ri-image-line" />
-            <span>Image</span>
-          </div>
+      <div class="post-type-selector">
+        <div
+          id="toggleTextButton"
+          class="type-button"
+          :class="{ active: type === 'text' }"
+          @click="toggleType('text')"
+        >
+          <v-icon name="ri-text" />
+          <span>Text</span>
         </div>
+        <div
+          id="toggleBlogButton"
+          class="type-button"
+          :class="{ active: type === 'markdown' }"
+          @click="toggleType('markdown')"
+        >
+          <v-icon name="ri-markdown-line" />
+          <span>Blog</span>
+        </div>
+        <div
+          id="toggleImageButton"
+          class="type-button"
+          :class="{ active: type === 'image' }"
+          @click="toggleType('image')"
+        >
+          <v-icon name="ri-image-line" />
+          <span>Image</span>
+        </div>
+      </div>
 
-        <div class="card-content">
-          <form @submit.prevent>
-            <div v-if="type === 'text'" class="field">
-              <label class="label">Content</label>
+      <div class="modal-content">
+        <form @submit.prevent>
+          <div v-if="type === 'text'" class="field">
+            <label class="label">Content</label>
+            <div class="control">
+              <textarea
+                v-model="content"
+                :maxlength="MAX_POST_LEN"
+                class="textarea"
+                placeholder="What's on your mind?"
+                style="resize: none; overflow: auto"
+              ></textarea>
+              <div class="help">{{ content.length }} / {{ MAX_POST_LEN }}</div>
+            </div>
+          </div>
+          <div v-else-if="type === 'markdown'" class="field">
+            <label class="label">Content</label>
+            <div class="control">
+              <MdEditor
+                v-model="content"
+                :theme="theme"
+                language="en-US"
+                :sanitize="sanitizeHTML"
+              />
+            </div>
+          </div>
+          <div v-else-if="type === 'image'" class="field">
+            <label class="label">Image</label>
+            <div class="control">
+              <div class="file-input-wrapper">
+                <input
+                  class="file-input"
+                  type="file"
+                  @change="(e) => setImage(e)"
+                  accept="image/*"
+                />
+                <div class="file-input-label">
+                  <v-icon name="ri-upload-cloud-line" />
+                  <span>Choose an image</span>
+                </div>
+              </div>
+              <div v-if="image" class="selected-file">
+                <span>{{ image.name }}</span>
+                <button class="delete is-small" @click="image = null"></button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Caption</label>
               <div class="control">
                 <textarea
                   v-model="content"
                   :maxlength="MAX_POST_LEN"
                   class="textarea"
-                  placeholder="What's on your mind?"
+                  placeholder="Add a caption to your image"
                   style="resize: none; overflow: auto"
                 ></textarea>
                 <div class="help">
@@ -177,125 +219,52 @@ const setImage = (e: Event) =>
                 </div>
               </div>
             </div>
-            <div v-else-if="type === 'markdown'" class="field">
-              <label class="label">Content</label>
-              <div class="control">
-                <MdEditor
-                  v-model="content"
-                  :theme="theme"
-                  language="en-US"
-                  :sanitize="sanitizeHTML"
-                />
-              </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <button
+                class="button is-primary is-fullwidth"
+                @click="submitPost"
+              >
+                {{ isReply ? "Reply" : "Post" }}
+              </button>
             </div>
-            <div v-else-if="type === 'image'" class="field">
-              <label class="label">Image</label>
-              <div class="control">
-                <div class="file-input-wrapper">
-                  <input
-                    class="file-input"
-                    type="file"
-                    @change="(e) => setImage(e)"
-                    accept="image/*"
-                  />
-                  <div class="file-input-label">
-                    <v-icon name="ri-upload-cloud-line" />
-                    <span>Choose an image</span>
-                  </div>
-                </div>
-                <div v-if="image" class="selected-file">
-                  <span>{{ image.name }}</span>
-                  <button
-                    class="delete is-small"
-                    @click="image = null"
-                  ></button>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Caption</label>
-                <div class="control">
-                  <textarea
-                    v-model="content"
-                    :maxlength="MAX_POST_LEN"
-                    class="textarea"
-                    placeholder="Add a caption to your image"
-                    style="resize: none; overflow: auto"
-                  ></textarea>
-                  <div class="help">
-                    {{ content.length }} / {{ MAX_POST_LEN }}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <div class="control">
-                <button
-                  class="button is-primary is-fullwidth"
-                  @click="submitPost"
-                >
-                  {{ isReply ? "Reply" : "Post" }}
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.modal {
-  z-index: 1000;
-}
-.modal-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-md);
-  margin: var(--spacing-md);
-  width: 100%;
-  height: 100%;
-}
-
-.add-post-card {
-  width: 100%;
-  max-width: 600px;
-}
-
-.card-header {
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--surface-hover);
-}
-
-.card-header-title {
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
 .post-type-selector {
   display: flex;
-  justify-content: space-around;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--surface-hover);
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.button {
+.type-button {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
   border-radius: var(--radius-full);
   transition: all var(--transition-fast);
 }
 
-.button .icon {
-  font-size: var(--font-size-xl);
+.type-button:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
 }
 
-.card-content {
-  padding: var(--spacing-lg);
+.type-button.active {
+  background-color: var(--primary);
+  color: white;
 }
 
 .field {
@@ -313,6 +282,17 @@ const setImage = (e: Event) =>
   min-height: 150px;
   padding: var(--spacing-md);
   font-size: var(--font-size-base);
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
 }
 
 .help {
@@ -325,7 +305,7 @@ const setImage = (e: Event) =>
   position: relative;
   width: 100%;
   height: 150px;
-  border: 2px dashed var(--surface-hover);
+  border: 2px dashed var(--secondary);
   border-radius: var(--radius-lg);
   display: flex;
   justify-content: center;
@@ -370,37 +350,13 @@ const setImage = (e: Event) =>
   font-size: var(--font-size-sm);
 }
 
-.delete {
-  position: absolute;
-  right: var(--spacing-md);
-  top: var(--spacing-md);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: color var(--transition-fast);
-}
-
-.delete:hover {
-  color: var(--danger);
-}
-
 @media (max-width: 768px) {
-  .modal-content {
-    padding: var(--spacing-sm);
-    margin: var(--spacing-sm);
-  }
-
-  .add-post-card {
-    margin: var(--spacing-md);
-  }
-
   .post-type-selector {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
 
-  .button {
+  .type-button {
     width: 100%;
     justify-content: center;
   }

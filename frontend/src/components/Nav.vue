@@ -95,7 +95,7 @@ const toggleTheme = () => {
     <div class="container nav-container">
       <div class="nav-brand">
         <div @click="navigateTo('/')" class="brand-link">
-          <v-icon name="ri-twitter-fill" scale="1.5" class="brand-icon" />
+          <v-icon name="ri-chat-smile-2-fill" scale="1.5" class="brand-icon" />
           <span class="brand-text">Social</span>
         </div>
       </div>
