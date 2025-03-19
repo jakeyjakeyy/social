@@ -65,6 +65,9 @@ def serialize_post(post, request_user=None):
     post_data = {
         "id": post.id,
         "account_display_name": post.account.display_name if post.account else None,
+        "account_profile_picture": (
+            post.account.profile_picture.url if post.account.profile_picture else None
+        ),
         "account_username": post.account.user.username if post.account else None,
         "account_id": post.account.id if post.account else None,
         "created_at": post.created_at,
