@@ -253,6 +253,7 @@ const toggleTheme = () => {
     padding: var(--spacing-lg);
     transform: translateX(-100%);
     transition: transform var(--transition-normal);
+    height: 100vh;
   }
 
   .nav-menu.is-active {
