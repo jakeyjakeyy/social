@@ -2,11 +2,6 @@
 @import "bulma/css/bulma.css";
 
 @font-face {
-  font-family: "Inter";
-  src: url("../assets/Inter-VariableFont_opsz,wght.ttf") format("truetype");
-}
-
-@font-face {
   font-family: "Cabin";
   src: url("../assets/Cabin-VariableFont_wdth,wght.ttf") format("truetype");
 }
