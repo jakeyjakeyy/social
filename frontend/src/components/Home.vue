@@ -135,8 +135,6 @@ const handleCloseAddPost = (success: boolean) => {
           :expanded="false"
           :post="post"
           @delete-post="fetchPosts"
-          @expand-post="expandedPost = post.reply_to ? post.reply_to : post"
-          @add-reply="handleAddReply"
         />
       </div>
       <div v-else class="skeleton-container">
@@ -146,16 +144,6 @@ const handleCloseAddPost = (success: boolean) => {
         <p>You've reached the end</p>
       </div>
     </div>
-    <ExpandedPost
-      v-if="expandedPost"
-      :post="expandedPost"
-      @close-expanded-post="expandedPost = null"
-    />
-    <AddPost
-      v-if="showAddPost"
-      :is-reply="replyToPostId || false"
-      @close-add-post-modal="handleCloseAddPost"
-    />
   </div>
 </template>
 

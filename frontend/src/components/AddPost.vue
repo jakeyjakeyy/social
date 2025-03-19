@@ -245,6 +245,9 @@ const setImage = (e: Event) =>
 </template>
 
 <style scoped>
+.modal {
+  z-index: 1000;
+}
 .modal-content {
   display: flex;
   justify-content: center;

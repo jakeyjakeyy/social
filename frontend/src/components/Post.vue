@@ -8,6 +8,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import ExpandedPost from "./ExpandedPost.vue";
 import { sanitizeHTML } from "@/utils/SanitizeHTML";
 import AddPost from "./AddPost.vue";
+import { Teleport } from "vue";
 
 type Themes = "light" | "dark";
 
@@ -126,7 +127,18 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
     !showAddPost.value &&
     !expanded
   ) {
-    emit("expandPost", post.reply_to ? post.reply_to : post);
+    showExpandedPost.value = true;
+  }
+};
+
+const handleCloseExpandedPost = () => {
+  showExpandedPost.value = false;
+};
+
+const handleCloseAddPost = (success: boolean) => {
+  showAddPost.value = false;
+  if (success) {
+    emit("deletePost", post.id);
   }
 };
 </script>
@@ -185,7 +197,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
       </div>
     </div>
     <footer class="card-footer">
-      <div class="card-footer-item" @click.stop="emit('addReply', post.id)">
+      <div class="card-footer-item" @click.stop="showAddPost = true">
         <v-icon name="bi-chat-left" />
         <span>{{ post.reply_count }}</span>
       </div>
@@ -211,13 +223,20 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
         <v-icon name="fa-regular-trash-alt" class="has-text-danger" />
       </div>
     </footer>
+  </div>
+
+  <Teleport to="body">
+    <ExpandedPost
+      v-if="showExpandedPost"
+      :post="post.reply_to || post"
+      @close-expanded-post="handleCloseExpandedPost"
+    />
     <AddPost
       v-if="showAddPost"
-      ref="addPostRef"
-      @close-add-post-modal="showAddPost = false"
       :is-reply="post.id"
+      @close-add-post-modal="handleCloseAddPost"
     />
-  </div>
+  </Teleport>
 </template>
 
 <style scoped>

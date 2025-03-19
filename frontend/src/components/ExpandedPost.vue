@@ -99,7 +99,7 @@ const handleCloseAddPost = (success: boolean) => {
   height: 100%;
   background-color: rgba(var(--background), 0.85);
   backdrop-filter: blur(12px);
-  z-index: 1000;
+  z-index: 999;
   display: flex;
   justify-content: center;
   align-items: flex-start;

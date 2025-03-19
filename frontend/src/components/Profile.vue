@@ -21,8 +21,6 @@ const loggedIn = checkToken();
 const isOwner = ref<boolean>(false);
 const profileFileInput = ref<HTMLInputElement | null>(null);
 const bannerFileInput = ref<HTMLInputElement | null>(null);
-const showAddPost = ref(false);
-const replyToPostId = ref<number | null>(null);
 
 const fetchPosts = async () => {
   const res = await fetch(
@@ -201,18 +199,6 @@ const handleFileUpload = async (event: Event, type: string) => {
 
   input.value = "";
 };
-
-const handleAddReply = (postId: number) => {
-  replyToPostId.value = postId;
-  showAddPost.value = true;
-};
-
-const handleCloseAddPost = (success: boolean) => {
-  showAddPost.value = false;
-  if (success) {
-    fetchPosts();
-  }
-};
 </script>
 <template>
   <div class="profile-container">
@@ -310,23 +296,11 @@ const handleCloseAddPost = (success: boolean) => {
         :key="post.id"
         :post="post"
         :expanded="false"
-        @expand-post="expandedPost = post.reply_to ? post.reply_to : post"
-        @add-reply="handleAddReply"
       />
     </div>
     <div v-else class="skeleton-container">
       <div v-for="i in 16" :key="i" class="skeleton-block"></div>
     </div>
-    <ExpandedPost
-      v-if="expandedPost"
-      :post="expandedPost"
-      @close-expanded-post="expandedPost = null"
-    />
-    <AddPost
-      v-if="showAddPost"
-      :is-reply="replyToPostId || false"
-      @close-add-post-modal="handleCloseAddPost"
-    />
   </div>
 </template>
 
