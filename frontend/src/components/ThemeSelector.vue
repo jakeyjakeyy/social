@@ -35,13 +35,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="theme-selector has-text-info">
-    <v-icon
-      id="theme-icon"
-      :name="themeLight ? 'fa-moon' : 'fa-sun'"
-      scale="1"
+  <div class="theme-selector">
+    <button
+      class="theme-button"
       @click="toggleTheme"
-    />
+      :title="themeLight ? 'Switch to dark mode' : 'Switch to light mode'"
+    >
+      <v-icon :name="themeLight ? 'fa-moon' : 'fa-sun'" scale="1.2" />
+    </button>
   </div>
 </template>
 
@@ -50,10 +51,29 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
 }
 
-#theme-icon {
+.theme-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
   cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.theme-button:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.theme-button:active {
+  transform: scale(0.95);
 }
 </style>

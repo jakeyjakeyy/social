@@ -1,11 +1,16 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import Post from "./Post.vue";
+import ExpandedPost from "./ExpandedPost.vue";
 import { checkToken, getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import type { Post as PostType } from "@/types/Post";
+import AddPost from "./AddPost.vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const posts = ref<PostType[]>([]);
+const expandedPost = ref<PostType | null>(null);
+const showAddPost = ref(false);
+const replyToPostId = ref<number | null>(null);
 let access_token = getAccessToken();
 let page = 1;
 const lastPage = ref<boolean>(false);
@@ -14,6 +19,7 @@ let fetchingPosts = false;
 const allButtonRef = ref<HTMLButtonElement | null>(null);
 const followingButtonRef = ref<HTMLButtonElement | null>(null);
 const loggedIn = ref<boolean>(checkToken());
+const followingFeed = ref<boolean>(false);
 
 onMounted(async () => {
   await fetchPosts();
@@ -41,6 +47,7 @@ onMounted(async () => {
     });
   }
 });
+
 const fetchPosts = async (followingFeed = false) => {
   let path;
   if (followingFeed) {
@@ -75,13 +82,27 @@ const toggleFeed = async (e: MouseEvent) => {
   page = 1;
   posts.value = [];
   if (e.target === allButtonRef.value) {
+    followingFeed.value = false;
     allButtonRef.value?.classList.add("is-primary");
     followingButtonRef.value?.classList.remove("is-primary");
     await fetchPosts();
   } else {
+    followingFeed.value = true;
     followingButtonRef.value?.classList.add("is-primary");
     allButtonRef.value?.classList.remove("is-primary");
     await fetchPosts(true);
+  }
+};
+
+const handleAddReply = (postId: number) => {
+  replyToPostId.value = postId;
+  showAddPost.value = true;
+};
+
+const handleCloseAddPost = (success: boolean) => {
+  showAddPost.value = false;
+  if (success) {
+    fetchPosts();
   }
 };
 </script>
@@ -89,10 +110,20 @@ const toggleFeed = async (e: MouseEvent) => {
 <template>
   <div class="home-container">
     <div v-if="loggedIn" class="content-selections">
-      <button ref="allButtonRef" class="button is-primary" @click="toggleFeed">
-        All
+      <button
+        ref="allButtonRef"
+        class="button"
+        :class="{ 'is-primary': !followingFeed }"
+        @click="toggleFeed"
+      >
+        All Posts
       </button>
-      <button ref="followingButtonRef" class="button" @click="toggleFeed">
+      <button
+        ref="followingButtonRef"
+        class="button"
+        :class="{ 'is-primary': followingFeed }"
+        @click="toggleFeed"
+      >
         Following
       </button>
     </div>
@@ -104,48 +135,114 @@ const toggleFeed = async (e: MouseEvent) => {
           :expanded="false"
           :post="post"
           @delete-post="fetchPosts"
+          @expand-post="expandedPost = post.reply_to ? post.reply_to : post"
+          @add-reply="handleAddReply"
         />
       </div>
       <div v-else class="skeleton-container">
         <div v-for="i in 16" :key="i" class="skeleton-block"></div>
       </div>
       <div v-if="lastPage" class="end-of-posts">
-        <p>End of posts</p>
+        <p>You've reached the end</p>
       </div>
     </div>
+    <ExpandedPost
+      v-if="expandedPost"
+      :post="expandedPost"
+      @close-expanded-post="expandedPost = null"
+    />
+    <AddPost
+      v-if="showAddPost"
+      :is-reply="replyToPostId || false"
+      @close-add-post-modal="handleCloseAddPost"
+    />
   </div>
 </template>
 
 <style scoped>
-.home-container,
-.content,
-.skeleton-container,
-.posts-wrapper {
+.home-container {
   display: flex;
-  width: 100%;
   flex-direction: column;
-  justify-content: start;
   align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  gap: var(--spacing-lg);
+}
+
+.content-selections {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--surface-hover);
+}
+
+.button {
+  flex: 1;
+  max-width: 200px;
+  transition: all var(--transition-fast);
 }
 
 .content {
-  height: 100vh;
-  padding-bottom: 25vh;
+  width: 100%;
+  min-height: calc(100vh - 200px);
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
+.posts-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
 .skeleton-container {
-  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
 }
 
 .skeleton-block {
-  width: 50%;
+  height: 200px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  animation: pulse 2s infinite;
 }
 
-/* @media (max-width: 768px) {
-  .content {
-    margin-top: 3rem;
+.end-of-posts {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
   }
-} */
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: var(--spacing-sm);
+  }
+
+  .content-selections {
+    padding: var(--spacing-sm) 0;
+  }
+
+  .button {
+    max-width: none;
+  }
+}
 </style>

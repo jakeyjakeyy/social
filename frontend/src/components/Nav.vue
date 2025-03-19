@@ -91,34 +91,55 @@ const toggleTheme = () => {
 </script>
 
 <template>
-  <div
-    class="menu has-background"
-    v-if="(navIsMobile && showMobileNav) || !navIsMobile"
-  >
-    <ThemeSelector @toggle-theme="toggleTheme" />
-    <p class="menu-label">Navigation</p>
-    <ul class="menu-list">
-      <li @click="navigateTo('/')"><a>Home</a></li>
-      <li v-if="loggedIn" @click="navigateTo('/profile')"><a>Profile</a></li>
-    </ul>
-    <p v-if="loggedIn" class="menu-label">Posts</p>
-    <ul v-if="loggedIn" class="menu-list">
-      <li @click="showAddPost = true"><a>Add Post</a></li>
-    </ul>
-    <p class="menu-label">Account</p>
-    <ul class="menu-list">
-      <li @click="navigateTo('/auth')">
-        <a>{{ loggedIn ? "Logout" : "Login" }}</a>
-      </li>
-    </ul>
-  </div>
+  <nav class="nav">
+    <div class="container nav-container">
+      <div class="nav-brand">
+        <div @click="navigateTo('/')" class="brand-link">
+          <v-icon name="ri-twitter-fill" scale="1.5" class="brand-icon" />
+          <span class="brand-text">Social</span>
+        </div>
+      </div>
+
+      <div class="nav-menu" :class="{ 'is-active': showMobileNav }">
+        <div class="nav-start">
+          <div @click="navigateTo('/')" class="nav-item">
+            <v-icon name="ri-home-5-line" />
+            <span>Home</span>
+          </div>
+          <div v-if="loggedIn" @click="navigateTo('/profile')" class="nav-item">
+            <v-icon name="ri-user-line" />
+            <span>Profile</span>
+          </div>
+        </div>
+
+        <div class="nav-end">
+          <div v-if="loggedIn" class="nav-item" @click="showAddPost = true">
+            <v-icon name="ri-add-line" />
+            <span>New Post</span>
+          </div>
+          <div class="nav-item" @click="navigateTo('/auth')">
+            <v-icon
+              :name="loggedIn ? 'ri-logout-box-line' : 'ri-login-box-line'"
+            />
+            <span>{{ loggedIn ? "Logout" : "Login" }}</span>
+          </div>
+          <ThemeSelector @toggle-theme="toggleTheme" />
+        </div>
+      </div>
+
+      <div class="nav-burger" @click="showMobileNav = !showMobileNav">
+        <v-icon name="co-hamburger-menu" scale="1.5" />
+      </div>
+    </div>
+  </nav>
+
   <AddPost
     v-if="showAddPost"
     @closeAddPostModal="toggleAddPostModal"
     :is-reply="false"
   />
   <Auth
-    :showModal
+    :showModal="showModal"
     @updateShowModal="updateShowModal"
     @updateLoggedIn="updateLoggedIn"
   />
@@ -126,52 +147,132 @@ const toggleTheme = () => {
     <button class="delete"></button>
     <strong>Success!</strong> Post added successfully.
   </div>
-  <div
-    v-if="navIsMobile"
-    class="toggle-nav"
-    @click="showMobileNav = !showMobileNav"
-  >
-    <span class="icon">
-      <v-icon
-        name="co-hamburger-menu"
-        :color="theme === 'dark' ? 'white' : 'black'"
-      />
-    </span>
-  </div>
 </template>
 
 <style scoped>
-.menu {
-  width: 20vw;
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  background-color: rgba(var(--surface), 0.8);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.brand-icon {
+  color: var(--primary);
+}
+
+.brand-text {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.nav-start,
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: var(--surface-hover);
+}
+
+.nav-item .icon {
+  font-size: var(--font-size-xl);
+}
+
+.nav-burger {
+  display: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast);
+}
+
+.nav-burger:hover {
+  background-color: var(--surface-hover);
 }
 
 .notification {
   position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
 }
 
 @media (max-width: 768px) {
-  .menu {
+  .nav-menu {
     position: fixed;
-    width: 100vw;
-    height: 100vh;
-    z-index: 10;
-    padding-top: 3rem;
-  }
-  .toggle-nav {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 0;
+    top: 64px;
+    left: 0;
     right: 0;
-    z-index: 10;
-    color: white;
-    border: 1px solid white;
-    padding: 0.5rem;
+    bottom: 0;
+    background-color: var(--surface);
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+  }
+
+  .nav-menu.is-active {
+    transform: translateX(0);
+  }
+
+  .nav-start,
+  .nav-end {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-item {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  .nav-burger {
+    display: block;
   }
 }
 </style>

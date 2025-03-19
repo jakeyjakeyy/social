@@ -1,17 +1,19 @@
-export type Post = {
-  account_display_name: string;
-  account_username: string;
+export interface Post {
+  id: number;
   content: string;
   created_at: string;
-  favorite_count: number;
-  favorited: boolean;
-  id: number;
-  is_owner: boolean;
-  is_repost: boolean;
-  original_post: Post | null;
-  reply_to: Post | null;
-  repost_count: number;
-  reposted: boolean;
   type: string;
-  url: string;
-};
+  url?: string;
+  account_username: string;
+  account_display_name: string;
+  account_avatar: string;
+  is_owner: boolean;
+  favorited: boolean;
+  favorite_count: number;
+  reposted: boolean;
+  repost_count: number;
+  reply_count: number;
+  is_repost: boolean;
+  original_post?: Post;
+  reply_to?: Post;
+}

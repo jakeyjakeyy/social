@@ -13,7 +13,7 @@ type Themes = "light" | "dark";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const props = defineProps<{ post: Post; expanded: boolean }>();
-const emit = defineEmits(["deletePost"]);
+const emit = defineEmits(["deletePost", "expandPost", "addReply"]);
 let post = props.post;
 let repostData: Post | null = null;
 const isRepost = ref(post.is_repost);
@@ -126,7 +126,7 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
     !showAddPost.value &&
     !expanded
   ) {
-    showExpandedPost.value = !showExpandedPost.value;
+    emit("expandPost", post.reply_to ? post.reply_to : post);
   }
 };
 </script>
@@ -144,20 +144,21 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
     </div>
     <div v-if="post.type === 'image'" class="card-image">
       <figure class="image is-4by3">
-        <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image" />
+        <img
+          :src="`${BACKEND_URL}/api${post.url}`"
+          alt="Post Image"
+          class="post-image"
+        />
       </figure>
     </div>
     <div class="card-content">
       <div class="media" @click="router.push(`/@${post.account_username}`)">
         <div class="media-left">
           <figure class="image is-48x48">
-            <!-- <img
-                :src="`${BACKEND_URL}/api${post.account_avatar}`"
-                alt="User Avatar"
-              /> -->
             <img
-              src="https://bulma.io/assets/images/placeholders/96x96.png"
-              alt="Placeholder image"
+              :src="`${BACKEND_URL}/api${post.account_avatar}`"
+              alt="User Avatar"
+              class="avatar"
             />
           </figure>
         </div>
@@ -184,9 +185,9 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
       </div>
     </div>
     <footer class="card-footer">
-      <div class="card-footer-item" @click="showAddPost = !showAddPost">
+      <div class="card-footer-item" @click.stop="emit('addReply', post.id)">
         <v-icon name="bi-chat-left" />
-        <!-- <span>{{ post.reply_count }}</span> -->
+        <span>{{ post.reply_count }}</span>
       </div>
       <div class="favorites card-footer-item" @click="submitAction('favorite')">
         <span>{{ post.favorite_count }}</span>
@@ -210,12 +211,6 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
         <v-icon name="fa-regular-trash-alt" class="has-text-danger" />
       </div>
     </footer>
-    <ExpandedPost
-      v-if="showExpandedPost"
-      :post="post.reply_to ? post.reply_to : post"
-      @close="showExpandedPost = false"
-      @close-expanded-post="showExpandedPost = false"
-    />
     <AddPost
       v-if="showAddPost"
       ref="addPostRef"
@@ -227,18 +222,55 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
 
 <style scoped>
 .post {
-  width: 50%;
+  width: 100%;
+  max-width: 600px;
+  margin: var(--spacing-md) auto;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  border: 1px solid var(--border-color);
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.post:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
 }
 
 .media {
   cursor: pointer;
   width: fit-content;
-  padding-right: 1rem;
+  padding-right: var(--spacing-md);
+  transition: opacity var(--transition-fast);
+}
+
+.media:hover {
+  opacity: 0.8;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  background-color: var(--surface-hover);
 }
 
 .card-footer-item {
-  gap: 1rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
   cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.card-footer-item:hover {
+  background-color: var(--surface);
+  color: var(--primary);
 }
 
 .reply-to {
@@ -246,18 +278,46 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   justify-content: center;
   align-items: center;
   width: 100%;
+  padding: var(--spacing-sm) 0;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reposted-by {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post-image {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .markdown-post {
   max-height: 50vh;
   overflow: auto;
-  box-shadow: 0 0 15px -2px var(--bulma-primary);
+  box-shadow: 0 0 15px -2px var(--primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  border: 1px solid var(--border-color);
+}
+
+.card-content {
+  padding: var(--spacing-lg);
 }
 
 @media (max-width: 768px) {
   .post {
-    width: 90%;
-    margin: 0.5rem 0;
+    width: 100%;
+    margin: var(--spacing-sm) 0;
+    border-radius: var(--radius-md);
   }
 }
 </style>

@@ -5,6 +5,8 @@ import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
 import { checkToken, getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import type { ProfileInfo } from "@/types/ProfileInfo";
+import ExpandedPost from "./ExpandedPost.vue";
+import AddPost from "./AddPost.vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 let access_token = getAccessToken();
@@ -12,21 +14,27 @@ let page = 1;
 const route = useRoute();
 const username = ref(route.params.username as string);
 const posts = ref<posttype[]>([]);
+const expandedPost = ref<posttype | null>(null);
 const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
 const loggedIn = checkToken();
 const isOwner = ref<boolean>(false);
 const profileFileInput = ref<HTMLInputElement | null>(null);
 const bannerFileInput = ref<HTMLInputElement | null>(null);
+const showAddPost = ref(false);
+const replyToPostId = ref<number | null>(null);
 
 const fetchPosts = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/profile/${username.value}/${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(access_token && { Authorization: `Bearer ${access_token}` }),
-    },
-  });
+  const res = await fetch(
+    `${BACKEND_URL}/api/profile/${username.value}/${page}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(access_token && { Authorization: `Bearer ${access_token}` }),
+      },
+    }
+  );
   const data = await res.json();
   if (data.detail) {
     let refresh = await RefreshToken();
@@ -42,13 +50,16 @@ const fetchPosts = async () => {
 };
 
 const checkFollow = async () => {
-  const res = await fetch(`${BACKEND_URL}/api/follow?username=${username.value}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(access_token && { Authorization: `Bearer ${access_token}` }),
-    },
-  });
+  const res = await fetch(
+    `${BACKEND_URL}/api/follow?username=${username.value}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(access_token && { Authorization: `Bearer ${access_token}` }),
+      },
+    }
+  );
   const data = await res.json();
   if (res.status != 200) {
     alert(data.message);
@@ -141,9 +152,9 @@ watch(
 );
 
 const uploadPhoto = async (type: string) => {
-  if (type === 'pfp') {
+  if (type === "pfp") {
     profileFileInput.value?.click();
-  } else if (type === 'banner') {
+  } else if (type === "banner") {
     bannerFileInput.value?.click();
   }
 };
@@ -151,13 +162,13 @@ const uploadPhoto = async (type: string) => {
 const handleFileUpload = async (event: Event, type: string) => {
   const input = event.target as HTMLInputElement;
   if (!input.files || input.files.length === 0) return;
-  
+
   const file = input.files[0];
   const formData = new FormData();
-  formData.append('username', username.value);
-  formData.append('file', file);
-  formData.append('type', type);
-  
+  formData.append("username", username.value);
+  formData.append("file", file);
+  formData.append("type", type);
+
   try {
     const res = await fetch(`${BACKEND_URL}/api/profile/info`, {
       method: "POST",
@@ -166,7 +177,7 @@ const handleFileUpload = async (event: Event, type: string) => {
       },
       body: formData,
     });
-    
+
     const data = await res.json();
     if (!res.ok) {
       if (data.detail) {
@@ -187,8 +198,20 @@ const handleFileUpload = async (event: Event, type: string) => {
     console.error("Error uploading image:", error);
     alert("Failed to upload image");
   }
-  
-  input.value = '';
+
+  input.value = "";
+};
+
+const handleAddReply = (postId: number) => {
+  replyToPostId.value = postId;
+  showAddPost.value = true;
+};
+
+const handleCloseAddPost = (success: boolean) => {
+  showAddPost.value = false;
+  if (success) {
+    fetchPosts();
+  }
 };
 </script>
 <template>
@@ -197,14 +220,28 @@ const handleFileUpload = async (event: Event, type: string) => {
       <div class="card-image">
         <figure class="image banner-image">
           <img
-          :src="profileInfo ? `${BACKEND_URL}/api${profileInfo.banner_picture}` : 'https://bulma.io/assets/images/placeholders/1280x960.png'"
-            alt="Placeholder image"
+            :src="
+              profileInfo
+                ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
+                : 'https://bulma.io/assets/images/placeholders/1280x960.png'
+            "
+            alt="Banner image"
           />
-          <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')">
+          <div
+            v-if="isOwner"
+            class="image-overlay"
+            @click="uploadPhoto('banner')"
+          >
             <span class="icon">
               <v-icon name="bi-camera" color="white" />
             </span>
-            <input type="file" ref="bannerFileInput" @change="($event) => handleFileUpload($event, 'banner')" style="display: none"  accept="image/*"/>
+            <input
+              type="file"
+              ref="bannerFileInput"
+              @change="($event) => handleFileUpload($event, 'banner')"
+              style="display: none"
+              accept="image/*"
+            />
           </div>
         </figure>
       </div>
@@ -213,14 +250,29 @@ const handleFileUpload = async (event: Event, type: string) => {
           <div class="media-left">
             <figure class="image is-128x128 profile-image-container">
               <img
-                :src="profileInfo ? `${BACKEND_URL}/api${profileInfo.profile_picture}` : 'https://bulma.io/assets/images/placeholders/128x128.png'"
+                :src="
+                  profileInfo
+                    ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
+                    : 'https://bulma.io/assets/images/placeholders/128x128.png'
+                "
                 alt="Profile Picture"
+                class="avatar"
               />
-              <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')">
+              <div
+                v-if="isOwner"
+                class="image-overlay"
+                @click="uploadPhoto('pfp')"
+              >
                 <span class="icon">
                   <v-icon name="bi-camera" color="white" />
                 </span>
-                <input type="file" ref="profileFileInput" @change="($event) => handleFileUpload($event, 'pfp')" style="display: none" accept="image/*"/>
+                <input
+                  type="file"
+                  ref="profileFileInput"
+                  @change="($event) => handleFileUpload($event, 'pfp')"
+                  style="display: none"
+                  accept="image/*"
+                />
               </div>
             </figure>
           </div>
@@ -228,24 +280,28 @@ const handleFileUpload = async (event: Event, type: string) => {
             <p v-if="profileInfo" class="title is-3">
               {{ profileInfo.display_name }}
             </p>
-            <p class="title is-3">@{{ username }}</p>
+            <p class="subtitle is-5">@{{ username }}</p>
           </div>
           <div v-if="!isOwner && loggedIn" class="follow-container">
-            <button class="button" @click="handleFollow">
-              {{ isFollowing ? "Unfollow" : "Follow" }}
+            <button
+              class="button"
+              :class="{ 'is-primary': isFollowing }"
+              @click="handleFollow"
+            >
+              {{ isFollowing ? "Following" : "Follow" }}
             </button>
           </div>
         </div>
       </div>
       <footer class="card-footer">
-        <p class="card-footer-item">
+        <div class="card-footer-item">
           <span class="has-text-weight-bold">{{ profileInfo?.followers }}</span>
-          <p>Followers</p>
-        </p>
-        <p class="card-footer-item">
+          <p class="subtitle is-6">Followers</p>
+        </div>
+        <div class="card-footer-item">
           <span class="has-text-weight-bold">{{ profileInfo?.following }}</span>
-          <p>Following</p>
-        </p>
+          <p class="subtitle is-6">Following</p>
+        </div>
       </footer>
     </div>
     <div v-if="posts.length" class="posts">
@@ -254,11 +310,23 @@ const handleFileUpload = async (event: Event, type: string) => {
         :key="post.id"
         :post="post"
         :expanded="false"
+        @expand-post="expandedPost = post.reply_to ? post.reply_to : post"
+        @add-reply="handleAddReply"
       />
     </div>
     <div v-else class="skeleton-container">
-      <div v-for="i in 16" class="skeleton-block"></div>
+      <div v-for="i in 16" :key="i" class="skeleton-block"></div>
     </div>
+    <ExpandedPost
+      v-if="expandedPost"
+      :post="expandedPost"
+      @close-expanded-post="expandedPost = null"
+    />
+    <AddPost
+      v-if="showAddPost"
+      :is-reply="replyToPostId || false"
+      @close-add-post-modal="handleCloseAddPost"
+    />
   </div>
 </template>
 
@@ -268,43 +336,106 @@ const handleFileUpload = async (event: Event, type: string) => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
-  overflow: auto;
-  scrollbar-width: thin;
-}
-
-.skeleton-container {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-top: 2rem;
-}
-
-.skeleton-block {
-  width: 50%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  gap: var(--spacing-lg);
 }
 
 .profile-header {
   width: 100%;
+  overflow: hidden;
+}
+
+.banner-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
 }
 
 .banner-image img {
   width: 100%;
-  height: 25vh;
+  height: 100%;
   object-fit: cover;
 }
 
-.posts {
+.card-content {
+  padding: var(--spacing-lg);
+}
+
+.media {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+}
+
+.media-left {
+  margin-top: -64px;
+}
+
+.profile-image-container {
+  position: relative;
+  border-radius: var(--radius-full);
+  border: 4px solid var(--surface);
+  box-shadow: var(--shadow-md);
+  background-color: var(--surface);
+}
+
+.avatar {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-full);
+}
+
+.media-content {
+  flex: 1;
+}
+
+.title {
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+}
+
+.follow-container {
+  margin-left: auto;
+}
+
+.button {
+  min-width: 100px;
+  transition: all var(--transition-fast);
+}
+
+.button.is-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.button.is-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--surface-hover);
 }
 
 .card-footer-item {
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.card-footer-item span {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
 }
 
 .image-overlay {
@@ -318,7 +449,7 @@ const handleFileUpload = async (event: Event, type: string) => {
   justify-content: center;
   align-items: center;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity var(--transition-fast);
   cursor: pointer;
 }
 
@@ -327,4 +458,53 @@ const handleFileUpload = async (event: Event, type: string) => {
   opacity: 1;
 }
 
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.skeleton-block {
+  height: 200px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: var(--spacing-sm);
+  }
+
+  .media {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .media-left {
+    margin-top: -48px;
+  }
+
+  .follow-container {
+    margin: var(--spacing-md) 0 0;
+  }
+
+  .banner-image {
+    height: 150px;
+  }
+}
 </style>
