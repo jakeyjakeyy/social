@@ -1,30 +1,31 @@
 :root {
-  /* Color System */
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
-  --secondary: #64748b;
+  --secondary: #93ade5;
   --success: #22c55e;
   --danger: #ef4444;
   --warning: #f59e0b;
-  --info: #3b82f6;
+  --info: #5e87df;
 
-  /* Neutral Colors */
-  --background: #ffffff;
+  --background: #f0f3fa;
   --surface: #f8fafc;
   --surface-hover: #f1f5f9;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
+  --text-primary: #040509;
+  --text-secondary: #585e75;
 
-  /* Dark Mode Colors */
   [data-theme="dark"] {
-    --background: #0f172a;
+    --background: #05080f;
     --surface: #1e293b;
     --surface-hover: #334155;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
+    --text-primary: #f4f6fa;
+    --text-secondary: #8f9299;
+
+    --primary: #1453db;
+    --primary-hover: #0f42b3;
+    --secondary: #1a336b;
+    --info: #2049a2;
   }
 
-  /* Typography */
   --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
   --font-size-xs: 0.75rem;
@@ -35,31 +36,26 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
 
-  /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
 
-  /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-full: 9999px;
 
-  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 
-  /* Transitions */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 350ms ease;
 }
 
-/* Utility Classes */
 .text-primary {
   color: var(--text-primary);
 }
@@ -76,7 +72,6 @@
   background-color: var(--background);
 }
 
-/* Modern Card Styles */
 .card {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
@@ -91,7 +86,6 @@
   box-shadow: var(--shadow-lg);
 }
 
-/* Modern Button Styles */
 .button {
   border-radius: var(--radius-full);
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -110,7 +104,6 @@
   background-color: var(--primary-hover);
 }
 
-/* Modern Input Styles */
 .input,
 .textarea {
   border-radius: var(--radius-md);
@@ -128,27 +121,23 @@
   outline: none;
 }
 
-/* Modern Navigation */
 .nav {
   background-color: var(--surface);
   border-bottom: 1px solid var(--surface-hover);
   padding: var(--spacing-md) var(--spacing-lg);
 }
 
-/* Modern Modal */
 .modal-content {
   border-radius: var(--radius-lg);
   background-color: var(--surface);
   box-shadow: var(--shadow-lg);
 }
 
-/* Modern Avatar */
 .avatar {
   border-radius: var(--radius-full);
   object-fit: cover;
 }
 
-/* Modern Loading States */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -169,7 +158,6 @@
   }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   :root {
     --spacing-lg: 1rem;
@@ -181,7 +169,6 @@
   }
 }
 
-/* Modal System */
 .modal-overlay {
   position: fixed;
   top: 0;

@@ -53,7 +53,7 @@ const handleCloseAddPost = (success: boolean) => {
     <div class="expanded-post-modal">
       <div class="expanded-post-content">
         <button class="close-button" @click="emit('closeExpandedPost')">
-          <v-icon name="ri-close-line" scale="1.5" />
+          <v-icon name="io-close" scale="1.5" />
         </button>
         <div class="post-section">
           <Post

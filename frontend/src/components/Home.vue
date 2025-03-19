@@ -161,6 +161,9 @@ const handleCloseAddPost = (success: boolean) => {
 
 .content-selections {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   gap: var(--spacing-md);
   width: 100%;
   padding: var(--spacing-md) 0;
