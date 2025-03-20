@@ -232,7 +232,7 @@ const handleFileUpload = async (event: Event, type: string) => {
         <figure class="image banner-image">
           <img
             :src="
-              profileInfo
+              profileInfo?.banner_picture
                 ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
                 : 'https://bulma.io/assets/images/placeholders/1280x960.png'
             "
@@ -262,7 +262,7 @@ const handleFileUpload = async (event: Event, type: string) => {
             <figure class="image is-128x128 profile-image-container">
               <img
                 :src="
-                  profileInfo
+                  profileInfo?.profile_picture
                     ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
                     : 'https://bulma.io/assets/images/placeholders/128x128.png'
                 "
