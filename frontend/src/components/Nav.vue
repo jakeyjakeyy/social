@@ -93,7 +93,7 @@ const toggleTheme = () => {
 <template>
   <nav class="nav">
     <div class="container nav-container">
-      <div class="nav-brand">
+      <div class="nav-brand nav-item">
         <div @click="navigateTo('/')" class="brand-link">
           <v-icon name="ri-chat-smile-2-fill" scale="1.5" class="brand-icon" />
           <span class="brand-text">Social</span>
