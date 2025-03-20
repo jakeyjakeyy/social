@@ -15,4 +15,5 @@ urlpatterns = [
     path("profile/<str:username>/<int:page>", Profile.as_view(), name="profile"),
     path("profile/info", ProfileInfo.as_view(), name="profile-info"),
     path("follow", Follow.as_view(), name="follow"),
+    path("account/id", GetAccountId.as_view(), name="get-account-id"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

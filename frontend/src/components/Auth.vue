@@ -77,6 +77,13 @@ const submitForm = async () => {
   cookies.set("access_token", data.access);
   localStorage.setItem("username", username.value);
 
+  // Get the account id
+  const accountIdResponse = await fetch(
+    `${serverURL}/api/account/id?username=${username.value}`
+  );
+  const accountIdData = await accountIdResponse.json();
+  localStorage.setItem("account_id", accountIdData.id);
+
   emit("updateLoggedIn", true);
   closeModal();
   username.value = "";

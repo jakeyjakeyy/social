@@ -11,3 +11,4 @@ backend/backend/__pycache__/
 media/
 backend/venv/
 .idea
+backend/notification/__pycache__/

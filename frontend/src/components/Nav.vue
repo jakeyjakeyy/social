@@ -5,6 +5,7 @@ import ThemeSelector from "./ThemeSelector.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { deleteTokens, checkToken } from "@/utils/RefreshToken";
+import Notifications from "./Notifications.vue";
 const showNavItems = ref(false);
 const router = useRouter();
 const showModal = ref(false);
@@ -124,6 +125,7 @@ const toggleTheme = () => {
             <span>{{ loggedIn ? "Logout" : "Login" }}</span>
           </div>
           <ThemeSelector @toggle-theme="toggleTheme" />
+          <Notifications class="nav-item" />
         </div>
       </div>
 

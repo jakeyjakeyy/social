@@ -269,6 +269,15 @@ class Profile(APIView):
         return Response(post_data)
 
 
+class GetAccountId(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        username = request.GET.get("username")
+        account = models.Account.objects.get(user__username=username)
+        return Response({"id": account.id})
+
+
 class Follow(APIView):
     authentication_classes = [JWTAuthentication]
 
