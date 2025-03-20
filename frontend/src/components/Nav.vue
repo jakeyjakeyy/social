@@ -72,7 +72,7 @@ const updateLoggedIn = (value: boolean) => {
   } else {
     navItems[2].name = "Login";
   }
-  window.location.reload();
+  // window.location.reload();
 };
 
 const toggleAddPostModal = (value: boolean) => {

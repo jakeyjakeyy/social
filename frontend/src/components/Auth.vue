@@ -66,6 +66,13 @@ const submitForm = async () => {
     confirmPassword.value = "";
     return;
   }
+
+  // If the user just registered, we need to login again
+  if (registerActive.value) {
+    registerActive.value = false;
+    submitForm();
+    return;
+  }
   cookies.set("refresh_token", data.refresh);
   cookies.set("access_token", data.access);
   localStorage.setItem("username", username.value);
@@ -77,13 +84,20 @@ const submitForm = async () => {
   confirmPassword.value = "";
   registerActive.value = false;
 };
+
+const toggleRegister = () => {
+  registerActive.value = !registerActive.value;
+  username.value = "";
+  password.value = "";
+  confirmPassword.value = "";
+};
 </script>
 
 <template>
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-container">
       <header class="modal-header">
-        <h2 class="modal-title">Login</h2>
+        <h2 class="modal-title">{{ registerActive ? "Register" : "Login" }}</h2>
         <button
           class="close-modal"
           aria-label="close"
@@ -119,6 +133,18 @@ const submitForm = async () => {
             </div>
           </div>
 
+          <div v-if="registerActive" class="field">
+            <label class="label">Confirm Password</label>
+            <div class="control">
+              <input
+                v-model="confirmPassword"
+                type="password"
+                class="input"
+                placeholder="Confirm your password"
+              />
+            </div>
+          </div>
+
           <div class="field">
             <div class="control">
               <button
@@ -126,11 +152,27 @@ const submitForm = async () => {
                 type="submit"
                 :disabled="isLoading"
               >
-                {{ isLoading ? "Loading..." : "Login" }}
+                {{
+                  isLoading
+                    ? "Loading..."
+                    : registerActive
+                    ? "Register"
+                    : "Login"
+                }}
               </button>
             </div>
           </div>
         </form>
+
+        <div class="toggle-container">
+          <button class="toggle-button" @click="toggleRegister">
+            {{
+              registerActive
+                ? "Already have an account? Login"
+                : "Need an account? Register"
+            }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -168,5 +210,23 @@ const submitForm = async () => {
 .button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.toggle-container {
+  margin-top: var(--spacing-md);
+  text-align: center;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs);
+}
+
+.toggle-button:hover {
+  text-decoration: underline;
 }
 </style>
