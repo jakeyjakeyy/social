@@ -279,6 +279,11 @@ const handleCloseAddPost = (success: boolean) => {
   opacity: 0.8;
 }
 
+.media-left {
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
 .card-footer {
   display: flex;
   justify-content: space-around;
