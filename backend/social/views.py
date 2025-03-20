@@ -144,7 +144,19 @@ class Post(APIView):
             )
             if entry[1] == False:
                 entry[0].delete()
+                models.Notification.objects.filter(
+                    account=post.account,
+                    post=post,
+                    action="favorited",
+                    action_account=account,
+                ).delete()
                 return Response({"message": "Unfavorited successfully"})
+            models.Notification.objects.create(
+                account=post.account,
+                post=post,
+                action="favorited",
+                action_account=account,
+            )
             return Response({"message": "Favorited successfully"})
         elif type == "repost":
             original_post = models.Post.objects.get(id=data["post_id"])
@@ -156,12 +168,24 @@ class Post(APIView):
                 post = entry[0].post
                 entry[0].delete()
                 post.delete()
+                models.Notification.objects.filter(
+                    account=original_post.account,
+                    post=original_post,
+                    action="reposted",
+                    action_account=account,
+                ).delete()
                 return Response({"message": "Unreposted successfully"})
             else:
                 entry[0].post = models.Post.objects.create(
                     account=account, reply_to=reply_post
                 )
                 entry[0].save()
+                models.Notification.objects.create(
+                    account=original_post.account,
+                    post=original_post,
+                    action="reposted",
+                    action_account=account,
+                )
             return Response({"message": "Reposted successfully"})
         elif type == "image":
             if not data["image"]:
@@ -286,8 +310,20 @@ class Follow(APIView):
         )
         if object[1] == False:
             object[0].delete()
+            models.Notification.objects.filter(
+                account=following,
+                post=None,
+                action="followed",
+                action_account=follower,
+            ).delete()
             return Response({"message": "Unfollowed successfully"})
         else:
+            models.Notification.objects.create(
+                account=following,
+                post=None,
+                action="followed",
+                action_account=follower,
+            )
             return Response({"message": "Followed successfully"})
 
 

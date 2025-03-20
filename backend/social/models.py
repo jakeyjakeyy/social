@@ -140,3 +140,21 @@ class Repost(models.Model):
 
     def __str__(self):
         return f"{self.account.user.username} reposted {self.post.id}"
+
+
+class Notification(models.Model):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="notifications"
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="notifications", null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+    action = models.CharField(max_length=255)
+    action_account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="action_account"
+    )
+
+    def __str__(self):
+        return f"{self.account.user.username} notified about {self.action_account.user.username} {self.action}"

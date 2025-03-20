@@ -8,6 +8,7 @@ from .models import (
     Repost,
     MarkdownPost,
     ImagePost,
+    Notification,
 )
 
 admin.site.register(Account)
@@ -18,3 +19,4 @@ admin.site.register(Favorite)
 admin.site.register(Repost)
 admin.site.register(MarkdownPost)
 admin.site.register(ImagePost)
+admin.site.register(Notification)
