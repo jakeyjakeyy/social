@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from django.db.models.signals import pre_delete, pre_save
+from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 import os
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import json
 
 User = get_user_model()
 
@@ -158,3 +161,24 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.account.user.username} notified about {self.action_account.user.username} {self.action}"
+
+
+@receiver(pre_save, sender=Notification)
+def send_notification(sender, instance, **kwargs):
+    user_id = instance.account.user.id
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"notification_{user_id}",
+        {
+            "type": "send_notification",
+            "message": {
+                "action": instance.action,
+                "action_account": instance.action_account.user.username,
+                "read": instance.read,
+                "created_at": (
+                    instance.created_at.isoformat() if instance.created_at else None
+                ),
+                "post_id": instance.post.id if instance.post else None,
+            },
+        },
+    )
