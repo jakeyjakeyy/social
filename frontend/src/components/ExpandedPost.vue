@@ -6,8 +6,7 @@ const props = defineProps<{ post: any }>();
 import { onMounted, ref } from "vue";
 import AddPost from "./AddPost.vue";
 
-const postRef = ref<InstanceType<typeof Post> | null>(null);
-const repliesRef = ref<HTMLDivElement | null>(null);
+const modalRef = ref<HTMLDivElement | null>(null);
 const showAddPost = ref(false);
 let page = 1;
 
@@ -18,11 +17,8 @@ onMounted(() => {
 });
 
 const clickBounds = (e: MouseEvent) => {
-  if (!postRef.value || !repliesRef.value || showAddPost.value) return false;
-  if (
-    !postRef.value.$el.contains(e.target as Node) &&
-    !repliesRef.value.contains(e.target as Node)
-  ) {
+  if (!modalRef.value || showAddPost.value) return false;
+  if (!modalRef.value.contains(e.target as Node)) {
     emit("closeExpandedPost");
   }
 };
@@ -50,7 +46,7 @@ const handleCloseAddPost = (success: boolean) => {
 </script>
 <template>
   <div class="expanded-post-overlay" @click="clickBounds">
-    <div class="expanded-post-modal">
+    <div class="expanded-post-modal" ref="modalRef">
       <div class="expanded-post-content">
         <button class="close-button" @click="emit('closeExpandedPost')">
           <v-icon name="io-close" scale="1.5" />
@@ -58,9 +54,9 @@ const handleCloseAddPost = (success: boolean) => {
         <div class="post-section">
           <Post
             :post="post"
-            :expanded="true"
             ref="postRef"
             @add-reply="handleAddReply"
+            expanded
           />
         </div>
         <div class="replies-section">
@@ -68,13 +64,13 @@ const handleCloseAddPost = (success: boolean) => {
             <h3>Replies</h3>
             <span class="reply-count">{{ replies.length }}</span>
           </div>
-          <div class="replies-container" ref="repliesRef">
+          <div class="replies-container">
             <div class="replies">
               <Post
                 v-for="reply in replies"
                 :key="reply.id"
                 :post="reply"
-                :expanded="false"
+                is-reply
                 @add-reply="handleAddReply"
               />
             </div>

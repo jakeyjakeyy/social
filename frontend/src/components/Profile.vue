@@ -291,12 +291,7 @@ const handleFileUpload = async (event: Event, type: string) => {
       </footer>
     </div>
     <div v-if="posts.length" class="posts">
-      <Post
-        v-for="post in posts"
-        :key="post.id"
-        :post="post"
-        :expanded="false"
-      />
+      <Post v-for="post in posts" :key="post.id" :post="post" />
     </div>
     <div v-else class="skeleton-container">
       <div v-for="i in 16" :key="i" class="skeleton-block"></div>

@@ -132,7 +132,6 @@ const handleCloseAddPost = (success: boolean) => {
         <Post
           v-for="post in posts"
           :key="post.id"
-          :expanded="false"
           :post="post"
           @delete-post="fetchPosts"
         />

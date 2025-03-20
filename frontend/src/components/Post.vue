@@ -13,7 +13,11 @@ import { Teleport } from "vue";
 type Themes = "light" | "dark";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const props = defineProps<{ post: Post; expanded: boolean }>();
+const props = defineProps<{
+  post: Post;
+  expanded?: boolean;
+  isReply?: boolean;
+}>();
 const emit = defineEmits(["deletePost", "expandPost", "addReply"]);
 let post = props.post;
 let repostData: Post | null = null;
@@ -22,7 +26,8 @@ const expanded = props.expanded;
 const showExpandedPost = ref(false);
 const theme = ref<Themes>("dark");
 const showAddPost = ref(false);
-
+const showReplyTo = ref(false);
+const isReply = props.isReply;
 if (post.is_repost && post.original_post) {
   repostData = post;
   post = post.original_post;
@@ -119,20 +124,22 @@ const toggleShowExpandedPost = (e: MouseEvent) => {
   const isFooterClick = target.closest(".card-footer");
   const isMedia = target.closest(".media");
   const isExpandedClick = target.closest(".expanded-post");
+  const isReplyClick = target.closest(".reply-to");
 
-  if (
-    !isMedia &&
-    !isFooterClick &&
-    !isExpandedClick &&
-    !showAddPost.value &&
-    !expanded
-  ) {
-    showExpandedPost.value = true;
+  if (!isMedia && !isFooterClick && !isExpandedClick && !showAddPost.value) {
+    if (!expanded) {
+      showExpandedPost.value = true;
+    }
+    if (isReplyClick) {
+      showExpandedPost.value = true;
+      showReplyTo.value = true;
+    }
   }
 };
 
 const handleCloseExpandedPost = () => {
   showExpandedPost.value = false;
+  showReplyTo.value = false;
 };
 
 const handleCloseAddPost = (success: boolean) => {
@@ -145,7 +152,7 @@ const handleCloseAddPost = (success: boolean) => {
 
 <template>
   <div class="post card" @click="toggleShowExpandedPost">
-    <div class="reply-to" v-if="post.reply_to">
+    <div class="reply-to" v-if="post.reply_to && !isReply">
       <v-icon name="fa-grip-lines-vertical" />
     </div>
     <div v-if="isRepost && repostData" class="reposted-by">
@@ -231,7 +238,7 @@ const handleCloseAddPost = (success: boolean) => {
   <Teleport to="body">
     <ExpandedPost
       v-if="showExpandedPost"
-      :post="post.reply_to || post"
+      :post="showReplyTo ? post.reply_to : post"
       @close-expanded-post="handleCloseExpandedPost"
     />
     <AddPost
