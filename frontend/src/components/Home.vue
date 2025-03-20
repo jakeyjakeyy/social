@@ -23,29 +23,26 @@ const followingFeed = ref<boolean>(false);
 
 onMounted(async () => {
   await fetchPosts();
-  const homePosts: HTMLElement | null = document.getElementById("home-posts");
-  if (homePosts) {
-    homePosts.addEventListener("scroll", async () => {
-      if (
-        homePosts.scrollTop + homePosts.clientHeight >=
-          homePosts.scrollHeight * 0.75 &&
-        !lastPage.value &&
-        homePosts.scrollTop > scrollPosition &&
-        !fetchingPosts
-      ) {
-        scrollPosition = homePosts.scrollTop;
-        page++;
-        const oldPosts = posts.value;
-        fetchingPosts = true;
-        await fetchPosts();
-        if (oldPosts.length === posts.value.length) {
-          page--;
-          lastPage.value = true;
-        }
-        fetchingPosts = false;
+  window.addEventListener("scroll", async () => {
+    if (
+      window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight * 0.75 &&
+      !lastPage.value &&
+      window.scrollY > scrollPosition &&
+      !fetchingPosts
+    ) {
+      scrollPosition = window.scrollY;
+      page++;
+      const oldPosts = posts.value;
+      fetchingPosts = true;
+      await fetchPosts();
+      if (oldPosts.length === posts.value.length) {
+        page--;
+        lastPage.value = true;
       }
-    });
-  }
+      fetchingPosts = false;
+    }
+  });
 });
 
 const fetchPosts = async (followingFeed = false) => {
@@ -137,7 +134,7 @@ const handleCloseAddPost = (success: boolean) => {
         />
       </div>
       <div v-else class="skeleton-container">
-        <div v-for="i in 16" :key="i" class="skeleton-block"></div>
+        <div class="skeleton-block"></div>
       </div>
       <div v-if="lastPage" class="end-of-posts">
         <p>You've reached the end</p>

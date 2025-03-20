@@ -307,9 +307,47 @@ const handleCloseAddPost = (success: boolean) => {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: var(--spacing-sm) 0;
-  color: var(--text-secondary);
+  padding: var(--spacing-sm);
+  color: var(--info);
   border-bottom: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.reply-to:hover {
+  color: var(--primary);
+  cursor: pointer;
+  background-color: var(--info);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 5px rgba(var(--primary-rgb), 0.1);
+}
+
+.reply-to:hover::after {
+  content: "View original post";
+  position: absolute;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  opacity: 0.8;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.reply-to svg {
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.reply-to:hover svg {
+  transform: scale(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.8;
+  }
 }
 
 .reposted-by {

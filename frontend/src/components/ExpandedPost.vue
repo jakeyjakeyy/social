@@ -107,7 +107,7 @@ const handleCloseAddPost = (success: boolean) => {
   width: 100%;
   max-width: 800px;
   margin: var(--spacing-lg) auto;
-  background-color: var(--surface);
+  background-color: var(--background);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
   position: relative;

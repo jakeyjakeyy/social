@@ -182,7 +182,6 @@ class Post(APIView):
         page = int(request.GET.get("page", 1))
         replies = request.GET.get("replies", False)
         followingFeed = request.GET.get("following", False)
-        logger.info(f"Following: {followingFeed}")
         if replies == False:  # Get all posts (that aren't replies)
             if followingFeed:  # Get posts from users that the user is following
                 account = models.Account.objects.get(user=request.user)

@@ -21,6 +21,9 @@ const loggedIn = checkToken();
 const isOwner = ref<boolean>(false);
 const profileFileInput = ref<HTMLInputElement | null>(null);
 const bannerFileInput = ref<HTMLInputElement | null>(null);
+const lastPage = ref<boolean>(false);
+let scrollPosition = 0;
+let fetchingPosts = false;
 
 const fetchPosts = async () => {
   const res = await fetch(
@@ -44,7 +47,7 @@ const fetchPosts = async () => {
     }
     return;
   }
-  posts.value = data;
+  posts.value = [...posts.value, ...data];
 };
 
 const checkFollow = async () => {
@@ -138,6 +141,28 @@ const loadProfileData = async () => {
 
 onMounted(async () => {
   await loadProfileData();
+
+  // Infinite scroll
+  window.addEventListener("scroll", async () => {
+    if (
+      window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight * 0.75 &&
+      !lastPage.value &&
+      window.scrollY > scrollPosition &&
+      !fetchingPosts
+    ) {
+      scrollPosition = window.scrollY;
+      page++;
+      const oldPosts = posts.value;
+      fetchingPosts = true;
+      await fetchPosts();
+      if (oldPosts.length === posts.value.length) {
+        page--;
+        lastPage.value = true;
+      }
+      fetchingPosts = false;
+    }
+  });
 });
 
 watch(
@@ -293,8 +318,11 @@ const handleFileUpload = async (event: Event, type: string) => {
     <div v-if="posts.length" class="posts">
       <Post v-for="post in posts" :key="post.id" :post="post" />
     </div>
+    <div v-if="lastPage" class="end-of-posts">
+      <p>You've reached the end</p>
+    </div>
     <div v-else class="skeleton-container">
-      <div v-for="i in 16" :key="i" class="skeleton-block"></div>
+      <div class="skeleton-block"></div>
     </div>
   </div>
 </template>
@@ -440,6 +468,20 @@ const handleFileUpload = async (event: Event, type: string) => {
   background: var(--surface);
   border-radius: var(--radius-lg);
   animation: pulse 2s infinite;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.end-of-posts {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 @keyframes pulse {
