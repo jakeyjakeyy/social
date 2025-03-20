@@ -41,38 +41,11 @@ import Nav from "@/components/Nav.vue";
   padding: var(--spacing-md);
 }
 
-/* Modern Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--surface-hover);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* Modern Selection */
-::selection {
-  background-color: var(--primary);
-  color: white;
-}
-
-/* Modern Focus Styles */
 :focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
-/* Modern Transitions */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity var(--transition-normal);
@@ -83,7 +56,6 @@ import Nav from "@/components/Nav.vue";
   opacity: 0;
 }
 
-/* Modern Container */
 .container {
   width: 100%;
   max-width: 1200px;
@@ -91,7 +63,6 @@ import Nav from "@/components/Nav.vue";
   padding: 0 var(--spacing-md);
 }
 
-/* Modern Grid System */
 .grid {
   display: grid;
   gap: var(--spacing-md);
@@ -110,7 +81,6 @@ import Nav from "@/components/Nav.vue";
   grid-template-columns: repeat(4, 1fr);
 }
 
-/* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .grid-cols-4 {
     grid-template-columns: repeat(3, 1fr);
@@ -141,7 +111,6 @@ import Nav from "@/components/Nav.vue";
   }
 }
 
-/* Mobile-first adjustments */
 @media (min-width: 641px) {
   .main-content {
     padding-top: var(--spacing-lg);
