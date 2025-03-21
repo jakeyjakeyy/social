@@ -125,7 +125,7 @@ const toggleTheme = () => {
             <span>{{ loggedIn ? "Logout" : "Login" }}</span>
           </div>
           <ThemeSelector @toggle-theme="toggleTheme" />
-          <Notifications class="nav-item" />
+          <Notifications v-if="loggedIn" class="nav-item" />
         </div>
       </div>
 

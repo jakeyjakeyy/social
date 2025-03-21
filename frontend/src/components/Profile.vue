@@ -12,7 +12,6 @@ let page = 1;
 const route = useRoute();
 const username = ref(route.params.username as string);
 const posts = ref<posttype[]>([]);
-const expandedPost = ref<posttype | null>(null);
 const isFollowing = ref<boolean>(false);
 const profileInfo = ref<ProfileInfo | null>(null);
 const loggedIn = checkToken();
@@ -41,7 +40,7 @@ const fetchPosts = async () => {
       alert("Please login again");
     } else {
       access_token = getAccessToken();
-      await fetchPosts();
+      return await fetchPosts();
     }
     return;
   }
@@ -91,7 +90,7 @@ const fetchProfileInfo = async () => {
       alert("Please login again");
     } else {
       access_token = getAccessToken();
-      await fetchProfileInfo();
+      return await fetchProfileInfo();
     }
   }
   profileInfo.value = data;
