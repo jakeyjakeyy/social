@@ -7,6 +7,10 @@ import os
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 User = get_user_model()
 
@@ -185,6 +189,21 @@ def send_notification(sender, instance, **kwargs):
                 "post_id": instance.post.id if instance.post else None,
                 "notification_id": instance.id,
             },
+        },
+    )
+
+
+@receiver(pre_delete, sender=Notification)
+def delete_notification(sender, instance, **kwargs):
+    notification_id = instance.id
+    user_id = instance.account.user.id
+    token = instance.account.notification_stream.first().token
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"notification_{user_id}_{token}",
+        {
+            "type": "delete_notification",
+            "id": notification_id,
         },
     )
 

@@ -45,3 +45,8 @@ class NotificationConsumer(WebsocketConsumer):
             self.close()
             return
         self.send(text_data=json.dumps({"message": event["message"]}))
+
+    def delete_notification(self, event):
+        self.send(
+            text_data=json.dumps({"type": "delete_notification", "id": event["id"]})
+        )

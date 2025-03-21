@@ -8,6 +8,7 @@ interface Notification {
   read: boolean;
   created_at: string;
   post_id: number | null;
+  notification_id: number;
 }
 
 const notifications = ref<Notification[]>([]);
@@ -102,10 +103,24 @@ const initWebSocket = async () => {
 
   ws.onmessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
-    const notification = data.message;
-    notifications.value.unshift(notification);
-    if (!notification.read) {
-      unreadCount.value++;
+    if (data.type === "delete_notification") {
+      const notification = notifications.value.find(
+        (notification) => notification.notification_id === data.id
+      );
+      if (notification) {
+        notifications.value = notifications.value.filter(
+          (notification) => notification.notification_id !== data.id
+        );
+        if (!notification.read) {
+          unreadCount.value--;
+        }
+      }
+    } else {
+      const notification = data.message;
+      notifications.value.unshift(notification);
+      if (!notification.read) {
+        unreadCount.value++;
+      }
     }
   };
   ws.onclose = async () => {
