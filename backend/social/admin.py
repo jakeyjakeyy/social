@@ -9,6 +9,7 @@ from .models import (
     MarkdownPost,
     ImagePost,
     Notification,
+    NotificationStream,
 )
 
 admin.site.register(Account)
@@ -20,3 +21,4 @@ admin.site.register(Repost)
 admin.site.register(MarkdownPost)
 admin.site.register(ImagePost)
 admin.site.register(Notification)
+admin.site.register(NotificationStream)

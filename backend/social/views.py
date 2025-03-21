@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from social import models
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -396,7 +397,14 @@ class NotificationToken(APIView):
         if not request.user.is_authenticated:
             return Response({"message": "Not logged in"}, status=401)
         account = models.Account.objects.get(user=request.user)
+
+        try:
+            stream = models.NotificationStream.objects.get(account=account)
+        except models.NotificationStream.DoesNotExist:
+            stream = models.NotificationStream.objects.create(account=account)
+
         secure_token = secrets.token_urlsafe(32)
-        account.notification_token = secure_token
-        account.save()
+        stream.token = secure_token
+        stream.created_at = timezone.now()
+        stream.save()
         return Response({"token": secure_token})

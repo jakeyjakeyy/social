@@ -26,7 +26,6 @@ class Account(models.Model):
         upload_to=user_image_path, blank=True, null=True
     )
     banner_picture = models.ImageField(upload_to=user_image_path, blank=True, null=True)
-    notification_token = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -167,7 +166,10 @@ class Notification(models.Model):
 @receiver(post_save, sender=Notification)
 def send_notification(sender, instance, **kwargs):
     user_id = instance.account.user.id
-    token = instance.account.notification_token
+    notification_stream = instance.account.notification_stream.first()
+    if not notification_stream:
+        return
+    token = notification_stream.token
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         f"notification_{user_id}_{token}",
@@ -185,3 +187,14 @@ def send_notification(sender, instance, **kwargs):
             },
         },
     )
+
+
+class NotificationStream(models.Model):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="notification_stream"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    token = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.account.user.username} - {self.created_at}"

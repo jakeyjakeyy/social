@@ -90,12 +90,16 @@ const markAsRead = (index: number) => {
   }
 };
 
-onMounted(async () => {
+const initWebSocket = async () => {
   notificationToken = await fetchNotificationToken();
-
   ws = new WebSocket(
     `ws://localhost:8000/ws/notification/${accountId}/?token=${notificationToken}`
   );
+  if (!ws) {
+    console.log("WebSocket connection failed");
+    return;
+  }
+
   ws.onmessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
     const notification = data.message;
@@ -105,17 +109,12 @@ onMounted(async () => {
     }
   };
   ws.onclose = async () => {
-    notificationToken = await fetchNotificationToken();
-    ws = new WebSocket(
-      `ws://localhost:8000/ws/notification/${accountId}/?token=${notificationToken}`
-    );
-    if (!ws) {
-      notificationToken = null;
-      console.log("WebSocket connection closed");
-      return;
-    }
+    await initWebSocket();
   };
+};
 
+onMounted(async () => {
+  await initWebSocket();
   document.addEventListener("click", handleClickOutside);
 });
 
