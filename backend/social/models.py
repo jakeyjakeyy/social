@@ -181,6 +181,7 @@ def send_notification(sender, instance, **kwargs):
                     instance.created_at.isoformat() if instance.created_at else None
                 ),
                 "post_id": instance.post.id if instance.post else None,
+                "notification_id": instance.id,
             },
         },
     )

@@ -16,6 +16,8 @@ const showDropdown = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 const accountId = localStorage.getItem("account_id");
 const token = getAccessToken();
+let ws: WebSocket | null = null;
+let notificationToken: string | null = null;
 
 const fetchNotificationToken = async () => {
   const res = await fetch("http://localhost:8000/api/notification/token", {
@@ -89,9 +91,9 @@ const markAsRead = (index: number) => {
 };
 
 onMounted(async () => {
-  const notificationToken = await fetchNotificationToken();
+  notificationToken = await fetchNotificationToken();
 
-  const ws = new WebSocket(
+  ws = new WebSocket(
     `ws://localhost:8000/ws/notification/${accountId}/?token=${notificationToken}`
   );
   ws.onmessage = (event: MessageEvent) => {
@@ -102,12 +104,26 @@ onMounted(async () => {
       unreadCount.value++;
     }
   };
+  ws.onclose = async () => {
+    notificationToken = await fetchNotificationToken();
+    ws = new WebSocket(
+      `ws://localhost:8000/ws/notification/${accountId}/?token=${notificationToken}`
+    );
+    if (!ws) {
+      notificationToken = null;
+      console.log("WebSocket connection closed");
+      return;
+    }
+  };
 
   document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
+  if (ws) {
+    ws.close();
+  }
 });
 </script>
 

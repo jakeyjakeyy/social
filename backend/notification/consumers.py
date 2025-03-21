@@ -29,6 +29,8 @@ class NotificationConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name, self.channel_name
         )
+        self.account.notification_token = None
+        self.account.save()
 
     def send_notification(self, event):
         self.send(text_data=json.dumps({"message": event["message"]}))
