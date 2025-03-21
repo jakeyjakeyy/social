@@ -30,11 +30,5 @@ class NotificationConsumer(WebsocketConsumer):
             self.group_name, self.channel_name
         )
 
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-
-        self.send(text_data=json.dumps({"message": message}))
-
     def send_notification(self, event):
         self.send(text_data=json.dumps({"message": event["message"]}))

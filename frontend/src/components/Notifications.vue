@@ -1,8 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 
-const notifications = ref<string[]>([]);
+interface Notification {
+  action: string;
+  action_account: string;
+  read: boolean;
+  created_at: string;
+  post_id: number | null;
+}
+
+const notifications = ref<Notification[]>([]);
+const unreadCount = ref(0);
+const showDropdown = ref(false);
+const dropdownRef = ref<HTMLElement | null>(null);
 const accountId = localStorage.getItem("account_id");
 const token = getAccessToken();
 
@@ -29,6 +40,54 @@ const fetchNotificationToken = async () => {
   return data.token;
 };
 
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    showDropdown.value = false;
+  }
+};
+
+const formatNotificationTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffSecs < 60) return `${diffSecs}s ago`;
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${diffDays}d ago`;
+};
+
+const getNotificationMessage = (notification: Notification) => {
+  switch (notification.action) {
+    case "followed":
+      return `${notification.action_account} followed you`;
+    default:
+      return `${notification.action_account} ${notification.action}`;
+  }
+};
+
+const markAsRead = (index: number) => {
+  if (!notifications.value[index].read) {
+    notifications.value[index].read = true;
+    if (unreadCount.value > 0) {
+      unreadCount.value--;
+    }
+  }
+
+  // Handle navigation if notification has post_id
+  if (notifications.value[index].post_id) {
+    console.log(`Navigate to post ${notifications.value[index].post_id}`);
+  }
+};
+
 onMounted(async () => {
   const notificationToken = await fetchNotificationToken();
 
@@ -36,14 +95,184 @@ onMounted(async () => {
     `ws://localhost:8000/ws/notification/${accountId}/?token=${notificationToken}`
   );
   ws.onmessage = (event: MessageEvent) => {
-    notifications.value.push(event.data);
-    console.log(notifications.value);
+    const data = JSON.parse(event.data);
+    const notification = data.message;
+    notifications.value.unshift(notification);
+    if (!notification.read) {
+      unreadCount.value++;
+    }
   };
+
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
 <template>
-  <div>Notifications</div>
+  <div class="notification-container">
+    <div class="notification-icon" @click.stop="toggleDropdown">
+      <v-icon name="ri-notification-3-line" />
+      <span v-if="unreadCount > 0" class="notification-badge">{{
+        unreadCount
+      }}</span>
+    </div>
+
+    <div
+      v-if="showDropdown"
+      class="notification-dropdown"
+      ref="dropdownRef"
+      @click.stop
+    >
+      <div class="notification-header">
+        <h3>Notifications</h3>
+      </div>
+      <div class="notification-list">
+        <div v-if="notifications.length === 0" class="notification-empty">
+          No notifications yet
+        </div>
+        <div
+          v-for="(notification, index) in notifications"
+          :key="index"
+          class="notification-item"
+          :class="{ unread: !notification.read }"
+          @click="markAsRead(index)"
+        >
+          <div class="notification-content">
+            <p class="notification-message">
+              {{ getNotificationMessage(notification) }}
+            </p>
+            <span class="notification-time">{{
+              formatNotificationTime(notification.created_at)
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.notification-container {
+  position: relative;
+}
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: var(--danger);
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -90px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.notification-header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--surface-hover);
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.notification-list {
+  padding: var(--spacing-xs);
+}
+
+.notification-item {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background-color: var(--surface-hover);
+}
+
+.notification-item.unread {
+  background-color: rgba(37, 99, 235, 0.05);
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.notification-message {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.notification-time {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.notification-empty {
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .notification-dropdown {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: calc(100vh - 64px);
+    border-radius: 0;
+  }
+}
+</style>

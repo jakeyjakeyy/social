@@ -164,7 +164,7 @@ class Notification(models.Model):
         return f"{self.account.user.username} notified about {self.action_account.user.username} {self.action}"
 
 
-@receiver(pre_save, sender=Notification)
+@receiver(post_save, sender=Notification)
 def send_notification(sender, instance, **kwargs):
     user_id = instance.account.user.id
     token = instance.account.notification_token
@@ -177,7 +177,9 @@ def send_notification(sender, instance, **kwargs):
                 "action": instance.action,
                 "action_account": instance.action_account.user.username,
                 "read": instance.read,
-                "created_at": instance.created_at,
+                "created_at": (
+                    instance.created_at.isoformat() if instance.created_at else None
+                ),
                 "post_id": instance.post.id if instance.post else None,
             },
         },
