@@ -352,6 +352,13 @@ class ProfileInfo(APIView):
                 "following": following,
                 "username": account.user.username,
                 "is_owner": account.user == request.user,
+                "is_following": (
+                    models.Follow.objects.filter(
+                        follower=request.user.account, following=account
+                    ).exists()
+                    if request.user.is_authenticated
+                    else False
+                ),
                 "profile_picture": (
                     account.profile_picture.url if account.profile_picture else None
                 ),

@@ -5,8 +5,6 @@ import { useRoute } from "vue-router";
 import type { Post as posttype } from "@/types/Post";
 import { checkToken, getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import type { ProfileInfo } from "@/types/ProfileInfo";
-import ExpandedPost from "./ExpandedPost.vue";
-import AddPost from "./AddPost.vue";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 let access_token = getAccessToken();
@@ -50,33 +48,6 @@ const fetchPosts = async () => {
   posts.value = [...posts.value, ...data];
 };
 
-const checkFollow = async () => {
-  const res = await fetch(
-    `${BACKEND_URL}/api/follow?username=${username.value}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(access_token && { Authorization: `Bearer ${access_token}` }),
-      },
-    }
-  );
-  const data = await res.json();
-  if (res.status != 200) {
-    alert(data.message);
-  }
-  if (data.detail) {
-    let refresh = await RefreshToken();
-    if (refresh.error) {
-      alert("Please login again");
-    } else {
-      access_token = getAccessToken();
-      await checkFollow();
-    }
-    return;
-  }
-  isFollowing.value = data.following;
-};
 const handleFollow = async () => {
   const res = await fetch(`${BACKEND_URL}/api/follow`, {
     method: "POST",
@@ -88,9 +59,6 @@ const handleFollow = async () => {
   });
   let data = await res.json();
   if (res.status != 200) {
-    alert(data.message);
-  }
-  if (data.detail) {
     let refresh = await RefreshToken();
     if (refresh.error) {
       alert("Please login again");
@@ -117,7 +85,7 @@ const fetchProfileInfo = async () => {
     }
   );
   const data = await res.json();
-  if (data.detail) {
+  if (res.status != 200) {
     let refresh = await RefreshToken();
     if (refresh.error) {
       alert("Please login again");
@@ -128,6 +96,7 @@ const fetchProfileInfo = async () => {
   }
   profileInfo.value = data;
   isOwner.value = data.is_owner;
+  isFollowing.value = data.is_following;
 };
 
 const loadProfileData = async () => {
@@ -136,7 +105,6 @@ const loadProfileData = async () => {
   username.value = route.params.username as string;
   await fetchProfileInfo();
   await fetchPosts();
-  if (loggedIn) await checkFollow();
 };
 
 onMounted(async () => {
