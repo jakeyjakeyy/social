@@ -1,5 +1,6 @@
 import html
 import logging
+import secrets
 from PIL import Image as PILImage
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -379,3 +380,16 @@ class ProfileInfo(APIView):
             account.banner_picture = data["file"]
             account.save()
         return Response({"message": "Profile updated successfully"})
+
+
+class NotificationToken(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        account = models.Account.objects.get(user=request.user)
+        secure_token = secrets.token_urlsafe(32)
+        account.notification_token = secure_token
+        account.save()
+        return Response({"token": secure_token})

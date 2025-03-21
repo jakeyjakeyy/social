@@ -26,6 +26,7 @@ class Account(models.Model):
         upload_to=user_image_path, blank=True, null=True
     )
     banner_picture = models.ImageField(upload_to=user_image_path, blank=True, null=True)
+    notification_token = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -166,18 +167,17 @@ class Notification(models.Model):
 @receiver(pre_save, sender=Notification)
 def send_notification(sender, instance, **kwargs):
     user_id = instance.account.user.id
+    token = instance.account.notification_token
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
-        f"notification_{user_id}",
+        f"notification_{user_id}_{token}",
         {
             "type": "send_notification",
             "message": {
                 "action": instance.action,
                 "action_account": instance.action_account.user.username,
                 "read": instance.read,
-                "created_at": (
-                    instance.created_at.isoformat() if instance.created_at else None
-                ),
+                "created_at": instance.created_at,
                 "post_id": instance.post.id if instance.post else None,
             },
         },
