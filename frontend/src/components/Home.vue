@@ -61,13 +61,13 @@ const fetchPosts = async (followingFeed = false) => {
   });
   const data = await res.json();
 
-  if (data.detail) {
+  if (res.status != 200) {
     const refresh = await RefreshToken();
     if (refresh.error) {
       alert("Please login again");
     } else {
       access_token = getAccessToken();
-      await fetchPosts();
+      return await fetchPosts();
     }
     return;
   }
