@@ -36,7 +36,7 @@ async function RefreshToken() {
 }
 
 function checkToken() {
-  const refresh = cookies.get("access_token");
+  const refresh = cookies.get("refresh_token");
   if (!refresh) return false;
   const refreshDecoded = jwtDecode(refresh);
   const currentTime = Date.now() / 1000;
