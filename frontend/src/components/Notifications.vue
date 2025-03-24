@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 
 interface Notification {
@@ -19,7 +19,9 @@ const accountId = localStorage.getItem("account_id");
 const token = getAccessToken();
 let ws: WebSocket | null = null;
 let notificationToken: string | null = null;
-
+const page = ref(1);
+const lastPage = ref(false);
+const fetchingNotifications = ref(false);
 const fetchNotificationToken = async () => {
   const res = await fetch("http://localhost:8000/api/notification/token", {
     headers: {
@@ -46,6 +48,37 @@ const fetchNotificationToken = async () => {
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
+
+const handleScroll = () => {
+  if (!dropdownRef.value) return;
+
+  const { scrollTop, scrollHeight, clientHeight } = dropdownRef.value;
+  if (scrollHeight - scrollTop - clientHeight < scrollHeight * 0.2) {
+    getNotifications();
+  }
+};
+
+const setupScrollListener = () => {
+  if (dropdownRef.value) {
+    dropdownRef.value.addEventListener("scroll", handleScroll);
+  }
+};
+
+const cleanupScrollListener = () => {
+  if (dropdownRef.value) {
+    dropdownRef.value.removeEventListener("scroll", handleScroll);
+  }
+};
+
+watch(showDropdown, (newValue) => {
+  if (newValue) {
+    nextTick(() => {
+      setupScrollListener();
+    });
+  } else {
+    cleanupScrollListener();
+  }
+});
 
 const handleClickOutside = (event: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
@@ -128,7 +161,31 @@ const initWebSocket = async () => {
   };
 };
 
+const getNotifications = async () => {
+  if (lastPage.value || fetchingNotifications.value) return;
+  fetchingNotifications.value = true;
+  const res = await fetch(
+    `http://localhost:8000/api/notification?page=${page.value}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const data = await res.json();
+  notifications.value.push(...data);
+  unreadCount.value = notifications.value.filter(
+    (notification) => !notification.read
+  ).length;
+  if (data.length === 0) {
+    lastPage.value = true;
+  }
+  page.value++;
+  fetchingNotifications.value = false;
+};
+
 onMounted(async () => {
+  await getNotifications();
   await initWebSocket();
   document.addEventListener("click", handleClickOutside);
 });

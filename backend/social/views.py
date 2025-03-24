@@ -408,3 +408,28 @@ class NotificationToken(APIView):
         stream.created_at = timezone.now()
         stream.save()
         return Response({"token": secure_token})
+
+
+def serialize_notification(notification):
+    return {
+        "action_account": notification.action_account.user.username,
+        "action": notification.action,
+        "post_id": notification.post.id if notification.post else None,
+        "created_at": notification.created_at,
+        "read": notification.read,
+        "notification_id": notification.id,
+    }
+
+
+class Notification(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        page = int(request.GET.get("page", 1))
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        account = models.Account.objects.get(user=request.user)
+        notifications = models.Notification.objects.filter(account=account).order_by(
+            "-created_at"
+        )[(page - 1) * PAGE_SIZE : page * PAGE_SIZE]
+        return Response([serialize_notification(n) for n in notifications])

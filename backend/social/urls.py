@@ -17,4 +17,5 @@ urlpatterns = [
     path("follow", Follow.as_view(), name="follow"),
     path("account/id", GetAccountId.as_view(), name="get-account-id"),
     path("notification/token", NotificationToken.as_view(), name="notification-token"),
+    path("notification", Notification.as_view(), name="notification"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
