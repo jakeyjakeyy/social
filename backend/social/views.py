@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from social import models
 from django.utils import timezone
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -425,11 +426,14 @@ class Notification(APIView):
     authentication_classes = [JWTAuthentication]
 
     def get(self, request):
-        page = int(request.GET.get("page", 1))
+        timestamp = int(request.GET.get("timestamp", datetime.now().timestamp() * 1000))
+        time_from = datetime.fromtimestamp(timestamp / 1000)
         if not request.user.is_authenticated:
             return Response({"message": "Not logged in"}, status=401)
         account = models.Account.objects.get(user=request.user)
         notifications = models.Notification.objects.filter(account=account).order_by(
             "-created_at"
-        )[(page - 1) * PAGE_SIZE : page * PAGE_SIZE]
+        )
+        notifications = notifications.filter(created_at__lte=time_from)
+        notifications = notifications[0:PAGE_SIZE]
         return Response([serialize_notification(n) for n in notifications])

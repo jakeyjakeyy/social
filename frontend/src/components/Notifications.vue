@@ -19,9 +19,10 @@ const accountId = localStorage.getItem("account_id");
 let token = getAccessToken();
 let ws: WebSocket | null = null;
 let notificationToken: string | null = null;
-const page = ref(1);
+const page = ref(new Date().getTime());
 const lastPage = ref(false);
 const fetchingNotifications = ref(false);
+
 const fetchNotificationToken = async () => {
   token = getAccessToken();
   const res = await fetch("http://localhost:8000/api/notification/token", {
@@ -166,7 +167,7 @@ const getNotifications = async () => {
   if (lastPage.value || fetchingNotifications.value) return;
   fetchingNotifications.value = true;
   const res = await fetch(
-    `http://localhost:8000/api/notification?page=${page.value}`,
+    `http://localhost:8000/api/notification?timestamp=${page.value}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -181,7 +182,9 @@ const getNotifications = async () => {
   if (data.length === 0) {
     lastPage.value = true;
   }
-  page.value++;
+  page.value = new Date(
+    notifications.value[notifications.value.length - 1].created_at
+  ).getTime();
   fetchingNotifications.value = false;
 };
 
