@@ -8,7 +8,7 @@ import type { ProfileInfo } from "@/types/ProfileInfo";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 let access_token = getAccessToken();
-let page = 1;
+let page = new Date().getTime();
 const route = useRoute();
 const username = ref(route.params.username as string);
 const posts = ref<posttype[]>([]);
@@ -24,7 +24,7 @@ let fetchingPosts = false;
 
 const fetchPosts = async () => {
   const res = await fetch(
-    `${BACKEND_URL}/api/profile/${username.value}/${page}`,
+    `${BACKEND_URL}/api/profile?username=${username.value}&timestamp=${page}`,
     {
       method: "GET",
       headers: {
@@ -100,7 +100,7 @@ const fetchProfileInfo = async () => {
 
 const loadProfileData = async () => {
   posts.value = [];
-  page = 1;
+  page = new Date().getTime();
   username.value = route.params.username as string;
   await fetchProfileInfo();
   await fetchPosts();
@@ -119,12 +119,11 @@ onMounted(async () => {
       !fetchingPosts
     ) {
       scrollPosition = window.scrollY;
-      page++;
+      page = new Date(posts.value[posts.value.length - 1].created_at).getTime();
       const oldPosts = posts.value;
       fetchingPosts = true;
       await fetchPosts();
       if (oldPosts.length === posts.value.length) {
-        page--;
         lastPage.value = true;
       }
       fetchingPosts = false;
