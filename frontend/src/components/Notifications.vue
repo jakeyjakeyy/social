@@ -16,13 +16,14 @@ const unreadCount = ref(0);
 const showDropdown = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 const accountId = localStorage.getItem("account_id");
-const token = getAccessToken();
+let token = getAccessToken();
 let ws: WebSocket | null = null;
 let notificationToken: string | null = null;
 const page = ref(1);
 const lastPage = ref(false);
 const fetchingNotifications = ref(false);
 const fetchNotificationToken = async () => {
+  token = getAccessToken();
   const res = await fetch("http://localhost:8000/api/notification/token", {
     headers: {
       Authorization: `Bearer ${token}`,

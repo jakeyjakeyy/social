@@ -47,6 +47,9 @@ class NotificationConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({"message": event["message"]}))
 
     def delete_notification(self, event):
+        if self.notification_stream.created_at + timedelta(minutes=15) < timezone.now():
+            self.close()
+            return
         self.send(
             text_data=json.dumps({"type": "delete_notification", "id": event["id"]})
         )
