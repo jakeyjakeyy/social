@@ -206,7 +206,8 @@ class Post(APIView):
         return Response({"message": "Invalid post type"}, status=400)
 
     def get(self, request):
-        page = int(request.GET.get("page", 1))
+        timestamp = int(request.GET.get("timestamp", datetime.now().timestamp() * 1000))
+        time_from = datetime.fromtimestamp(timestamp / 1000)
         replies = request.GET.get("replies", False)
         followingFeed = request.GET.get("following", False)
         if replies == False:  # Get all posts (that aren't replies)
@@ -218,23 +219,23 @@ class Post(APIView):
                         account__in=[f.following for f in following]
                     )
                     .order_by("-created_at")
-                    .exclude(reply_to__isnull=False)[
-                        (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-                    ]
+                    .exclude(reply_to__isnull=False)
+                    .filter(created_at__lte=time_from)[0:PAGE_SIZE]
                 )
             else:  # Else get all posts
                 posts = (
                     models.Post.objects.all()
                     .order_by("-created_at")
-                    .exclude(reply_to__isnull=False)[
-                        (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-                    ]
+                    .exclude(reply_to__isnull=False)
+                    .filter(created_at__lte=time_from)[0:PAGE_SIZE]
                 )
         else:  # Get replies to a specific post
             post = models.Post.objects.get(id=int(replies))
-            posts = models.Post.objects.filter(reply_to=post).order_by("-created_at")[
-                (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-            ]
+            posts = (
+                models.Post.objects.filter(reply_to=post)
+                .order_by("-created_at")
+                .filter(created_at__lte=time_from)[0:PAGE_SIZE]
+            )
         account = (
             models.Account.objects.get(user=request.user)
             if request.user.is_authenticated
@@ -260,14 +261,18 @@ class Post(APIView):
 class Profile(APIView):
     authentication_classes = [JWTAuthentication]
 
-    def get(self, request, username, page=1):
-        page = int(page)
+    def get(self, request):
+        timestamp = int(request.GET.get("timestamp", datetime.now().timestamp() * 1000))
+        time_from = datetime.fromtimestamp(timestamp / 1000)
+        username = request.GET.get("username")
         account = models.Account.objects.get(
             user=models.User.objects.get(username=username)
         )
-        posts = models.Post.objects.filter(account=account).order_by("-created_at")[
-            (page - 1) * PAGE_SIZE : page * PAGE_SIZE
-        ]
+        posts = (
+            models.Post.objects.filter(account=account)
+            .order_by("-created_at")
+            .filter(created_at__lte=time_from)[0:PAGE_SIZE]
+        )
         post_data = [serialize_post(post, request.user) for post in posts]
         return Response(post_data)
 

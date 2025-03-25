@@ -12,7 +12,7 @@ const expandedPost = ref<PostType | null>(null);
 const showAddPost = ref(false);
 const replyToPostId = ref<number | null>(null);
 let access_token = getAccessToken();
-let page = 1;
+let page = new Date().getTime();
 const lastPage = ref<boolean>(false);
 let scrollPosition = 0;
 let fetchingPosts = false;
@@ -32,12 +32,11 @@ onMounted(async () => {
       !fetchingPosts
     ) {
       scrollPosition = window.scrollY;
-      page++;
+      page = new Date(posts.value[posts.value.length - 1].created_at).getTime();
       const oldPosts = posts.value;
       fetchingPosts = true;
       await fetchPosts();
       if (oldPosts.length === posts.value.length) {
-        page--;
         lastPage.value = true;
       }
       fetchingPosts = false;
@@ -48,9 +47,9 @@ onMounted(async () => {
 const fetchPosts = async (followingFeed = false) => {
   let path;
   if (followingFeed) {
-    path = `${BACKEND_URL}/api/post?page=${page}&following=true`;
+    path = `${BACKEND_URL}/api/post?timestamp=${page}&following=true`;
   } else {
-    path = `${BACKEND_URL}/api/post?page=${page}`;
+    path = `${BACKEND_URL}/api/post?timestamp=${page}`;
   }
   const res = await fetch(`${path}`, {
     method: "GET",
