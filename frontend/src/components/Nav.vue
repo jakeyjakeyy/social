@@ -46,6 +46,7 @@ const navigateTo = (path: string) => {
         deleteTokens();
         localStorage.removeItem("username");
         navItems[2].name = "Login";
+        window.location.reload();
         break;
       case false:
         showModal.value = true;

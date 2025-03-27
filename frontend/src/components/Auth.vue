@@ -90,6 +90,7 @@ const submitForm = async () => {
   password.value = "";
   confirmPassword.value = "";
   registerActive.value = false;
+  window.location.reload();
 };
 
 const toggleRegister = () => {
