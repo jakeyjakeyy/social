@@ -112,7 +112,10 @@ const getNotificationMessage = (notification: Notification) => {
   }
 };
 
-const postMarkAsRead = async (notification_id: number) => {
+const callMarkAsRead = async (
+  notification_id: number | null,
+  type: string = "read"
+) => {
   const res = await fetch("http://localhost:8000/api/notification", {
     method: "POST",
 
@@ -120,7 +123,7 @@ const postMarkAsRead = async (notification_id: number) => {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ notification_id, type: "read" }),
+    body: JSON.stringify({ notification_id, type }),
   });
   if (!res.ok) {
     try {
@@ -129,7 +132,7 @@ const postMarkAsRead = async (notification_id: number) => {
         console.log(data.message);
         return;
       }
-      return await postMarkAsRead(notification_id);
+      return await callMarkAsRead(notification_id);
     } catch (err) {
       console.log(err);
       return;
@@ -140,7 +143,7 @@ const postMarkAsRead = async (notification_id: number) => {
 const markAsRead = async (index: number) => {
   let notification = notifications.value[index];
   if (!notification.read) {
-    await postMarkAsRead(notification.notification_id);
+    await callMarkAsRead(notification.notification_id);
     notifications.value[index].read = true;
     if (unreadCount.value > 0) {
       unreadCount.value--;
@@ -215,6 +218,14 @@ const getNotifications = async () => {
   fetchingNotifications.value = false;
 };
 
+const markAllAsRead = async () => {
+  await callMarkAsRead(null, "all");
+  notifications.value.forEach((notification) => {
+    notification.read = true;
+  });
+  unreadCount.value = 0;
+};
+
 onMounted(async () => {
   await getNotifications();
   await initWebSocket();
@@ -245,7 +256,16 @@ onUnmounted(() => {
       @click.stop
     >
       <div class="notification-header">
-        <h3>Notifications</h3>
+        <div class="notification-header-content">
+          <h3>Notifications</h3>
+          <button
+            v-if="unreadCount > 0"
+            @click="markAllAsRead"
+            class="mark-all-as-read-button"
+          >
+            <v-icon name="ri-check-line" />
+          </button>
+        </div>
       </div>
       <div class="notification-list">
         <div v-if="notifications.length === 0" class="notification-empty">
@@ -326,6 +346,27 @@ onUnmounted(() => {
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.notification-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mark-all-as-read-button {
+  font-size: var(--font-size-sm);
+  color: var(--primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.mark-all-as-read-button:hover {
+  background-color: var(--surface-hover);
 }
 
 .notification-list {

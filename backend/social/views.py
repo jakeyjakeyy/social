@@ -456,3 +456,9 @@ class Notification(APIView):
             notification.read = True
             notification.save()
             return Response({"message": "Notification read successfully"})
+        elif data["type"] == "all":
+            notifications = models.Notification.objects.filter(account=account)
+            for notification in notifications:
+                notification.read = True
+                notification.save()
+            return Response({"message": "All notifications read successfully"})
