@@ -442,3 +442,17 @@ class Notification(APIView):
         notifications = notifications.filter(created_at__lte=time_from)
         notifications = notifications[0:PAGE_SIZE]
         return Response([serialize_notification(n) for n in notifications])
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        account = models.Account.objects.get(user=request.user)
+        data = request.data
+        if data["type"] == "read":
+            notification_id = data["notification_id"]
+            notification = models.Notification.objects.get(id=notification_id)
+            if notification.account != account:
+                return Response({"message": "Not authorized"}, status=403)
+            notification.read = True
+            notification.save()
+            return Response({"message": "Notification read successfully"})

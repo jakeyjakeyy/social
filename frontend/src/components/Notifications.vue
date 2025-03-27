@@ -112,8 +112,35 @@ const getNotificationMessage = (notification: Notification) => {
   }
 };
 
-const markAsRead = (index: number) => {
-  if (!notifications.value[index].read) {
+const postMarkAsRead = async (notification_id: number) => {
+  const res = await fetch("http://localhost:8000/api/notification", {
+    method: "POST",
+
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ notification_id, type: "read" }),
+  });
+  if (!res.ok) {
+    try {
+      const data = await RefreshToken();
+      if (data.error) {
+        console.log(data.message);
+        return;
+      }
+      return await postMarkAsRead(notification_id);
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  }
+};
+
+const markAsRead = async (index: number) => {
+  let notification = notifications.value[index];
+  if (!notification.read) {
+    await postMarkAsRead(notification.notification_id);
     notifications.value[index].read = true;
     if (unreadCount.value > 0) {
       unreadCount.value--;
@@ -121,8 +148,8 @@ const markAsRead = (index: number) => {
   }
 
   // Handle navigation if notification has post_id
-  if (notifications.value[index].post_id) {
-    console.log(`Navigate to post ${notifications.value[index].post_id}`);
+  if (notification.post_id) {
+    console.log(`Navigate to post ${notification.post_id}`);
   }
 };
 
