@@ -21,6 +21,8 @@ const bannerFileInput = ref<HTMLInputElement | null>(null);
 const lastPage = ref<boolean>(false);
 let scrollPosition = 0;
 let fetchingPosts = false;
+const editDisplayName = ref<boolean>(false);
+const newDisplayName = ref<string>("");
 
 const fetchPosts = async () => {
   const res = await fetch(
@@ -96,6 +98,7 @@ const fetchProfileInfo = async () => {
   profileInfo.value = data;
   isOwner.value = data.is_owner;
   isFollowing.value = data.is_following;
+  newDisplayName.value = data.display_name;
 };
 
 const loadProfileData = async () => {
@@ -190,6 +193,39 @@ const handleFileUpload = async (event: Event, type: string) => {
 
   input.value = "";
 };
+
+const updateDisplayName = async () => {
+  if (newDisplayName.value !== profileInfo.value?.display_name) {
+    const res = await fetch(`${BACKEND_URL}/api/profile/info`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        display_name: newDisplayName.value,
+        type: "display_name",
+        username: username.value,
+      }),
+    });
+    let data = await res.json();
+    if (!res.ok) {
+      if (data.detail) {
+        let refresh = await RefreshToken();
+        if (refresh.error) {
+          alert("Please login again");
+        } else {
+          access_token = getAccessToken();
+          await updateDisplayName();
+        }
+      }
+      alert(data.message || "Failed to update display name");
+    } else if (profileInfo.value) {
+      profileInfo.value.display_name = newDisplayName.value;
+    }
+  }
+  editDisplayName.value = false;
+};
 </script>
 <template>
   <div class="profile-container">
@@ -254,9 +290,26 @@ const handleFileUpload = async (event: Event, type: string) => {
             </figure>
           </div>
           <div class="media-content">
-            <p v-if="profileInfo" class="title is-3">
-              {{ profileInfo.display_name }}
-            </p>
+            <div class="display-name-container">
+              <p v-if="profileInfo && !editDisplayName" class="title is-3">
+                {{ profileInfo.display_name }}
+              </p>
+              <input
+                v-if="profileInfo && isOwner && editDisplayName"
+                v-model="newDisplayName"
+                class="input"
+                @blur="updateDisplayName"
+                @keydown.enter="updateDisplayName"
+              />
+
+              <div
+                v-if="isOwner && !editDisplayName"
+                class="edit-profile-button"
+                @click="editDisplayName = true"
+              >
+                <v-icon name="ri-edit-box-line" />
+              </div>
+            </div>
             <p class="subtitle is-5">@{{ username }}</p>
           </div>
           <div v-if="!isOwner && loggedIn" class="follow-container">
@@ -448,6 +501,32 @@ const handleFileUpload = async (event: Event, type: string) => {
   padding: var(--spacing-xl) 0;
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.display-name-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.edit-profile-button {
+  cursor: pointer;
+  color: var(--primary);
+  padding: 8px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.edit-profile-button:hover {
+  background-color: var(--surface-hover);
+  transform: scale(1.1);
+}
+
+.edit-profile-button:active {
+  transform: scale(0.95);
 }
 
 @keyframes pulse {

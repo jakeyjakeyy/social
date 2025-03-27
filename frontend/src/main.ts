@@ -30,6 +30,7 @@ import {
   RiLoginBoxLine,
   RiNotification3Line,
   RiCheckLine,
+  RiEditBoxLine,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -56,7 +57,8 @@ addIcons(
   RiLogoutBoxLine,
   RiLoginBoxLine,
   RiNotification3Line,
-  RiCheckLine
+  RiCheckLine,
+  RiEditBoxLine
 );
 
 const app = createApp(App);

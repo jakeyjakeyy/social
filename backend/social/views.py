@@ -393,6 +393,9 @@ class ProfileInfo(APIView):
                 return Response({"message": "Invalid file provided"}, status=400)
             account.banner_picture = data["file"]
             account.save()
+        if data["type"] == "display_name":
+            account.display_name = data["display_name"]
+            account.save()
         return Response({"message": "Profile updated successfully"})
 
 
