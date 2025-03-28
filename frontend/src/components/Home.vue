@@ -75,7 +75,7 @@ const fetchPosts = async (followingFeed = false) => {
 };
 
 const toggleFeed = async (e: MouseEvent) => {
-  page = 1;
+  page = new Date().getTime();
   posts.value = [];
   if (e.target === allButtonRef.value) {
     followingFeed.value = false;
