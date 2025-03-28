@@ -2,7 +2,7 @@
 import Post from "./Post.vue";
 import type { Post as postType } from "@/types/Post";
 const emit = defineEmits(["closeExpandedPost"]);
-const props = defineProps<{ post: any }>();
+const props = defineProps<{ post: any; notModal?: boolean }>();
 import { onMounted, ref } from "vue";
 import AddPost from "./AddPost.vue";
 
@@ -18,7 +18,7 @@ onMounted(() => {
 
 const clickBounds = (e: MouseEvent) => {
   if (!modalRef.value || showAddPost.value) return false;
-  if (!modalRef.value.contains(e.target as Node)) {
+  if (!props.notModal && !modalRef.value.contains(e.target as Node)) {
     emit("closeExpandedPost");
   }
 };
@@ -45,10 +45,26 @@ const handleCloseAddPost = (success: boolean) => {
 };
 </script>
 <template>
-  <div class="expanded-post-overlay" @click="clickBounds">
-    <div class="expanded-post-modal" ref="modalRef">
+  <div
+    :class="{
+      'expanded-post-overlay': !props.notModal,
+      'expanded-post-container': props.notModal,
+    }"
+    @click="clickBounds"
+  >
+    <div
+      :class="{
+        'expanded-post-modal': !props.notModal,
+        'expanded-post-wrapper': props.notModal,
+      }"
+      ref="modalRef"
+    >
       <div class="expanded-post-content">
-        <button class="close-button" @click="emit('closeExpandedPost')">
+        <button
+          v-if="!props.notModal"
+          class="close-button"
+          @click="emit('closeExpandedPost')"
+        >
           <v-icon name="io-close" scale="1.5" />
         </button>
         <div class="post-section">
@@ -103,6 +119,12 @@ const handleCloseAddPost = (success: boolean) => {
   padding: var(--spacing-lg);
 }
 
+.expanded-post-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .expanded-post-modal {
   width: 100%;
   max-width: 800px;
@@ -113,6 +135,16 @@ const handleCloseAddPost = (success: boolean) => {
   position: relative;
   overflow: hidden;
   animation: modalSlideIn 0.3s ease-out;
+}
+
+.expanded-post-wrapper {
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--background);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
 }
 
 .expanded-post-content {
@@ -210,7 +242,8 @@ const handleCloseAddPost = (success: boolean) => {
     padding: var(--spacing-sm);
   }
 
-  .expanded-post-modal {
+  .expanded-post-modal,
+  .expanded-post-wrapper {
     margin: var(--spacing-sm) auto;
     border-radius: var(--radius-lg);
   }

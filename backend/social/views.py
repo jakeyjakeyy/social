@@ -206,6 +206,13 @@ class Post(APIView):
         return Response({"message": "Invalid post type"}, status=400)
 
     def get(self, request):
+        if request.GET.get("id"):
+            post = models.Post.objects.get(id=request.GET.get("id"))
+            return Response(
+                serialize_post(
+                    post, request.user if request.user.is_authenticated else None
+                )
+            )
         timestamp = int(request.GET.get("timestamp", datetime.now().timestamp() * 1000))
         time_from = datetime.fromtimestamp(timestamp / 1000)
         replies = request.GET.get("replies", False)
