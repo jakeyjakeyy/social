@@ -28,6 +28,8 @@ const theme = ref<Themes>("dark");
 const showAddPost = ref(false);
 const showReplyTo = ref(false);
 const isReply = props.isReply;
+const showNotification = ref(false);
+
 if (post.is_repost && post.original_post) {
   repostData = post;
   post = post.original_post;
@@ -148,6 +150,14 @@ const handleCloseAddPost = (success: boolean) => {
     emit("deletePost", post.id);
   }
 };
+
+const copyLink = () => {
+  navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+  showNotification.value = true;
+  setTimeout(() => {
+    showNotification.value = false;
+  }, 3000);
+};
 </script>
 
 <template>
@@ -225,6 +235,9 @@ const handleCloseAddPost = (success: boolean) => {
           <v-icon v-else name="ri-repeat-2-fill" class="has-text-success" />
         </span>
       </div>
+      <div class="card-footer-item" @click="copyLink">
+        <v-icon name="ri-share-line" />
+      </div>
       <div
         v-if="post.is_owner"
         class="card-footer-item"
@@ -246,6 +259,9 @@ const handleCloseAddPost = (success: boolean) => {
       :is-reply="post.id"
       @close-add-post-modal="handleCloseAddPost"
     />
+    <div v-if="showNotification" class="notification">
+      Link copied to clipboard
+    </div>
   </Teleport>
 </template>
 
@@ -383,6 +399,43 @@ const handleCloseAddPost = (success: boolean) => {
 
 .card-content {
   padding: var(--spacing-lg);
+}
+
+.notification {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  background-color: var(--surface);
+  border-top: 1px solid var(--border-color);
+  padding: var(--spacing-md);
+  animation: slideUp 0.3s ease-in, slideDown 0.3s ease-out 2.8s;
+  z-index: 999;
+  transform-origin: bottom;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 768px) {
