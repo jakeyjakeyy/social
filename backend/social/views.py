@@ -122,6 +122,7 @@ class Post(APIView):
         account = models.Account.objects.get(user=request.user)
         reply_id = data.get("reply_id")
         reply_post = models.Post.objects.get(id=reply_id) if reply_id else None
+        action = ""
 
         type = data["type"]
         if type == "text":
@@ -130,7 +131,10 @@ class Post(APIView):
                 post=post,
                 content=data["content"],
             )
-            return Response({"message": "Post created successfully"})
+            if reply_post:
+                action = "replied"
+            else:
+                action = "posted"
         elif type == "markdown":
             post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.MarkdownPost.objects.create(
@@ -138,7 +142,10 @@ class Post(APIView):
                 # content=html.escape(data["content"]),
                 content=data["content"],
             )
-            return Response({"message": "Post created successfully"})
+            if reply_post:
+                action = "replied"
+            else:
+                action = "posted"
         elif type == "favorite":
             post = models.Post.objects.get(id=data["post_id"])
             entry = models.Favorite.objects.get_or_create(
@@ -154,13 +161,7 @@ class Post(APIView):
                     action_account=account,
                 ).delete()
                 return Response({"message": "Unfavorited successfully"})
-            models.Notification.objects.create(
-                account=post.account,
-                post=post,
-                action="favorited",
-                action_account=account,
-            )
-            return Response({"message": "Favorited successfully"})
+            action = "favorited"
         elif type == "repost":
             original_post = models.Post.objects.get(id=data["post_id"])
             entry = models.Repost.objects.get_or_create(
@@ -183,13 +184,7 @@ class Post(APIView):
                     account=account, reply_to=reply_post
                 )
                 entry[0].save()
-                models.Notification.objects.create(
-                    account=original_post.account,
-                    post=original_post,
-                    action="reposted",
-                    action_account=account,
-                )
-            return Response({"message": "Reposted successfully"})
+                action = "reposted"
         elif type == "image":
             if not data["image"]:
                 return Response({"message": "No image provided"}, status=400)
@@ -202,8 +197,20 @@ class Post(APIView):
                 image=image,
                 caption=data["caption"],
             )
-            return Response({"message": "Image post created successfully"})
-        return Response({"message": "Invalid post type"}, status=400)
+            if reply_post:
+                action = "replied"
+            else:
+                action = "posted"
+        else:
+            return Response({"message": "Invalid post type"}, status=400)
+
+        models.Notification.objects.create(
+            account=post.account,
+            post=post,
+            action=action,
+            action_account=account,
+        )
+        return Response({"message": "Post created successfully"})
 
     def get(self, request):
         if request.GET.get("id"):
@@ -261,6 +268,7 @@ class Post(APIView):
             return Response(
                 {"detail": "You do not have permission to delete this post"}, status=403
             )
+        models.Notification.objects.filter(post=post).delete()
         post.delete()
         return Response({"message": "Post deleted successfully"})
 
