@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
+import { useRouter } from "vue-router";
 
 interface Notification {
   action: string;
@@ -11,6 +12,7 @@ interface Notification {
   notification_id: number;
 }
 
+const router = useRouter();
 const notifications = ref<Notification[]>([]);
 const unreadCount = ref(0);
 const showDropdown = ref(false);
@@ -152,7 +154,7 @@ const markAsRead = async (index: number) => {
 
   // Handle navigation if notification has post_id
   if (notification.post_id) {
-    console.log(`Navigate to post ${notification.post_id}`);
+    router.push(`/post/${notification.post_id}`);
   }
 };
 
