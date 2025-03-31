@@ -434,11 +434,11 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .notification-dropdown {
     position: fixed;
-    top: 56px;
+    top: 96px;
     left: 0;
     right: 0;
     width: 100%;
-    max-height: calc(100vh - 56px);
+    max-height: calc(100vh - 96px);
     border-radius: 0;
     border-top: 1px solid var(--surface-hover);
   }
@@ -467,13 +467,6 @@ onUnmounted(() => {
 
   .notification-message {
     font-size: var(--font-size-sm);
-  }
-}
-
-@media (max-width: 480px) {
-  .notification-dropdown {
-    top: 96px;
-    max-height: calc(100vh - 96px);
   }
 }
 </style>
