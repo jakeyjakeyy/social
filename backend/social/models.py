@@ -169,6 +169,8 @@ class Notification(models.Model):
 
 @receiver(post_save, sender=Notification)
 def send_notification(sender, instance, **kwargs):
+    if instance.read:
+        return
     user_id = instance.account.user.id
     notification_stream = instance.account.notification_stream.first()
     if not notification_stream:
