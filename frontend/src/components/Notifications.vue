@@ -304,17 +304,19 @@ onUnmounted(() => {
   position: relative;
   cursor: pointer;
   color: var(--text-primary);
+  padding: 8px;
 }
 
 .notification-badge {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
+  min-width: 18px;
   height: 18px;
+  padding: 0 4px;
   background-color: var(--danger);
   color: white;
   font-size: var(--font-size-xs);
@@ -339,6 +341,10 @@ onUnmounted(() => {
 .notification-header {
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--surface-hover);
+  position: sticky;
+  top: 0;
+  background-color: var(--surface);
+  z-index: 1;
 }
 
 .notification-header h3 {
@@ -378,6 +384,7 @@ onUnmounted(() => {
   border-radius: var(--radius-md);
   transition: background-color var(--transition-fast);
   cursor: pointer;
+  margin-bottom: 4px;
 }
 
 .notification-item:hover {
@@ -398,6 +405,7 @@ onUnmounted(() => {
   margin: 0;
   color: var(--text-primary);
   font-size: var(--font-size-sm);
+  line-height: 1.4;
 }
 
 .notification-time {
@@ -426,12 +434,46 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .notification-dropdown {
     position: fixed;
-    top: 64px;
+    top: 56px;
     left: 0;
     right: 0;
     width: 100%;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 56px);
     border-radius: 0;
+    border-top: 1px solid var(--surface-hover);
+  }
+
+  .notification-icon {
+    padding: 6px;
+  }
+
+  .notification-badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+
+  .notification-header {
+    padding: var(--spacing-sm);
+  }
+
+  .notification-header h3 {
+    font-size: var(--font-size-md);
+  }
+
+  .notification-item {
+    padding: var(--spacing-sm);
+  }
+
+  .notification-message {
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-dropdown {
+    top: 96px;
+    max-height: calc(100vh - 96px);
   }
 }
 </style>

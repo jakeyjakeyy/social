@@ -126,12 +126,13 @@ const toggleTheme = () => {
             <span>{{ loggedIn ? "Logout" : "Login" }}</span>
           </div>
           <ThemeSelector @toggle-theme="toggleTheme" />
-          <Notifications v-if="loggedIn" class="nav-item" />
+          <Notifications v-if="loggedIn && !navIsMobile" class="nav-item" />
         </div>
       </div>
 
       <div class="nav-burger" @click="showMobileNav = !showMobileNav">
         <v-icon name="co-hamburger-menu" scale="1.5" />
+        <Notifications v-if="loggedIn && navIsMobile" class="nav-item" />
       </div>
     </div>
   </nav>
@@ -251,7 +252,7 @@ const toggleTheme = () => {
 @media (max-width: 768px) {
   .nav-menu {
     position: fixed;
-    top: 64px;
+    top: 96px;
     left: 0;
     right: 0;
     bottom: 0;
@@ -280,7 +281,8 @@ const toggleTheme = () => {
   }
 
   .nav-burger {
-    display: block;
+    display: flex;
+    justify-content: flex-end;
   }
 }
 </style>

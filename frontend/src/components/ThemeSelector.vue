@@ -76,4 +76,10 @@ onMounted(() => {
 .theme-button:active {
   transform: scale(0.95);
 }
+
+@media (max-width: 768px) {
+  .theme-selector {
+    margin-left: 10px;
+  }
+}
 </style>
