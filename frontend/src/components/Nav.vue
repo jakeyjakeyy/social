@@ -2,7 +2,7 @@
 import Auth from "./Auth.vue";
 import AddPost from "./AddPost.vue";
 import ThemeSelector from "./ThemeSelector.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { deleteTokens, checkToken } from "@/utils/RefreshToken";
 import Notifications from "./Notifications.vue";
@@ -20,23 +20,31 @@ const theme = ref("dark");
 onMounted(() => {
   window.addEventListener("resize", () => {
     screen.value = window.innerWidth;
+    checkNavIsMobile();
   });
 
-  if (screen.value < 768) {
-    navIsMobile.value = true;
-  }
+  checkNavIsMobile();
 
   theme.value = localStorage.getItem("theme") || "dark";
 });
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkNavIsMobile);
+});
+
 const navItems = [
   { name: "Home", path: "/" },
   { name: "Profile", path: "/profile" },
   { name: loggedIn.value ? "Logout" : "Login", path: "/auth" },
 ];
 
-const toggleNavItems = () => {
-  showNavItems.value = !showNavItems.value;
-};
+function checkNavIsMobile() {
+  if (screen.value < 768) {
+    navIsMobile.value = true;
+  } else {
+    navIsMobile.value = false;
+  }
+}
 
 const navigateTo = (path: string) => {
   if (path === "/auth") {
@@ -126,12 +134,13 @@ const toggleTheme = () => {
             <span>{{ loggedIn ? "Logout" : "Login" }}</span>
           </div>
           <ThemeSelector @toggle-theme="toggleTheme" />
-          <Notifications v-if="loggedIn" class="nav-item" />
+          <Notifications v-if="loggedIn && !navIsMobile" class="nav-item" />
         </div>
       </div>
 
       <div class="nav-burger" @click="showMobileNav = !showMobileNav">
         <v-icon name="co-hamburger-menu" scale="1.5" />
+        <Notifications v-if="loggedIn && navIsMobile" class="nav-item" />
       </div>
     </div>
   </nav>
@@ -251,7 +260,7 @@ const toggleTheme = () => {
 @media (max-width: 768px) {
   .nav-menu {
     position: fixed;
-    top: 64px;
+    top: 96px;
     left: 0;
     right: 0;
     bottom: 0;
@@ -280,7 +289,8 @@ const toggleTheme = () => {
   }
 
   .nav-burger {
-    display: block;
+    display: flex;
+    justify-content: flex-end;
   }
 }
 </style>
