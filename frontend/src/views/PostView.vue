@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import ExpandedPost from "@/components/ExpandedPost.vue";
 import type { Post as PostType } from "@/types/Post";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { getAccessToken } from "@/utils/RefreshToken";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const route = useRoute();
-const postId = route.params.id;
+let postId = route.params.id;
 const post = ref<PostType | null>(null);
 async function getPost() {
   const token = getAccessToken();
@@ -23,6 +23,15 @@ async function getPost() {
 onMounted(() => {
   getPost();
 });
+
+watch(
+  () => route.params.id,
+  async (id) => {
+    post.value = null;
+    postId = id;
+    await getPost();
+  }
+);
 </script>
 
 <template>
