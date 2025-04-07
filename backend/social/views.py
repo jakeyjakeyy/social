@@ -118,11 +118,14 @@ class Post(APIView):
     authentication_classes = [JWTAuthentication]
 
     def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"message": "Not logged in"}, status=401)
+        
         data = request.data
         account = models.Account.objects.get(user=request.user)
         reply_id = data.get("reply_id")
         reply_post = models.Post.objects.get(id=reply_id) if reply_id else None
-        action = ""
+        action = None
 
         type = data["type"]
         if type == "text":
@@ -133,8 +136,6 @@ class Post(APIView):
             )
             if reply_post:
                 action = "replied"
-            else:
-                action = "posted"
         elif type == "markdown":
             post = models.Post.objects.create(account=account, reply_to=reply_post)
             models.MarkdownPost.objects.create(
@@ -144,8 +145,6 @@ class Post(APIView):
             )
             if reply_post:
                 action = "replied"
-            else:
-                action = "posted"
         elif type == "favorite":
             post = models.Post.objects.get(id=data["post_id"])
             entry = models.Favorite.objects.get_or_create(
@@ -199,17 +198,16 @@ class Post(APIView):
             )
             if reply_post:
                 action = "replied"
-            else:
-                action = "posted"
         else:
             return Response({"message": "Invalid post type"}, status=400)
 
-        models.Notification.objects.create(
-            account=post.account,
-            post=post,
-            action=action,
-            action_account=account,
-        )
+        if action is not None:
+            models.Notification.objects.create(
+                account=post.account,
+                post=post,
+                action=action,
+                action_account=account,
+            )
         return Response({"message": "Post created successfully"})
 
     def get(self, request):
