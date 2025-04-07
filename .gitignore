@@ -12,3 +12,4 @@ media/
 backend/venv/
 .idea
 backend/notification/__pycache__/
+data/db
