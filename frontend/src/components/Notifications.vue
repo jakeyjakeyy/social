@@ -213,10 +213,11 @@ const getNotifications = async () => {
   ).length;
   if (data.length === 0) {
     lastPage.value = true;
+  } else {
+    page.value = new Date(
+      notifications.value[notifications.value.length - 1].created_at
+    ).getTime();
   }
-  page.value = new Date(
-    notifications.value[notifications.value.length - 1].created_at
-  ).getTime();
   fetchingNotifications.value = false;
 };
 
