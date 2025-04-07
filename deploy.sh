@@ -26,7 +26,7 @@ fi
 # Step 1: Build docker images
 echo -e "${YELLOW}Step 1: Building docker images...${NC}"
 docker rmi $(docker images -q)
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # Step 2: Tag frontend and backend images
 echo -e "${YELLOW}Step 2: Tagging frontend and backend images...${NC}"
