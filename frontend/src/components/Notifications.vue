@@ -12,6 +12,7 @@ interface Notification {
   notification_id: number;
 }
 
+const serverURL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
 const notifications = ref<Notification[]>([]);
 const unreadCount = ref(0);
@@ -27,7 +28,7 @@ const fetchingNotifications = ref(false);
 
 const fetchNotificationToken = async () => {
   token = getAccessToken();
-  const res = await fetch("http://localhost:8000/api/notification/token", {
+  const res = await fetch(`${serverURL}/api/notification/token`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -118,7 +119,7 @@ const callMarkAsRead = async (
   notification_id: number | null,
   type: string = "read"
 ) => {
-  const res = await fetch("http://localhost:8000/api/notification", {
+  const res = await fetch(`${serverURL}/api/notification`, {
     method: "POST",
 
     headers: {
@@ -199,7 +200,7 @@ const getNotifications = async () => {
   if (lastPage.value || fetchingNotifications.value) return;
   fetchingNotifications.value = true;
   const res = await fetch(
-    `http://localhost:8000/api/notification?timestamp=${page.value}`,
+    `${serverURL}/api/notification?timestamp=${page.value}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
