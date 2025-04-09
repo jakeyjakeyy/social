@@ -160,10 +160,14 @@ const markAsRead = async (index: number) => {
 };
 
 const initWebSocket = async () => {
-  const stripURL = serverURL.replace("http://", "").replace("https://", "");
   notificationToken = await fetchNotificationToken();
+  const protocol = serverURL.startsWith("https") ? "wss" : "ws";
+  const stripURL = serverURL.replace("http://", "").replace("https://", "");
+  console.log(
+    `${protocol}://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
+  );
   ws = new WebSocket(
-    `ws://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
+    `${protocol}://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
   );
   if (!ws) {
     console.log("WebSocket connection failed");
