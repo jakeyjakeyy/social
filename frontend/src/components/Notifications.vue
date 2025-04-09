@@ -162,7 +162,7 @@ const markAsRead = async (index: number) => {
 const initWebSocket = async () => {
   notificationToken = await fetchNotificationToken();
   ws = new WebSocket(
-    `ws://localhost:8000/ws/notification/${accountId}/?token=${notificationToken}`
+    `ws://${serverURL}/ws/notification/${accountId}/?token=${notificationToken}`
   );
   if (!ws) {
     console.log("WebSocket connection failed");
