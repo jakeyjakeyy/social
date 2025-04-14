@@ -111,7 +111,7 @@ const getNotificationMessage = (notification: Notification) => {
     case "followed":
       return `${notification.action_account} followed you`;
     default:
-      return `${notification.action_account} ${notification.action}`;
+      return `${notification.action_account} ${notification.action} your post.`;
   }
 };
 
