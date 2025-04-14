@@ -4,7 +4,7 @@
   <footer>
     <div class="footerIcons">
       <div class="icon">
-        <a href="https://www.github.com/jakeyjakeyy" aria-label="github" target="_blank">
+        <a href="https://www.github.com/jakeyjakeyy/social" aria-label="github" target="_blank">
           <v-icon name="fa-github" scale="1.25" />
         </a>
       </div>
