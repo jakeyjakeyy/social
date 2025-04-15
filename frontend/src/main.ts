@@ -32,7 +32,7 @@ import {
   RiCheckLine,
   RiEditBoxLine,
   RiShareLine,
-  FaGithub
+  FaGithub,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -62,7 +62,7 @@ addIcons(
   RiCheckLine,
   RiEditBoxLine,
   RiShareLine,
-  FaGithub
+  FaGithub,
 );
 
 const app = createApp(App);

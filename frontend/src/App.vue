@@ -73,12 +73,15 @@ import Footer from "./components/Footer.vue";
 .grid-cols-1 {
   grid-template-columns: repeat(1, 1fr);
 }
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, 1fr);
 }
+
 .grid-cols-3 {
   grid-template-columns: repeat(3, 1fr);
 }
+
 .grid-cols-4 {
   grid-template-columns: repeat(4, 1fr);
 }
