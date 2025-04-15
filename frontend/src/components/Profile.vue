@@ -19,6 +19,7 @@ const isOwner = ref<boolean>(false);
 const profileFileInput = ref<HTMLInputElement | null>(null);
 const bannerFileInput = ref<HTMLInputElement | null>(null);
 const lastPage = ref<boolean>(false);
+const nothingHere = ref<boolean>(false);
 let scrollPosition = 0;
 let fetchingPosts = false;
 const editDisplayName = ref<boolean>(false);
@@ -46,7 +47,8 @@ const fetchPosts = async () => {
     }
     return;
   }
-  if (data.length === 0) {
+  if (data.length === 0 && posts.value.length === 0) {
+    nothingHere.value = true;
     lastPage.value = true;
   }
   posts.value = [...posts.value, ...data];
@@ -300,7 +302,10 @@ const updateDisplayName = async () => {
     <div v-if="posts.length" class="posts">
       <Post v-for="post in posts" :key="post.id" :post="post" />
     </div>
-    <div v-if="lastPage" class="end-of-posts">
+    <div v-if="nothingHere" class="end-of-posts">
+      <p>No posts here yet</p>
+    </div>
+    <div v-else-if="lastPage" class="end-of-posts">
       <p>You've reached the end</p>
     </div>
     <div v-else class="skeleton-container">

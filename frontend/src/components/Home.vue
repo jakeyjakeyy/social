@@ -14,12 +14,14 @@ const replyToPostId = ref<number | null>(null);
 let access_token = getAccessToken();
 let page = new Date().getTime();
 const lastPage = ref<boolean>(false);
+const nothingHere = ref<boolean>(false);
 let scrollPosition = 0;
 let fetchingPosts = false;
 const allButtonRef = ref<HTMLButtonElement | null>(null);
 const followingButtonRef = ref<HTMLButtonElement | null>(null);
 const loggedIn = ref<boolean>(checkToken());
 const followingFeed = ref<boolean>(false);
+const loading = ref<boolean>(true);
 
 onMounted(async () => {
   await fetchPosts();
@@ -45,6 +47,9 @@ onMounted(async () => {
 });
 
 const fetchPosts = async (followingFeed = false) => {
+  loading.value = true;
+  nothingHere.value = false;
+  lastPage.value = false;
   let path;
   if (followingFeed) {
     path = `${BACKEND_URL}/api/post?timestamp=${page}&following=true`;
@@ -70,8 +75,12 @@ const fetchPosts = async (followingFeed = false) => {
     }
     return;
   }
-
+  if (data.length === 0 && posts.value.length === 0) {
+    nothingHere.value = true;
+    return;
+  }
   posts.value = [...posts.value, ...data];
+
 };
 
 const toggleFeed = async (e: MouseEvent) => {
@@ -114,13 +123,16 @@ const handleCloseAddPost = (success: boolean) => {
       </button>
     </div>
     <div id="home-posts" class="content">
-      <div class="posts-wrapper" v-if="posts.length">
+      <div class="posts-wrapper" v-if="loading">
         <Post v-for="post in posts" :key="post.id" :post="post" @delete-post="fetchPosts" />
       </div>
       <div v-else class="skeleton-container">
         <div class="skeleton-block"></div>
       </div>
-      <div v-if="lastPage" class="end-of-posts">
+      <div v-if="nothingHere" class="end-of-posts">
+        <p>No posts here yet</p>
+      </div>
+      <div v-else-if="lastPage" class="end-of-posts">
         <p>You've reached the end</p>
       </div>
     </div>
