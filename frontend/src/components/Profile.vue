@@ -46,6 +46,9 @@ const fetchPosts = async () => {
     }
     return;
   }
+  if (data.length === 0) {
+    lastPage.value = true;
+  }
   posts.value = [...posts.value, ...data];
 };
 
@@ -233,8 +236,8 @@ const updateDisplayName = async () => {
       <div class="card-image">
         <figure class="image banner-image">
           <img :src="profileInfo?.banner_picture
-              ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
-              : 'https://bulma.io/assets/images/placeholders/1280x960.png'
+            ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
+            : 'https://bulma.io/assets/images/placeholders/1280x960.png'
             " alt="Banner image" />
           <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')">
             <span class="icon">
@@ -250,8 +253,8 @@ const updateDisplayName = async () => {
           <div class="media-left">
             <figure class="image is-128x128 profile-image-container">
               <img :src="profileInfo?.profile_picture
-                  ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
-                  : 'https://bulma.io/assets/images/placeholders/128x128.png'
+                ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
+                : 'https://bulma.io/assets/images/placeholders/128x128.png'
                 " alt="Profile Picture" class="avatar" />
               <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')">
                 <span class="icon">
