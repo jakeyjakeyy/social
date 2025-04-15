@@ -173,25 +173,17 @@ const copyLink = () => {
     </div>
     <div v-if="post.type === 'image'" class="card-image">
       <figure class="image is-4by3">
-        <img
-          :src="`${BACKEND_URL}/api${post.url}`"
-          alt="Post Image"
-          class="post-image"
-        />
+        <img :src="`${BACKEND_URL}/api${post.url}`" alt="Post Image" class="post-image" />
       </figure>
     </div>
     <div class="card-content">
       <div class="media" @click="router.push(`/@${post.account_username}`)">
         <div class="media-left">
           <figure class="image is-48x48">
-            <img
-              :src="
-                post.account_profile_picture
-                  ? `${BACKEND_URL}/api${post.account_profile_picture}`
-                  : 'https://bulma.io/assets/images/placeholders/96x96.png'
-              "
-              alt="User Avatar"
-            />
+            <img :src="post.account_profile_picture
+              ? `${BACKEND_URL}/api${post.account_profile_picture}`
+              : 'https://bulma.io/assets/images/placeholders/96x96.png'
+              " alt="User Avatar" />
           </figure>
         </div>
         <div class="media-content">
@@ -200,13 +192,7 @@ const copyLink = () => {
         </div>
       </div>
       <div v-if="post.type === 'markdown'" class="markdown-post">
-        <MdPreview
-          id="post.id"
-          :model-value="post.content"
-          :theme="theme"
-          language="en-US"
-          :sanitize="sanitizeHTML"
-        />
+        <MdPreview id="post.id" :model-value="post.content" :theme="theme" language="en-US" :sanitize="sanitizeHTML" />
       </div>
       <div class="content has-text-weight-semibold">
         {{ post.type === "text" || post.type === "image" ? post.content : "" }}
@@ -238,27 +224,16 @@ const copyLink = () => {
       <div class="card-footer-item" @click="copyLink">
         <v-icon name="ri-share-line" />
       </div>
-      <div
-        v-if="post.is_owner"
-        class="card-footer-item"
-        @click="deletePost(post.id)"
-      >
+      <div v-if="post.is_owner" class="card-footer-item" @click="deletePost(post.id)">
         <v-icon name="fa-regular-trash-alt" class="has-text-danger" />
       </div>
     </footer>
   </div>
 
   <Teleport to="body">
-    <ExpandedPost
-      v-if="showExpandedPost"
-      :post="showReplyTo ? post.reply_to : post"
-      @close-expanded-post="handleCloseExpandedPost"
-    />
-    <AddPost
-      v-if="showAddPost"
-      :is-reply="post.id"
-      @close-add-post-modal="handleCloseAddPost"
-    />
+    <ExpandedPost v-if="showExpandedPost" :post="showReplyTo ? post.reply_to : post"
+      @close-expanded-post="handleCloseExpandedPost" />
+    <AddPost v-if="showAddPost" :is-reply="post.id" @close-add-post-modal="handleCloseAddPost" />
     <div v-if="showNotification" class="notification">
       Link copied to clipboard
     </div>
@@ -366,6 +341,7 @@ const copyLink = () => {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 0.8;
   }
@@ -421,6 +397,7 @@ const copyLink = () => {
     transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -432,6 +409,7 @@ const copyLink = () => {
     transform: translateY(0);
     opacity: 1;
   }
+
   to {
     transform: translateY(100%);
     opacity: 0;

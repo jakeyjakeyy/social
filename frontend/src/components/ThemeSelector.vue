@@ -36,11 +36,8 @@ onMounted(() => {
 
 <template>
   <div class="theme-selector">
-    <button
-      class="theme-button"
-      @click="toggleTheme"
-      :title="themeLight ? 'Switch to dark mode' : 'Switch to light mode'"
-    >
+    <button class="theme-button" @click="toggleTheme"
+      :title="themeLight ? 'Switch to dark mode' : 'Switch to light mode'">
       <v-icon :name="themeLight ? 'fa-moon' : 'fa-sun'" scale="1.2" />
     </button>
   </div>

@@ -128,9 +128,7 @@ const toggleTheme = () => {
             <span>New Post</span>
           </div>
           <div class="nav-item" @click="navigateTo('/auth')">
-            <v-icon
-              :name="loggedIn ? 'ri-logout-box-line' : 'ri-login-box-line'"
-            />
+            <v-icon :name="loggedIn ? 'ri-logout-box-line' : 'ri-login-box-line'" />
             <span>{{ loggedIn ? "Logout" : "Login" }}</span>
           </div>
           <ThemeSelector @toggle-theme="toggleTheme" />
@@ -145,16 +143,8 @@ const toggleTheme = () => {
     </div>
   </nav>
 
-  <AddPost
-    v-if="showAddPost"
-    @closeAddPostModal="toggleAddPostModal"
-    :is-reply="false"
-  />
-  <Auth
-    :showModal="showModal"
-    @updateShowModal="updateShowModal"
-    @updateLoggedIn="updateLoggedIn"
-  />
+  <AddPost v-if="showAddPost" @closeAddPostModal="toggleAddPostModal" :is-reply="false" />
+  <Auth :showModal="showModal" @updateShowModal="updateShowModal" @updateLoggedIn="updateLoggedIn" />
   <div class="notification is-success" v-if="showNotification">
     <button class="delete"></button>
     <strong>Success!</strong> Post added successfully.

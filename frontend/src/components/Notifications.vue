@@ -255,23 +255,14 @@ onUnmounted(() => {
       <v-icon name="ri-notification-3-line" />
       <span v-if="unreadCount > 0" class="notification-badge">{{
         unreadCount
-      }}</span>
+        }}</span>
     </div>
 
-    <div
-      v-if="showDropdown"
-      class="notification-dropdown"
-      ref="dropdownRef"
-      @click.stop
-    >
+    <div v-if="showDropdown" class="notification-dropdown" ref="dropdownRef" @click.stop>
       <div class="notification-header">
         <div class="notification-header-content">
           <h3>Notifications</h3>
-          <button
-            v-if="unreadCount > 0"
-            @click="markAllAsRead"
-            class="mark-all-as-read-button"
-          >
+          <button v-if="unreadCount > 0" @click="markAllAsRead" class="mark-all-as-read-button">
             <v-icon name="ri-check-line" />
           </button>
         </div>
@@ -280,20 +271,15 @@ onUnmounted(() => {
         <div v-if="notifications.length === 0" class="notification-empty">
           No notifications yet
         </div>
-        <div
-          v-for="(notification, index) in notifications"
-          :key="index"
-          class="notification-item"
-          :class="{ unread: !notification.read }"
-          @click="markAsRead(index)"
-        >
+        <div v-for="(notification, index) in notifications" :key="index" class="notification-item"
+          :class="{ unread: !notification.read }" @click="markAsRead(index)">
           <div class="notification-content">
             <p class="notification-message">
               {{ getNotificationMessage(notification) }}
             </p>
             <span class="notification-time">{{
               formatNotificationTime(notification.created_at)
-            }}</span>
+              }}</span>
           </div>
         </div>
       </div>
@@ -434,6 +420,7 @@ onUnmounted(() => {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

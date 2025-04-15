@@ -25,8 +25,7 @@ const clickBounds = (e: MouseEvent) => {
 
 const fetchReplies = async () => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/post?page=${page}&replies=${
-      props.post.id
+    `${import.meta.env.VITE_BACKEND_URL}/api/post?page=${page}&replies=${props.post.id
     }`
   );
   const data = await res.json();
@@ -45,35 +44,20 @@ const handleCloseAddPost = (success: boolean) => {
 };
 </script>
 <template>
-  <div
-    :class="{
-      'expanded-post-overlay': !props.notModal,
-      'expanded-post-container': props.notModal,
-    }"
-    @click="clickBounds"
-  >
-    <div
-      :class="{
-        'expanded-post-modal': !props.notModal,
-        'expanded-post-wrapper': props.notModal,
-      }"
-      ref="modalRef"
-    >
+  <div :class="{
+    'expanded-post-overlay': !props.notModal,
+    'expanded-post-container': props.notModal,
+  }" @click="clickBounds">
+    <div :class="{
+      'expanded-post-modal': !props.notModal,
+      'expanded-post-wrapper': props.notModal,
+    }" ref="modalRef">
       <div class="expanded-post-content">
-        <button
-          v-if="!props.notModal"
-          class="close-button"
-          @click="emit('closeExpandedPost')"
-        >
+        <button v-if="!props.notModal" class="close-button" @click="emit('closeExpandedPost')">
           <v-icon name="io-close" scale="1.5" />
         </button>
         <div class="post-section">
-          <Post
-            :post="post"
-            ref="postRef"
-            @add-reply="handleAddReply"
-            expanded
-          />
+          <Post :post="post" ref="postRef" @add-reply="handleAddReply" expanded />
         </div>
         <div class="replies-section">
           <div class="replies-header">
@@ -82,23 +66,13 @@ const handleCloseAddPost = (success: boolean) => {
           </div>
           <div class="replies-container">
             <div class="replies">
-              <Post
-                v-for="reply in replies"
-                :key="reply.id"
-                :post="reply"
-                is-reply
-                @add-reply="handleAddReply"
-              />
+              <Post v-for="reply in replies" :key="reply.id" :post="reply" is-reply @add-reply="handleAddReply" />
             </div>
           </div>
         </div>
       </div>
     </div>
-    <AddPost
-      v-if="showAddPost"
-      :is-reply="post.id"
-      @close-add-post-modal="handleCloseAddPost"
-    />
+    <AddPost v-if="showAddPost" :is-reply="post.id" @close-add-post-modal="handleCloseAddPost" />
   </div>
 </template>
 
@@ -231,6 +205,7 @@ const handleCloseAddPost = (success: boolean) => {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

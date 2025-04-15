@@ -116,7 +116,7 @@ onMounted(async () => {
   window.addEventListener("scroll", async () => {
     if (
       window.scrollY + window.innerHeight >=
-        document.documentElement.scrollHeight * 0.75 &&
+      document.documentElement.scrollHeight * 0.75 &&
       !lastPage.value &&
       window.scrollY > scrollPosition &&
       !fetchingPosts
@@ -232,29 +232,16 @@ const updateDisplayName = async () => {
     <div class="card profile-header">
       <div class="card-image">
         <figure class="image banner-image">
-          <img
-            :src="
-              profileInfo?.banner_picture
-                ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
-                : 'https://bulma.io/assets/images/placeholders/1280x960.png'
-            "
-            alt="Banner image"
-          />
-          <div
-            v-if="isOwner"
-            class="image-overlay"
-            @click="uploadPhoto('banner')"
-          >
+          <img :src="profileInfo?.banner_picture
+              ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
+              : 'https://bulma.io/assets/images/placeholders/1280x960.png'
+            " alt="Banner image" />
+          <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')">
             <span class="icon">
               <v-icon name="bi-camera" color="white" />
             </span>
-            <input
-              type="file"
-              ref="bannerFileInput"
-              @change="($event) => handleFileUpload($event, 'banner')"
-              style="display: none"
-              accept="image/*"
-            />
+            <input type="file" ref="bannerFileInput" @change="($event) => handleFileUpload($event, 'banner')"
+              style="display: none" accept="image/*" />
           </div>
         </figure>
       </div>
@@ -262,30 +249,16 @@ const updateDisplayName = async () => {
         <div class="media">
           <div class="media-left">
             <figure class="image is-128x128 profile-image-container">
-              <img
-                :src="
-                  profileInfo?.profile_picture
-                    ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
-                    : 'https://bulma.io/assets/images/placeholders/128x128.png'
-                "
-                alt="Profile Picture"
-                class="avatar"
-              />
-              <div
-                v-if="isOwner"
-                class="image-overlay"
-                @click="uploadPhoto('pfp')"
-              >
+              <img :src="profileInfo?.profile_picture
+                  ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
+                  : 'https://bulma.io/assets/images/placeholders/128x128.png'
+                " alt="Profile Picture" class="avatar" />
+              <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')">
                 <span class="icon">
                   <v-icon name="bi-camera" color="white" />
                 </span>
-                <input
-                  type="file"
-                  ref="profileFileInput"
-                  @change="($event) => handleFileUpload($event, 'pfp')"
-                  style="display: none"
-                  accept="image/*"
-                />
+                <input type="file" ref="profileFileInput" @change="($event) => handleFileUpload($event, 'pfp')"
+                  style="display: none" accept="image/*" />
               </div>
             </figure>
           </div>
@@ -294,30 +267,17 @@ const updateDisplayName = async () => {
               <p v-if="profileInfo && !editDisplayName" class="title is-3">
                 {{ profileInfo.display_name }}
               </p>
-              <input
-                v-if="profileInfo && isOwner && editDisplayName"
-                v-model="newDisplayName"
-                class="input"
-                @blur="updateDisplayName"
-                @keydown.enter="updateDisplayName"
-              />
+              <input v-if="profileInfo && isOwner && editDisplayName" v-model="newDisplayName" class="input"
+                @blur="updateDisplayName" @keydown.enter="updateDisplayName" />
 
-              <div
-                v-if="isOwner && !editDisplayName"
-                class="edit-profile-button"
-                @click="editDisplayName = true"
-              >
+              <div v-if="isOwner && !editDisplayName" class="edit-profile-button" @click="editDisplayName = true">
                 <v-icon name="ri-edit-box-line" />
               </div>
             </div>
             <p class="subtitle is-5">@{{ username }}</p>
           </div>
           <div v-if="!isOwner && loggedIn" class="follow-container">
-            <button
-              class="button"
-              :class="{ 'is-primary': isFollowing }"
-              @click="handleFollow"
-            >
+            <button class="button" :class="{ 'is-primary': isFollowing }" @click="handleFollow">
               {{ isFollowing ? "Following" : "Follow" }}
             </button>
           </div>
@@ -533,9 +493,11 @@ const updateDisplayName = async () => {
   0% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 0.8;
   }
+
   100% {
     opacity: 0.6;
   }

@@ -26,7 +26,7 @@ onMounted(async () => {
   window.addEventListener("scroll", async () => {
     if (
       window.scrollY + window.innerHeight >=
-        document.documentElement.scrollHeight * 0.75 &&
+      document.documentElement.scrollHeight * 0.75 &&
       !lastPage.value &&
       window.scrollY > scrollPosition &&
       !fetchingPosts
@@ -106,31 +106,16 @@ const handleCloseAddPost = (success: boolean) => {
 <template>
   <div class="home-container">
     <div v-if="loggedIn" class="content-selections">
-      <button
-        ref="allButtonRef"
-        class="button"
-        :class="{ 'is-primary': !followingFeed }"
-        @click="toggleFeed"
-      >
+      <button ref="allButtonRef" class="button" :class="{ 'is-primary': !followingFeed }" @click="toggleFeed">
         All Posts
       </button>
-      <button
-        ref="followingButtonRef"
-        class="button"
-        :class="{ 'is-primary': followingFeed }"
-        @click="toggleFeed"
-      >
+      <button ref="followingButtonRef" class="button" :class="{ 'is-primary': followingFeed }" @click="toggleFeed">
         Following
       </button>
     </div>
     <div id="home-posts" class="content">
       <div class="posts-wrapper" v-if="posts.length">
-        <Post
-          v-for="post in posts"
-          :key="post.id"
-          :post="post"
-          @delete-post="fetchPosts"
-        />
+        <Post v-for="post in posts" :key="post.id" :post="post" @delete-post="fetchPosts" />
       </div>
       <div v-else class="skeleton-container">
         <div class="skeleton-block"></div>
@@ -210,9 +195,11 @@ const handleCloseAddPost = (success: boolean) => {
   0% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 0.8;
   }
+
   100% {
     opacity: 0.6;
   }
