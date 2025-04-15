@@ -434,6 +434,7 @@ class NotificationToken(APIView):
 
 def serialize_notification(notification):
     return {
+        "action_account_displayname": notification.action_account.display_name,
         "action_account": notification.action_account.user.username,
         "action": notification.action,
         "post_id": notification.post.id if notification.post else None,

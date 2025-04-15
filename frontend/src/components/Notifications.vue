@@ -6,6 +6,7 @@ import { useRouter } from "vue-router";
 interface Notification {
   action: string;
   action_account: string;
+  action_account_displayname: string;
   read: boolean;
   created_at: string;
   post_id: number | null;
@@ -109,9 +110,9 @@ const formatNotificationTime = (dateString: string) => {
 const getNotificationMessage = (notification: Notification) => {
   switch (notification.action) {
     case "followed":
-      return `${notification.action_account} followed you`;
+      return `${notification.action_account_displayname} followed you`;
     default:
-      return `${notification.action_account} ${notification.action} your post.`;
+      return `${notification.action_account_displayname} ${notification.action} your post.`;
   }
 };
 
@@ -153,9 +154,11 @@ const markAsRead = async (index: number) => {
     }
   }
 
-  // Handle navigation if notification has post_id
+  // Handle navigation based on notification type
   if (notification.post_id) {
     router.push(`/post/${notification.post_id}`);
+  } else {
+    router.push(`/@${notification.action_account}`);
   }
 };
 
@@ -163,9 +166,6 @@ const initWebSocket = async () => {
   notificationToken = await fetchNotificationToken();
   const protocol = serverURL.startsWith("https") ? "wss" : "ws";
   const stripURL = serverURL.replace("http://", "").replace("https://", "");
-  console.log(
-    `${protocol}://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
-  );
   ws = new WebSocket(
     `${protocol}://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
   );
@@ -255,7 +255,7 @@ onUnmounted(() => {
       <v-icon name="ri-notification-3-line" />
       <span v-if="unreadCount > 0" class="notification-badge">{{
         unreadCount
-        }}</span>
+      }}</span>
     </div>
 
     <div v-if="showDropdown" class="notification-dropdown" ref="dropdownRef" @click.stop>
@@ -279,7 +279,7 @@ onUnmounted(() => {
             </p>
             <span class="notification-time">{{
               formatNotificationTime(notification.created_at)
-              }}</span>
+            }}</span>
           </div>
         </div>
       </div>
