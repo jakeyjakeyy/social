@@ -184,6 +184,7 @@ def send_notification(sender, instance, **kwargs):
             "message": {
                 "action": instance.action,
                 "action_account": instance.action_account.user.username,
+                "action_account_displayname": instance.action_account.display_name,
                 "read": instance.read,
                 "created_at": (
                     instance.created_at.isoformat() if instance.created_at else None

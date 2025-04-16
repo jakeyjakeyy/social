@@ -104,33 +104,33 @@ const toggleTheme = () => {
   <nav class="nav">
     <div class="container nav-container">
       <div class="nav-brand nav-item">
-        <div @click="navigateTo('/')" class="brand-link">
+        <button @click="navigateTo('/')" class="brand-link">
           <v-icon name="ri-chat-smile-2-fill" scale="1.5" class="brand-icon" />
           <span class="brand-text">Social</span>
-        </div>
+        </button>
       </div>
 
       <div class="nav-menu" :class="{ 'is-active': showMobileNav }">
         <div class="nav-start">
-          <div @click="navigateTo('/')" class="nav-item">
+          <button @click="navigateTo('/')" class="nav-item">
             <v-icon name="ri-home-5-line" />
             <span>Home</span>
-          </div>
-          <div v-if="loggedIn" @click="navigateTo('/profile')" class="nav-item">
+          </button>
+          <button v-if="loggedIn" @click="navigateTo('/profile')" class="nav-item">
             <v-icon name="ri-user-line" />
             <span>Profile</span>
-          </div>
+          </button>
         </div>
 
         <div class="nav-end">
-          <div v-if="loggedIn" class="nav-item" @click="showAddPost = true">
+          <button v-if="loggedIn" class="nav-item" @click="showAddPost = true">
             <v-icon name="ri-add-line" />
             <span>New Post</span>
-          </div>
-          <div class="nav-item" @click="navigateTo('/auth')">
+          </button>
+          <button class="nav-item" @click="navigateTo('/auth')">
             <v-icon :name="loggedIn ? 'ri-logout-box-line' : 'ri-login-box-line'" />
             <span>{{ loggedIn ? "Logout" : "Login" }}</span>
-          </div>
+          </button>
           <ThemeSelector @toggle-theme="toggleTheme" />
           <Notifications v-if="loggedIn && !navIsMobile" class="nav-item" />
         </div>

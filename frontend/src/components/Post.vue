@@ -121,7 +121,7 @@ const deletePost = async (id: number) => {
   emit("deletePost", id);
 };
 
-const toggleShowExpandedPost = (e: MouseEvent) => {
+const toggleShowExpandedPost = (e: MouseEvent | KeyboardEvent) => {
   const target = e.target as HTMLElement;
   const isFooterClick = target.closest(".card-footer");
   const isMedia = target.closest(".media");
@@ -161,10 +161,10 @@ const copyLink = () => {
 </script>
 
 <template>
-  <div class="post card" @click="toggleShowExpandedPost">
-    <div class="reply-to" v-if="post.reply_to && !isReply">
+  <div class="post card" @click="toggleShowExpandedPost" @keydown.enter="toggleShowExpandedPost" tabindex="0">
+    <button class="reply-to" v-if="post.reply_to && !isReply" aria-label="View Original Post">
       <v-icon name="fa-grip-lines-vertical" />
-    </div>
+    </button>
     <div v-if="isRepost && repostData" class="reposted-by">
       <p>
         <v-icon name="ri-repeat-2-line" />
@@ -177,20 +177,23 @@ const copyLink = () => {
       </figure>
     </div>
     <div class="card-content">
-      <div class="media" @click="router.push(`/@${post.account_username}`)">
+      <button class="media" @click="router.push(`/@${post.account_username}`)">
         <div class="media-left">
           <figure class="image is-48x48">
             <img :src="post.account_profile_picture
               ? `${BACKEND_URL}/api${post.account_profile_picture}`
               : 'https://bulma.io/assets/images/placeholders/96x96.png'
               " alt="User Avatar" />
+            <figcaption>
+              User Avatar
+            </figcaption>
           </figure>
         </div>
         <div class="media-content">
           <p class="title is-4">{{ post.account_display_name }}</p>
           <p class="subtitle is-6">@{{ post.account_username }}</p>
         </div>
-      </div>
+      </button>
       <div v-if="post.type === 'markdown'" class="markdown-post">
         <MdPreview id="post.id" :model-value="post.content" :theme="theme" language="en-US" :sanitize="sanitizeHTML" />
       </div>
@@ -203,30 +206,30 @@ const copyLink = () => {
       </div>
     </div>
     <footer class="card-footer">
-      <div class="card-footer-item" @click.stop="showAddPost = true">
+      <button class="card-footer-item" @click.stop="showAddPost = true" aria-label="Reply">
         <v-icon name="bi-chat-left" />
         <span>{{ post.reply_count }}</span>
-      </div>
-      <div class="favorites card-footer-item" @click="submitAction('favorite')">
+      </button>
+      <button class="favorites card-footer-item" @click="submitAction('favorite')" aria-label="Favorite">
         <span>{{ post.favorite_count }}</span>
         <span>
           <v-icon v-if="!post.favorited" name="bi-heart" />
           <v-icon v-else name="bi-heart-fill" class="has-text-danger" />
         </span>
-      </div>
-      <div class="reposts card-footer-item" @click="submitAction('repost')">
+      </button>
+      <button class="reposts card-footer-item" @click="submitAction('repost')" aria-label="Repost">
         <span>{{ post.repost_count }}</span>
         <span>
           <v-icon v-if="!post.reposted" name="ri-repeat-2-line" />
           <v-icon v-else name="ri-repeat-2-fill" class="has-text-success" />
         </span>
-      </div>
-      <div class="card-footer-item" @click="copyLink">
+      </button>
+      <button class="card-footer-item" @click="copyLink" aria-label="Copy Link">
         <v-icon name="ri-share-line" />
-      </div>
-      <div v-if="post.is_owner" class="card-footer-item" @click="deletePost(post.id)">
+      </button>
+      <button v-if="post.is_owner" class="card-footer-item" @click="deletePost(post.id)" aria-label="Delete Post">
         <v-icon name="fa-regular-trash-alt" class="has-text-danger" />
-      </div>
+      </button>
     </footer>
   </div>
 

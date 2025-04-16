@@ -251,12 +251,12 @@ onUnmounted(() => {
 
 <template>
   <div class="notification-container">
-    <div class="notification-icon" @click.stop="toggleDropdown">
+    <button class="notification-icon" @click.stop="toggleDropdown" title="Notifications">
       <v-icon name="ri-notification-3-line" />
       <span v-if="unreadCount > 0" class="notification-badge">{{
         unreadCount
       }}</span>
-    </div>
+    </button>
 
     <div v-if="showDropdown" class="notification-dropdown" ref="dropdownRef" @click.stop>
       <div class="notification-header">
@@ -272,7 +272,8 @@ onUnmounted(() => {
           No notifications yet
         </div>
         <div v-for="(notification, index) in notifications" :key="index" class="notification-item"
-          :class="{ unread: !notification.read }" @click="markAsRead(index)">
+          :class="{ unread: !notification.read }" @click="markAsRead(index)" @keydown.enter="markAsRead(index)"
+          tabindex="0">
           <div class="notification-content">
             <p class="notification-message">
               {{ getNotificationMessage(notification) }}

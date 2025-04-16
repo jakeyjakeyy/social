@@ -125,20 +125,21 @@ const setImage = (e: Event) =>
       </header>
 
       <div class="post-type-selector">
-        <div id="toggleTextButton" class="type-button" :class="{ active: type === 'text' }" @click="toggleType('text')">
+        <button id="toggleTextButton" class="type-button" :class="{ active: type === 'text' }"
+          @click="toggleType('text')" aria-label="Text Post">
           <v-icon name="ri-text" />
           <span>Text</span>
-        </div>
-        <div id="toggleBlogButton" class="type-button" :class="{ active: type === 'markdown' }"
-          @click="toggleType('markdown')">
+        </button>
+        <button id="toggleBlogButton" class="type-button" :class="{ active: type === 'markdown' }"
+          @click="toggleType('markdown')" aria-label="Blog Post">
           <v-icon name="ri-markdown-line" />
           <span>Blog</span>
-        </div>
-        <div id="toggleImageButton" class="type-button" :class="{ active: type === 'image' }"
-          @click="toggleType('image')">
+        </button>
+        <button id="toggleImageButton" class="type-button" :class="{ active: type === 'image' }"
+          @click="toggleType('image')" aria-label="Image Post">
           <v-icon name="ri-image-line" />
           <span>Image</span>
-        </div>
+        </button>
       </div>
 
       <div class="modal-content">

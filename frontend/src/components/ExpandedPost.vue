@@ -16,9 +16,9 @@ onMounted(() => {
   fetchReplies();
 });
 
-const clickBounds = (e: MouseEvent) => {
+const clickBounds = (e: MouseEvent | KeyboardEvent) => {
   if (!modalRef.value || showAddPost.value) return false;
-  if (!props.notModal && !modalRef.value.contains(e.target as Node)) {
+  if ((!props.notModal && !modalRef.value.contains(e.target as Node)) || (e.type === "keydown" && (e as KeyboardEvent).key == "Escape")) {
     emit("closeExpandedPost");
   }
 };
@@ -53,7 +53,7 @@ const handleCloseAddPost = (success: boolean) => {
       'expanded-post-wrapper': props.notModal,
     }" ref="modalRef">
       <div class="expanded-post-content">
-        <button v-if="!props.notModal" class="close-button" @click="emit('closeExpandedPost')">
+        <button v-if="!props.notModal" class="close-button" @click="emit('closeExpandedPost')" aria-label="Close">
           <v-icon name="io-close" scale="1.5" />
         </button>
         <div class="post-section">
@@ -177,7 +177,7 @@ const handleCloseAddPost = (success: boolean) => {
 
 .reply-count {
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   background-color: var(--surface-hover);
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-full);

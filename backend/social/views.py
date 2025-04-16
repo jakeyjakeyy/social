@@ -184,6 +184,7 @@ class Post(APIView):
                 )
                 entry[0].save()
                 action = "reposted"
+                post = original_post
         elif type == "image":
             if not data["image"]:
                 return Response({"message": "No image provided"}, status=400)

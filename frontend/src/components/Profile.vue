@@ -241,13 +241,14 @@ const updateDisplayName = async () => {
             ? `${BACKEND_URL}/api${profileInfo.banner_picture}`
             : 'https://bulma.io/assets/images/placeholders/1280x960.png'
             " alt="Banner image" />
-          <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')">
+          <figcaption>Banner Image</figcaption>
+          <button v-if="isOwner" class="image-overlay" @click="uploadPhoto('banner')" aria-label="Upload Banner">
             <span class="icon">
               <v-icon name="bi-camera" color="white" />
             </span>
             <input type="file" ref="bannerFileInput" @change="($event) => handleFileUpload($event, 'banner')"
               style="display: none" accept="image/*" />
-          </div>
+          </button>
         </figure>
       </div>
       <div class="card-content">
@@ -258,13 +259,15 @@ const updateDisplayName = async () => {
                 ? `${BACKEND_URL}/api${profileInfo.profile_picture}`
                 : 'https://bulma.io/assets/images/placeholders/128x128.png'
                 " alt="Profile Picture" class="avatar" />
-              <div v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')">
+              <figcaption>Profile Picture</figcaption>
+              <button v-if="isOwner" class="image-overlay" @click="uploadPhoto('pfp')"
+                aria-label="Upload Profile Picture">
                 <span class="icon">
                   <v-icon name="bi-camera" color="white" />
                 </span>
                 <input type="file" ref="profileFileInput" @change="($event) => handleFileUpload($event, 'pfp')"
                   style="display: none" accept="image/*" />
-              </div>
+              </button>
             </figure>
           </div>
           <div class="media-content">
@@ -275,9 +278,10 @@ const updateDisplayName = async () => {
               <input v-if="profileInfo && isOwner && editDisplayName" v-model="newDisplayName" class="input"
                 @blur="updateDisplayName" @keydown.enter="updateDisplayName" />
 
-              <div v-if="isOwner && !editDisplayName" class="edit-profile-button" @click="editDisplayName = true">
+              <button v-if="isOwner && !editDisplayName" class="edit-profile-button" @click="editDisplayName = true"
+                aria-label="Edit Display Name">
                 <v-icon name="ri-edit-box-line" />
-              </div>
+              </button>
             </div>
             <p class="subtitle is-5">@{{ username }}</p>
           </div>
