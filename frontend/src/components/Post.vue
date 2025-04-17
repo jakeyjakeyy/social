@@ -99,24 +99,26 @@ const submitAction = async (action: string) => {
   }
 };
 
-const deletePost = async (id: number) => {
-  const access_token = getAccessToken();
-  const res = await fetch(`${BACKEND_URL}/api/post?id=${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-  const data = await res.json();
-  if (data.detail) {
-    const refresh = await RefreshToken();
-    if (refresh.error) {
-      alert("Please login again");
+const deletePost = async (id: number, emitOnly?: boolean) => {
+  if (!emitOnly) {
+    const access_token = getAccessToken();
+    const res = await fetch(`${BACKEND_URL}/api/post?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    const data = await res.json();
+    if (data.detail) {
+      const refresh = await RefreshToken();
+      if (refresh.error) {
+        alert("Please login again");
+      } else {
+        await deletePost(id);
+      }
     } else {
-      await deletePost(id);
+      await router.push("/");
     }
-  } else {
-    await router.push("/");
   }
   emit("deletePost", id);
 };
@@ -202,7 +204,7 @@ const copyLink = () => {
         <br />
         <time class="has-text-weight-light is-size-7">{{
           new Date(post.created_at).toLocaleString()
-        }}</time>
+          }}</time>
       </div>
     </div>
     <footer class="card-footer">
@@ -235,7 +237,7 @@ const copyLink = () => {
 
   <Teleport to="body">
     <ExpandedPost v-if="showExpandedPost" :post="showReplyTo ? post.reply_to : post"
-      @close-expanded-post="handleCloseExpandedPost" />
+      @close-expanded-post="handleCloseExpandedPost" @delete-post="deletePost(post.id, true)" />
     <AddPost v-if="showAddPost" :is-reply="post.id" @close-add-post-modal="handleCloseAddPost" />
     <div v-if="showNotification" class="notification">
       Link copied to clipboard

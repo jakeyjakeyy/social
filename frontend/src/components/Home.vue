@@ -99,17 +99,10 @@ const toggleFeed = async (e: MouseEvent) => {
   }
 };
 
-const handleAddReply = (postId: number) => {
-  replyToPostId.value = postId;
-  showAddPost.value = true;
-};
-
-const handleCloseAddPost = (success: boolean) => {
-  showAddPost.value = false;
-  if (success) {
-    fetchPosts();
-  }
-};
+function deletePost(postId: number) {
+  console.log("Deleting post with ID:", postId);
+  posts.value = posts.value.filter((post) => post.id !== postId);
+}
 </script>
 
 <template>
@@ -124,7 +117,7 @@ const handleCloseAddPost = (success: boolean) => {
     </div>
     <div id="home-posts" class="content">
       <div class="posts-wrapper" v-if="loading">
-        <Post v-for="post in posts" :key="post.id" :post="post" @delete-post="fetchPosts" />
+        <Post v-for="post in posts" :key="post.id" :post="post" @delete-post="deletePost" />
       </div>
       <div v-else class="skeleton-container">
         <div class="skeleton-block"></div>
