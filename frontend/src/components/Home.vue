@@ -100,10 +100,6 @@ const toggleFeed = async (e: MouseEvent) => {
 };
 
 function deletePost(postId: number) {
-<<<<<<< HEAD
-  console.log("Deleting post with ID:", postId);
-=======
->>>>>>> 66af912 (fix(Post): :bug: delete post from expanded modal handling)
   posts.value = posts.value.filter((post) => post.id !== postId);
 }
 </script>
