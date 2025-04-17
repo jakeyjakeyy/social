@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import Nav from "@/components/Nav.vue";
+import Footer from "./components/Footer.vue";
 </script>
 
 <template>
@@ -9,6 +10,7 @@ import Nav from "@/components/Nav.vue";
     <main class="main-content">
       <RouterView id="router-view" />
     </main>
+    <Footer />
   </div>
 </template>
 
@@ -71,12 +73,15 @@ import Nav from "@/components/Nav.vue";
 .grid-cols-1 {
   grid-template-columns: repeat(1, 1fr);
 }
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, 1fr);
 }
+
 .grid-cols-3 {
   grid-template-columns: repeat(3, 1fr);
 }
+
 .grid-cols-4 {
   grid-template-columns: repeat(4, 1fr);
 }

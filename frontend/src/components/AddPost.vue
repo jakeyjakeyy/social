@@ -119,43 +119,27 @@ const setImage = (e: Event) =>
     <div class="modal-container">
       <header class="modal-header">
         <h2 class="modal-title">{{ isReply ? "Reply" : "Create Post" }}</h2>
-        <button
-          class="close-modal"
-          aria-label="close"
-          @click="emit('closeAddPostModal')"
-        >
+        <button class="close-modal" aria-label="close" @click="emit('closeAddPostModal')">
           <v-icon name="io-close" />
         </button>
       </header>
 
       <div class="post-type-selector">
-        <div
-          id="toggleTextButton"
-          class="type-button"
-          :class="{ active: type === 'text' }"
-          @click="toggleType('text')"
-        >
+        <button id="toggleTextButton" class="type-button" :class="{ active: type === 'text' }"
+          @click="toggleType('text')" aria-label="Text Post">
           <v-icon name="ri-text" />
           <span>Text</span>
-        </div>
-        <div
-          id="toggleBlogButton"
-          class="type-button"
-          :class="{ active: type === 'markdown' }"
-          @click="toggleType('markdown')"
-        >
+        </button>
+        <button id="toggleBlogButton" class="type-button" :class="{ active: type === 'markdown' }"
+          @click="toggleType('markdown')" aria-label="Blog Post">
           <v-icon name="ri-markdown-line" />
           <span>Blog</span>
-        </div>
-        <div
-          id="toggleImageButton"
-          class="type-button"
-          :class="{ active: type === 'image' }"
-          @click="toggleType('image')"
-        >
+        </button>
+        <button id="toggleImageButton" class="type-button" :class="{ active: type === 'image' }"
+          @click="toggleType('image')" aria-label="Image Post">
           <v-icon name="ri-image-line" />
           <span>Image</span>
-        </div>
+        </button>
       </div>
 
       <div class="modal-content">
@@ -163,37 +147,22 @@ const setImage = (e: Event) =>
           <div v-if="type === 'text'" class="field">
             <label class="label">Content</label>
             <div class="control">
-              <textarea
-                v-model="content"
-                :maxlength="MAX_POST_LEN"
-                class="textarea"
-                placeholder="What's on your mind?"
-                style="resize: none; overflow: auto"
-              ></textarea>
+              <textarea v-model="content" :maxlength="MAX_POST_LEN" class="textarea" placeholder="What's on your mind?"
+                style="resize: none; overflow: auto"></textarea>
               <div class="help">{{ content.length }} / {{ MAX_POST_LEN }}</div>
             </div>
           </div>
           <div v-else-if="type === 'markdown'" class="field">
             <label class="label">Content</label>
             <div class="control">
-              <MdEditor
-                v-model="content"
-                :theme="theme"
-                language="en-US"
-                :sanitize="sanitizeHTML"
-              />
+              <MdEditor v-model="content" :theme="theme" language="en-US" :sanitize="sanitizeHTML" />
             </div>
           </div>
           <div v-else-if="type === 'image'" class="field">
             <label class="label">Image</label>
             <div class="control">
               <div class="file-input-wrapper">
-                <input
-                  class="file-input"
-                  type="file"
-                  @change="(e) => setImage(e)"
-                  accept="image/*"
-                />
+                <input class="file-input" type="file" @change="(e) => setImage(e)" accept="image/*" />
                 <div class="file-input-label">
                   <v-icon name="ri-upload-cloud-line" />
                   <span>Choose an image</span>
@@ -207,13 +176,8 @@ const setImage = (e: Event) =>
             <div class="field">
               <label class="label">Caption</label>
               <div class="control">
-                <textarea
-                  v-model="content"
-                  :maxlength="MAX_POST_LEN"
-                  class="textarea"
-                  placeholder="Add a caption to your image"
-                  style="resize: none; overflow: auto"
-                ></textarea>
+                <textarea v-model="content" :maxlength="MAX_POST_LEN" class="textarea"
+                  placeholder="Add a caption to your image" style="resize: none; overflow: auto"></textarea>
                 <div class="help">
                   {{ content.length }} / {{ MAX_POST_LEN }}
                 </div>
@@ -222,10 +186,7 @@ const setImage = (e: Event) =>
           </div>
           <div class="field">
             <div class="control">
-              <button
-                class="button is-primary is-fullwidth"
-                @click="submitPost"
-              >
+              <button class="button is-primary is-fullwidth" @click="submitPost">
                 {{ isReply ? "Reply" : "Post" }}
               </button>
             </div>

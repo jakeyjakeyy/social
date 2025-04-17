@@ -6,6 +6,7 @@ import { useRouter } from "vue-router";
 interface Notification {
   action: string;
   action_account: string;
+  action_account_displayname: string;
   read: boolean;
   created_at: string;
   post_id: number | null;
@@ -109,9 +110,9 @@ const formatNotificationTime = (dateString: string) => {
 const getNotificationMessage = (notification: Notification) => {
   switch (notification.action) {
     case "followed":
-      return `${notification.action_account} followed you`;
+      return `${notification.action_account_displayname} followed you`;
     default:
-      return `${notification.action_account} ${notification.action}`;
+      return `${notification.action_account_displayname} ${notification.action} your post.`;
   }
 };
 
@@ -153,9 +154,11 @@ const markAsRead = async (index: number) => {
     }
   }
 
-  // Handle navigation if notification has post_id
+  // Handle navigation based on notification type
   if (notification.post_id) {
     router.push(`/post/${notification.post_id}`);
+  } else {
+    router.push(`/@${notification.action_account}`);
   }
 };
 
@@ -163,9 +166,6 @@ const initWebSocket = async () => {
   notificationToken = await fetchNotificationToken();
   const protocol = serverURL.startsWith("https") ? "wss" : "ws";
   const stripURL = serverURL.replace("http://", "").replace("https://", "");
-  console.log(
-    `${protocol}://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
-  );
   ws = new WebSocket(
     `${protocol}://${stripURL}/ws/notification/${accountId}/?token=${notificationToken}`
   );
@@ -251,27 +251,18 @@ onUnmounted(() => {
 
 <template>
   <div class="notification-container">
-    <div class="notification-icon" @click.stop="toggleDropdown">
+    <button class="notification-icon" @click.stop="toggleDropdown" title="Notifications">
       <v-icon name="ri-notification-3-line" />
       <span v-if="unreadCount > 0" class="notification-badge">{{
         unreadCount
       }}</span>
-    </div>
+    </button>
 
-    <div
-      v-if="showDropdown"
-      class="notification-dropdown"
-      ref="dropdownRef"
-      @click.stop
-    >
+    <div v-if="showDropdown" class="notification-dropdown" ref="dropdownRef" @click.stop>
       <div class="notification-header">
         <div class="notification-header-content">
           <h3>Notifications</h3>
-          <button
-            v-if="unreadCount > 0"
-            @click="markAllAsRead"
-            class="mark-all-as-read-button"
-          >
+          <button v-if="unreadCount > 0" @click="markAllAsRead" class="mark-all-as-read-button">
             <v-icon name="ri-check-line" />
           </button>
         </div>
@@ -280,13 +271,9 @@ onUnmounted(() => {
         <div v-if="notifications.length === 0" class="notification-empty">
           No notifications yet
         </div>
-        <div
-          v-for="(notification, index) in notifications"
-          :key="index"
-          class="notification-item"
-          :class="{ unread: !notification.read }"
-          @click="markAsRead(index)"
-        >
+        <div v-for="(notification, index) in notifications" :key="index" class="notification-item"
+          :class="{ unread: !notification.read }" @click="markAsRead(index)" @keydown.enter="markAsRead(index)"
+          tabindex="0">
           <div class="notification-content">
             <p class="notification-message">
               {{ getNotificationMessage(notification) }}
@@ -434,6 +421,7 @@ onUnmounted(() => {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

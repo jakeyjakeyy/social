@@ -106,11 +106,7 @@ const toggleRegister = () => {
     <div class="modal-container">
       <header class="modal-header">
         <h2 class="modal-title">{{ registerActive ? "Register" : "Login" }}</h2>
-        <button
-          class="close-modal"
-          aria-label="close"
-          @click="emit('updateShowModal', false)"
-        >
+        <button class="close-modal" aria-label="close" @click="emit('updateShowModal', false)">
           <v-icon name="io-close" />
         </button>
       </header>
@@ -120,52 +116,33 @@ const toggleRegister = () => {
           <div class="field">
             <label class="label">Username</label>
             <div class="control">
-              <input
-                v-model="username"
-                type="text"
-                class="input"
-                placeholder="Enter your username"
-              />
+              <input v-model="username" type="text" class="input" placeholder="Enter your username" />
             </div>
           </div>
 
           <div class="field">
             <label class="label">Password</label>
             <div class="control">
-              <input
-                v-model="password"
-                type="password"
-                class="input"
-                placeholder="Enter your password"
-              />
+              <input v-model="password" type="password" class="input" placeholder="Enter your password" />
             </div>
           </div>
 
           <div v-if="registerActive" class="field">
             <label class="label">Confirm Password</label>
             <div class="control">
-              <input
-                v-model="confirmPassword"
-                type="password"
-                class="input"
-                placeholder="Confirm your password"
-              />
+              <input v-model="confirmPassword" type="password" class="input" placeholder="Confirm your password" />
             </div>
           </div>
 
           <div class="field">
             <div class="control">
-              <button
-                class="button is-primary is-fullwidth"
-                type="submit"
-                :disabled="isLoading"
-              >
+              <button class="button is-primary is-fullwidth" type="submit" :disabled="isLoading">
                 {{
                   isLoading
                     ? "Loading..."
                     : registerActive
-                    ? "Register"
-                    : "Login"
+                      ? "Register"
+                      : "Login"
                 }}
               </button>
             </div>

@@ -184,6 +184,7 @@ class Post(APIView):
                 )
                 entry[0].save()
                 action = "reposted"
+                post = original_post
         elif type == "image":
             if not data["image"]:
                 return Response({"message": "No image provided"}, status=400)
@@ -434,6 +435,7 @@ class NotificationToken(APIView):
 
 def serialize_notification(notification):
     return {
+        "action_account_displayname": notification.action_account.display_name,
         "action_account": notification.action_account.user.username,
         "action": notification.action,
         "post_id": notification.post.id if notification.post else None,
