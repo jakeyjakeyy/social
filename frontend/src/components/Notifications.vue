@@ -2,20 +2,12 @@
 import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { getAccessToken, RefreshToken } from "@/utils/RefreshToken";
 import { useRouter } from "vue-router";
-
-interface Notification {
-  action: string;
-  action_account: string;
-  action_account_displayname: string;
-  read: boolean;
-  created_at: string;
-  post_id: number | null;
-  notification_id: number;
-}
+import type { Notification as NotificationType } from "@/types/Notification";
+import Notification from "./Notification.vue";
 
 const serverURL = import.meta.env.VITE_BACKEND_URL;
 const router = useRouter();
-const notifications = ref<Notification[]>([]);
+const notifications = ref<NotificationType[]>([]);
 const unreadCount = ref(0);
 const showDropdown = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
@@ -92,29 +84,6 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-const formatNotificationTime = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSecs = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSecs / 60);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffSecs < 60) return `${diffSecs}s ago`;
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return `${diffDays}d ago`;
-};
-
-const getNotificationMessage = (notification: Notification) => {
-  switch (notification.action) {
-    case "followed":
-      return `${notification.action_account_displayname} followed you`;
-    default:
-      return `${notification.action_account_displayname} ${notification.action} your post.`;
-  }
-};
 
 const callMarkAsRead = async (
   notification_id: number | null,
@@ -274,14 +243,7 @@ onUnmounted(() => {
         <div v-for="(notification, index) in notifications" :key="index" class="notification-item"
           :class="{ unread: !notification.read }" @click="markAsRead(index)" @keydown.enter="markAsRead(index)"
           tabindex="0">
-          <div class="notification-content">
-            <p class="notification-message">
-              {{ getNotificationMessage(notification) }}
-            </p>
-            <span class="notification-time">{{
-              formatNotificationTime(notification.created_at)
-            }}</span>
-          </div>
+          <Notification :notification="notification" />
         </div>
       </div>
     </div>
@@ -389,24 +351,6 @@ onUnmounted(() => {
 
 .notification-item.unread {
   background-color: rgba(37, 99, 235, 0.05);
-}
-
-.notification-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.notification-message {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
-}
-
-.notification-time {
-  color: var(--text-secondary);
-  font-size: var(--font-size-xs);
 }
 
 .notification-empty {
