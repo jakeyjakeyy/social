@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Post from "./Post.vue";
 import type { Post as postType } from "@/types/Post";
-const emit = defineEmits(["closeExpandedPost"]);
+const emit = defineEmits(["closeExpandedPost", "deletePost"]);
 const props = defineProps<{ post: any; notModal?: boolean }>();
 import { onMounted, ref } from "vue";
 import AddPost from "./AddPost.vue";
@@ -42,6 +42,12 @@ const handleCloseAddPost = (success: boolean) => {
     fetchReplies();
   }
 };
+
+function deletePost(postId: number) {
+  emit("deletePost", postId);
+  emit("closeExpandedPost");
+}
+
 </script>
 <template>
   <div :class="{
@@ -57,7 +63,7 @@ const handleCloseAddPost = (success: boolean) => {
           <v-icon name="io-close" scale="1.5" />
         </button>
         <div class="post-section">
-          <Post :post="post" ref="postRef" @add-reply="handleAddReply" expanded />
+          <Post :post="post" ref="postRef" @add-reply="handleAddReply" @delete-post="deletePost" />
         </div>
         <div class="replies-section">
           <div class="replies-header">
