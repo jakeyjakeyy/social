@@ -18,15 +18,19 @@ onMounted(() => {
 
 const clickBounds = (e: MouseEvent | KeyboardEvent) => {
   if (!modalRef.value || showAddPost.value) return false;
-  if ((!props.notModal && !modalRef.value.contains(e.target as Node)) || (e.type === "keydown" && (e as KeyboardEvent).key == "Escape")) {
+  if (
+    (!props.notModal && !modalRef.value.contains(e.target as Node)) ||
+    (e.type === "keydown" && (e as KeyboardEvent).key == "Escape")
+  ) {
     emit("closeExpandedPost");
   }
 };
 
 const fetchReplies = async () => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/post?page=${page}&replies=${props.post.id
-    }`
+    `${import.meta.env.VITE_BACKEND_URL}/api/post?page=${page}&replies=${
+      props.post.id
+    }`,
   );
   const data = await res.json();
   replies.value = data;
@@ -47,23 +51,39 @@ function deletePost(postId: number) {
   emit("deletePost", postId);
   emit("closeExpandedPost");
 }
-
 </script>
 <template>
-  <div :class="{
-    'expanded-post-overlay': !props.notModal,
-    'expanded-post-container': props.notModal,
-  }" @click="clickBounds">
-    <div :class="{
-      'expanded-post-modal': !props.notModal,
-      'expanded-post-wrapper': props.notModal,
-    }" ref="modalRef">
+  <div
+    :class="{
+      'expanded-post-overlay': !props.notModal,
+      'expanded-post-container': props.notModal,
+    }"
+    @click="clickBounds"
+  >
+    <div
+      :class="{
+        'expanded-post-modal': !props.notModal,
+        'expanded-post-wrapper': props.notModal,
+      }"
+      ref="modalRef"
+    >
       <div class="expanded-post-content">
-        <button v-if="!props.notModal" class="close-button" @click="emit('closeExpandedPost')" aria-label="Close">
+        <button
+          v-if="!props.notModal"
+          class="close-button"
+          @click="emit('closeExpandedPost')"
+          aria-label="Close"
+        >
           <v-icon name="io-close" scale="1.5" />
         </button>
         <div class="post-section">
-          <Post :post="post" ref="postRef" @add-reply="handleAddReply" @delete-post="deletePost" />
+          <Post
+            :post="post"
+            ref="postRef"
+            @add-reply="handleAddReply"
+            @delete-post="deletePost"
+            expanded
+          />
         </div>
         <div class="replies-section">
           <div class="replies-header">
@@ -72,13 +92,23 @@ function deletePost(postId: number) {
           </div>
           <div class="replies-container">
             <div class="replies">
-              <Post v-for="reply in replies" :key="reply.id" :post="reply" is-reply @add-reply="handleAddReply" />
+              <Post
+                v-for="reply in replies"
+                :key="reply.id"
+                :post="reply"
+                is-reply
+                @add-reply="handleAddReply"
+              />
             </div>
           </div>
         </div>
       </div>
     </div>
-    <AddPost v-if="showAddPost" :is-reply="post.id" @close-add-post-modal="handleCloseAddPost" />
+    <AddPost
+      v-if="showAddPost"
+      :is-reply="post.id"
+      @close-add-post-modal="handleCloseAddPost"
+    />
   </div>
 </template>
 
